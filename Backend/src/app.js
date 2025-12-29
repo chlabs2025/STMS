@@ -18,6 +18,9 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
+import loginRoute from "./route/auth.route.js"
+app.use("/api",loginRoute)
+
 
 
 export {app}

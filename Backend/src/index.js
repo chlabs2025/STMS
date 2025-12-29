@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { DB_NAME } from "./constants.js";
 import express from "express"
 import {app} from './app.js'
-
+import createDefaultUser from "./utils/defaultUser.js";
 
 
 //require('dotenv').config({path:'./env'})
@@ -19,6 +19,7 @@ connectDB()  //ye async use kiye hai to promise bhi return karega isliye
         console.log(`Server is running at port :${process.env.PORT}`);
         
     })
+    createDefaultUser();
 })
 .catch((err)=>{
     console.log("MONGODB connection failed !!!",err);
