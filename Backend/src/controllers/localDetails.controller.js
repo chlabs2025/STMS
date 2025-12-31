@@ -8,7 +8,6 @@ export const getlocalData = asyncHandler(async (req, res) => {
   const locals = await localData
     .find()
     .select("LocalID LocalName");
-
    
     return res.json(
     new ApiResponse(

@@ -29,43 +29,59 @@ const AddRawImli = () => {
   }
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white rounded-lg p-12 w-full max-w-md shadow-lg">
-        <div className="text-center mb-8">
-          <p className="text-gray-500 text-sm">
-            25th September 2025 , 8.00 AM
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <h2 className="text-2xl font-bold mb-6">ADD IMLI</h2>
-
-          <input
-            type="text"
-            placeholder="Amount of Imli to be added"
-            value={rawImliQuantity}
-            onChange={(e) => setRawImliQuantity(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6 placeholder-gray-400 focus:outline-none focus:border-gray-500"
-          />
-
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={() => setRawImliQuantity("")}
-              className="flex-1 px-6 py-3 border border-gray-900 rounded-lg text-gray-900 font-bold hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-gray-900 text-white rounded-lg font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-            >
-              <span>Add to Stock</span>
-              <span>➕</span>
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-white">Add Imli Stock</h1>
+              <p className="text-gray-300 text-xs">
+                {new Date().toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}{" "}
+                • {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
           </div>
-        </form>
+
+          {/* Content */}
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2 text-sm">Imli Quantity (KG)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter quantity in KG"
+                  value={rawImliQuantity}
+                  onChange={(e) => setRawImliQuantity(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm transition"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setRawImliQuantity("")}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold text-sm hover:bg-gray-800 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span>➕</span>
+                  <span>Add to Stock</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   )
