@@ -162,7 +162,7 @@ const AssignImli = () => {
 
                   {/* Dropdown List */}
                   {showDropdown && filteredLocals.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto pointer-events-auto">
                       {filteredLocals.map((local) => (
                         <div
                           key={local._id}
