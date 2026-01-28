@@ -12,22 +12,18 @@ export const assignImli = asyncHandler(async (req, res) => {
   if (!assignedQuantity)
     throw new ApiError(400, "assignedQuantity is required");
 
-  // 1️⃣ Check current stock
   const stock = await ImliData.findOne();
   if (!stock || stock.rawImliQuantity < assignedQuantity) {
     throw new ApiError(400, "Not enough imli in stock");
   }
 
-  // 2️⃣ Reduce stock
   await ImliData.findOneAndUpdate(
     {},
     { $inc: { rawImliQuantity: -assignedQuantity } }
   );
 
-  // 3️⃣ Get local info
   const local = await localData.findOne({ LocalID });
 
-  // 4️⃣ Create assignment record
   const assign = await ImliAssign.create({
     localID: local.LocalID,
     localName: local.LocalName,

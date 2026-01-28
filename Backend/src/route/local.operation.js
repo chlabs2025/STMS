@@ -1,4 +1,4 @@
-import { return_local, delete_local } from "../controllers/local.operator.admin.action.controller.js";
+import { return_local, delete_local } from "../controllers/admin.operator.local.controller.js";
 import { Router } from "express";
 
 const router = Router();
