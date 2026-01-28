@@ -18,6 +18,23 @@ const return_local=asyncHandler(async(req , res)=>{
     );
 })
 
-const delete_local=asyncHandler(async(req , res)=>{
+const delete_local = asyncHandler(async (req, res) => {
+    const { localId } = req.body;
+
+    const local = await localData.findById(localId);
+    if (!local) {
+        throw new ApiError(404, "Local not found");
+    }
+
+    await local.deleteOne();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            "Local deleted successfully"
+        )
+    );
+});
+
 export {return_local};
 
