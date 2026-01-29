@@ -20,12 +20,17 @@ const AdminLayout = () => {
     setActivePage("assignImli")
   }
 
+  const handlePageChange = (pageId) => {
+    setNavigationProps({}) // Clear navigation props when changing pages normally
+    setActivePage(pageId)
+  }
+
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)
   }
 
   const pageConfig = {
-    dashboard: { component: Dashboard, title: "DASHBOARD GENERAL", props: { navigateToAssignImli } },
+    dashboard: { component: Dashboard, title: "DASHBOARD GENERAL", props: { navigateToAssignImli, onPageChange: handlePageChange } },
     addLocals : {component : AddLocals, title :"ADD LOCALS", props: {}},
     addRawImli: { component: AddRawImli, title: "ADD RAW IMLI IN STOCKS", props: {} },
     assignImli: { component: AssignImli, title: "ASSIGN IMLI", props: navigationProps },
@@ -35,11 +40,6 @@ const AdminLayout = () => {
 
   const currentPage = pageConfig[activePage]
   const CurrentComponent = currentPage.component
-
-  const handlePageChange = (pageId) => {
-    setNavigationProps({}) // Clear navigation props when changing pages normally
-    setActivePage(pageId)
-  }
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">

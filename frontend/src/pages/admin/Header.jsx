@@ -1,6 +1,6 @@
 const Header = ({ title, onToggleSidebar, isSidebarCollapsed }) => {
   return (
-    <header className="bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white px-6 py-4 flex items-center h-[80px] shadow-lg border-b border-orange-300/30">
+    <header className="bg-[#ff741f] text-white px-6 py-4 flex items-center h-[80px] shadow-lg border-b border-orange-300/30">
       <div className="flex items-center gap-4 w-full">
         <button 
           onClick={onToggleSidebar}
@@ -16,7 +16,6 @@ const Header = ({ title, onToggleSidebar, isSidebarCollapsed }) => {
           </svg>
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-2 h-8 bg-white/20 rounded-full"></div>
           <h2 className="text-xl font-semibold tracking-wide truncate text-white/95">{title}</h2>
         </div>
       </div>
