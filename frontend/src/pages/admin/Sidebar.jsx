@@ -1,13 +1,15 @@
 "use client"
 
-import { 
-  MdDashboard, 
-  MdPersonAdd, 
-  MdEco, 
-  MdAssignment, 
-  MdKeyboardReturn, 
+import {
+  MdDashboard,
+  MdPersonAdd,
+  MdEco,
+  MdAssignment,
+  MdKeyboardReturn,
   MdPerson,
-  MdSettings
+  MdSettings,
+  MdChevronLeft,
+  MdChevronRight
 } from 'react-icons/md';
 
 export default function Sidebar({ activePage, onPageChange, isCollapsed, onToggle }) {
@@ -21,26 +23,67 @@ export default function Sidebar({ activePage, onPageChange, isCollapsed, onToggl
   ]
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b  to-gray-100 h-screen flex flex-col flex-shrink-0 shadow-xl transition-all duration-300 ease-in-out`}>
-      {/* Header */}
-      <div className={`${isCollapsed ? 'px-2' : 'px-6'} py-4 bg-[#ff741f] h-[80px] flex items-center shadow-lg relative overflow-hidden transition-all duration-300`}>
+    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-white to-gray-50 h-screen flex flex-col flex-shrink-0 shadow-xl transition-all duration-300 ease-in-out relative`}>
+      {/* Header - ChatGPT Style */}
+      <div className="px-3 py-4 bg-[#ff741f] h-[80px] flex items-center justify-between shadow-lg relative overflow-hidden transition-all duration-300">
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-        {isCollapsed ? (
-          <div className="relative z-10 flex items-center justify-center w-full">
-            <img 
-              src="/stms-logo.svg" 
-              alt="SITMS Portal" 
-              className="h-10 w-auto filter brightness-0 invert"
-            />
-          </div>
-        ) : (
-          <div className="relative z-10 flex items-center gap-3">
-            <img 
-              src="/stms-logo.svg" 
-              alt="SITMS Portal" 
-              className="h-10 w-auto filter brightness-0 invert"
-            />
-          </div>
+
+        {/* Logo */}
+        <div className="relative z-10 flex items-center">
+          {isCollapsed ? (
+            /* When collapsed: Logo with hover-to-toggle behavior */
+            <button
+              onClick={onToggle}
+              className="group flex items-center gap-2 transition-all duration-300 cursor-pointer"
+            >
+              <div className="w-10 h-10 flex items-center justify-center rounded-lg group-hover:bg-white/20 transition-all duration-300">
+                {/* Logo - visible by default, hidden on hover */}
+                <img
+                  src="/stms-logo.svg"
+                  alt="SITMS Portal"
+                  className="h-20 w-auto filter brightness-0 invert absolute transition-all duration-300 opacity-100 group-hover:opacity-0 group-hover:scale-75"
+                />
+                {/* Sidebar Panel Icon - hidden by default, visible on hover */}
+                <svg
+                  className="w-5 h-5 text-white absolute transition-all duration-300 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2" />
+                  <line x1="9" y1="3" x2="9" y2="21" strokeWidth="2" />
+                </svg>
+              </div>
+            </button>
+          ) : (
+            /* When expanded: Just show the logo */
+            <div className="w-10 h-10 flex items-center justify-center rounded-lg">
+              <img
+                src="/stms-logo.svg"
+                alt="SITMS Portal"
+                className="h-12 w-auto filter brightness-0 invert"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Toggle Button - Only visible when expanded (like ChatGPT) */}
+        {!isCollapsed && (
+          <button
+            onClick={onToggle}
+            className="relative z-10 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all duration-200 group"
+            aria-label="Close sidebar"
+          >
+            <svg
+              className="w-5 h-5 text-white/80 group-hover:text-white transition-colors"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2" />
+              <line x1="9" y1="3" x2="9" y2="21" strokeWidth="2" />
+            </svg>
+          </button>
         )}
       </div>
 
@@ -52,11 +95,10 @@ export default function Sidebar({ activePage, onPageChange, isCollapsed, onToggl
             <div key={item.id} className="relative group">
               <button
                 onClick={() => onPageChange(item.id)}
-                className={`w-full text-left ${isCollapsed ? 'px-0 py-3 justify-center' : 'px-4 py-3.5'} rounded-xl font-medium transition-all duration-200 group flex items-center gap-3 ${
-                  activePage === item.id 
-                    ? "bg-[#ff741f] text-white shadow-lg shadow-orange-500/25 scale-[1.02]" 
-                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-700 hover:shadow-sm"
-                }`}
+                className={`w-full text-left ${isCollapsed ? 'px-0 py-3 justify-center' : 'px-4 py-3.5'} rounded-xl font-medium transition-all duration-200 group flex items-center gap-3 ${activePage === item.id
+                  ? "bg-[#ff741f] text-white shadow-lg shadow-orange-500/25 scale-[1.02]"
+                  : "text-gray-700 hover:bg-orange-50 hover:text-orange-700 hover:shadow-sm"
+                  }`}
               >
                 <div className="flex items-center gap-3 justify-center w-full">
                   {isCollapsed ? (

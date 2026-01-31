@@ -31,7 +31,7 @@ const AdminLayout = () => {
 
   const pageConfig = {
     dashboard: { component: Dashboard, title: "DASHBOARD GENERAL", props: { navigateToAssignImli, onPageChange: handlePageChange } },
-    addLocals : {component : AddLocals, title :"ADD LOCALS", props: {}},
+    addLocals: { component: AddLocals, title: "ADD LOCALS", props: {} },
     addRawImli: { component: AddRawImli, title: "ADD RAW IMLI IN STOCKS", props: {} },
     assignImli: { component: AssignImli, title: "ASSIGN IMLI", props: navigationProps },
     imliReturned: { component: ImliReturned, title: "IMLI RETURNED", props: {} },
@@ -43,17 +43,15 @@ const AdminLayout = () => {
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      <Sidebar 
-        activePage={activePage} 
-        onPageChange={handlePageChange} 
+      <Sidebar
+        activePage={activePage}
+        onPageChange={handlePageChange}
         isCollapsed={isSidebarCollapsed}
         onToggle={toggleSidebar}
       />
       <div className="flex-1 flex flex-col min-w-0">
-        <Header 
-          title={currentPage.title} 
-          onToggleSidebar={toggleSidebar}
-          isSidebarCollapsed={isSidebarCollapsed}
+        <Header
+          title={currentPage.title}
         />
         <div className="flex-1 overflow-auto">
           <CurrentComponent {...currentPage.props} />

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
+import LandingPage from "./pages/LandingPage"
 import Login from "./pages/Login"
 
 // admin
@@ -15,7 +16,8 @@ function App() {
       <Routes>
 
         {/* public */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
 
         {/* admin routes */}
         <Route path="/admin/dashboard" element={<A_Dashboard />} />
@@ -29,3 +31,4 @@ function App() {
 }
 
 export default App
+
