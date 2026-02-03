@@ -1,7 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
-/* Global Font Family - Inter */
+/* 👉 Global Font (same as yours) */
 * {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    sans-serif;
+}
+
+/* 👉 Smooth & natural falling animation */
+@keyframes cursor-shower-fall {
+  0% {
+    transform: translateY(0) rotate(var(--tw-rotate)) scale(1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(var(--fall-distance)) rotate(var(--rotation-end)) scale(0.85);
+    opacity: 0;
+  }
+}
+
+/* 👉 Premium animation tuning */
+.animate-cursor-shower {
+  animation: cursor-shower-fall 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+  /* 👉 Soft depth, no harsh contrast */
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+
+  /* 👉 GPU acceleration (important for smoothness) */
+  will-change: transform, opacity;
 }
