@@ -2,13 +2,13 @@ import { CheckCircle2 } from 'lucide-react';
 
 const AboutSection = () => {
     return (
-        <section id="about" className="py-24 bg-white">
+        <section id="about" className="py-24 bg-white section-reveal">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
                     {/* Image Side */}
                     <div className="relative group">
-                        <div className="absolute inset-0 bg-orange-100 rounded-3xl transform rotate-3 transition-transform group-hover:rotate-0" />
+                        <div className="absolute inset-0 bg-[#ff5a1f]/10 rounded-3xl transform rotate-3 transition-transform group-hover:rotate-0" />
                         <div className="relative h-[500px] w-full bg-zinc-100 rounded-3xl overflow-hidden shadow-xl">
                             {/* Placeholder for About Image */}
                             <img
@@ -21,7 +21,7 @@ const AboutSection = () => {
 
                     {/* Content Side */}
                     <div>
-                        <h2 className="text-sm font-bold text-orange-600 tracking-wider uppercase mb-3">Who We Are</h2>
+                        <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Who We Are</h2>
                         <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                             Empowering Farmers, <br />
                             <span className="text-gray-400">Delivering Excellence.</span>
@@ -39,8 +39,8 @@ const AboutSection = () => {
                                 "Global export quality standards"
                             ].map((item, index) => (
                                 <div key={index} className="flex items-center gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                                        <CheckCircle2 className="w-4 h-4 text-orange-600" />
+                                    <div className="w-6 h-6 rounded-full bg-[#ff5a1f]/15 flex items-center justify-center flex-shrink-0">
+                                        <CheckCircle2 className="w-4 h-4 text-[#ff5a1f]" />
                                     </div>
                                     <span className="text-gray-700 font-medium">{item}</span>
                                 </div>

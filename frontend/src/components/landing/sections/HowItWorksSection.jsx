@@ -49,7 +49,7 @@ const HowItWorksSection = () => {
             <div className="container mx-auto px-6 relative z-10">
                 <ScrollReveal>
                     <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-800">
-                        How It <span className="text-[#ff741f]">Works</span>
+                        How It <span className="text-[#FF4D00]">Works</span>
                     </h2>
                     <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
                         Our streamlined process ensures quality at every step
@@ -58,7 +58,7 @@ const HowItWorksSection = () => {
 
                 <div className="relative">
                     {/* Connection Line */}
-                    <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-200 via-[#ff741f] to-orange-200 transform -translate-y-1/2" />
+                    <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-200 via-[#FF4D00] to-orange-200 transform -translate-y-1/2" />
 
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
                         {steps.map((step, index) => {
@@ -68,13 +68,13 @@ const HowItWorksSection = () => {
                                     <Card3D className="h-full">
                                         <div className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full min-h-[280px] group relative flex flex-col justify-between">
                                             {/* Step Number */}
-                                            <div className="absolute -top-4 -right-2 w-8 h-8 bg-[#ff741f] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+                                            <div className="absolute -top-4 -right-2 w-8 h-8 bg-[#FF4D00] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
                                                 {index + 1}
                                             </div>
-                                            <div className="w-16 h-16 bg-gradient-to-br from-[#ff741f] to-[#ff9b54] rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0">
+                                            <div className="w-16 h-16 bg-gradient-to-br from-[#FF4D00] to-[#ff9b54] rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0">
                                                 <IconComponent className="text-3xl text-white" />
                                             </div>
-                                            <h3 className="text-lg font-bold text-gray-800 mb-2 text-center group-hover:text-[#ff741f] transition-colors flex-shrink-0">
+                                            <h3 className="text-lg font-bold text-gray-800 mb-2 text-center group-hover:text-[#FF4D00] transition-colors flex-shrink-0">
                                                 {step.title}
                                             </h3>
                                             <p className="text-gray-600 text-sm text-center leading-relaxed flex-1">

@@ -36,23 +36,23 @@ const GallerySection = () => {
     };
 
     return (
-        <section id="gallery" className="py-24 bg-zinc-950 text-white overflow-hidden">
+        <section id="gallery" className="py-24 bg-white text-gray-900 overflow-hidden section-reveal">
             <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
                 <div>
-                    <h2 className="text-sm font-bold text-orange-500 tracking-wider uppercase mb-3">Our Work</h2>
-                    <h3 className="text-4xl font-bold">Captured Moments</h3>
+                    <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Our Work</h2>
+                    <h3 className="text-4xl font-bold text-gray-900">Captured Moments</h3>
                 </div>
 
                 <div className="flex gap-4">
                     <button
                         onClick={() => scroll('left')}
-                        className="p-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all"
+                        className="p-3 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all"
                     >
                         <ArrowLeft size={20} />
                     </button>
                     <button
                         onClick={() => scroll('right')}
-                        className="p-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all"
+                        className="p-3 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all"
                     >
                         <ArrowRight size={20} />
                     </button>
@@ -74,9 +74,9 @@ const GallerySection = () => {
                             alt={img.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
-                            <h4 className="text-2xl font-bold mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{img.title}</h4>
-                            <p className="text-gray-300 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">{img.desc}</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                            <h4 className="text-2xl font-bold text-white mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{img.title}</h4>
+                            <p className="text-gray-200 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">{img.desc}</p>
                         </div>
                     </div>
                 ))}
