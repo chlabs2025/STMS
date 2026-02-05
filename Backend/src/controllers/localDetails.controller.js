@@ -7,9 +7,9 @@ import { localData } from "../models/local.model.js";
 export const getlocalData = asyncHandler(async (req, res) => {
   const locals = await localData
     .find()
-    .select("LocalID LocalName totalAssignedQuantity");
-   
-    return res.json(
+    .select("LocalID LocalName totalAssignedQuantity totalReturnedQuantity updatedAt");
+
+  return res.json(
     new ApiResponse(
       200,
       locals,

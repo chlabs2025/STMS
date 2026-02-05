@@ -213,7 +213,21 @@ const Payment = () => {
                                         <div className="flex flex-col lg:flex-row justify-between gap-10">
                                             <div className="lg:w-2/3">
                                                 <div className="mb-8 p-4 bg-orange-50/50 rounded-lg border-l-4 border-orange-500 text-gray-700 font-medium text-sm">
-                                                    Period: Thursday 09/10 to 16/10
+                                                    {(() => {
+                                                        const date = local.updatedAt ? new Date(local.updatedAt) : new Date();
+                                                        // Find the most recent Thursday
+                                                        const day = date.getDay();
+                                                        const diff = date.getDate() - day + (day >= 4 ? 4 : -3);
+                                                        const start = new Date(date);
+                                                        start.setDate(diff);
+
+                                                        const end = new Date(start);
+                                                        end.setDate(start.getDate() + 7);
+
+                                                        const format = (d) => `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                                                        return `Period: Thursday ${format(start)} to ${format(end)}`;
+                                                    })()}
                                                 </div>
 
                                                 <div className="overflow-hidden rounded-lg border border-gray-200">
@@ -227,7 +241,13 @@ const Payment = () => {
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
                                                             <tr className="hover:bg-gray-50/50 transition-colors">
-                                                                <td className="px-6 py-4 font-medium">-</td>
+                                                                <td className="px-6 py-4 font-medium">
+                                                                    {local.updatedAt ? new Date(local.updatedAt).toLocaleDateString("en-GB", {
+                                                                        day: "numeric",
+                                                                        month: "short",
+                                                                        year: "numeric"
+                                                                    }) : "-"}
+                                                                </td>
                                                                 <td className="px-6 py-4">{assignedQty}</td>
                                                                 <td className="px-6 py-4">{cleanedQty}</td>
                                                             </tr>
