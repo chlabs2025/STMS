@@ -1,3 +1,5 @@
+
+import {Payment} from "../models/payment.model.js"
 import { getOrGenerateQR } from "../service/qrGenerator.js";
 import { localData } from "../models/local.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -27,4 +29,8 @@ export const qrHandler = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, { qr }, "QR generated successfully")
     );
+});
+
+export const payment=asyncHandler(async(req , res)=>{
+
 });

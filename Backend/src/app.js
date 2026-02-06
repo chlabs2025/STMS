@@ -17,6 +17,8 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+import qrHandler from "./route/payment.admin.js"
+app.use("/api", qrHandler)
 
 import loginRoute from "./route/auth.route.js"
 app.use("/api",loginRoute)
@@ -26,9 +28,6 @@ app.use("/api",addRawImli)
 
 import addLocal from "./route/addlocal.route.js"
 app.use("/api",addLocal)
-
-import getlocalData from "./route/getlocalDetail.js"
-app.use("/api",getlocalData)
 
 import assignImli from "./route/assignImli.route.js"
 app.use("/api",assignImli)
