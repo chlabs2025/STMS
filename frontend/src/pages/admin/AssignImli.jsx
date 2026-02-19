@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { MdAssignment, MdSearch, MdPerson, MdScale, MdCancel, MdCheck, MdSchedule, MdLocationOn } from 'react-icons/md'
 import api from "../../api/axios"
 import toast from "react-hot-toast"
+import SuccessModal from "../../components/common/SuccessModal"
 
 const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,8 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
   const [selectedLocal, setSelectedLocal] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fetchingLocals, setFetchingLocals] = useState(true)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [lastAssignedData, setLastAssignedData] = useState(null)
 
   // Fetch all locals on component mount
   useEffect(() => {
@@ -117,9 +120,16 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
         assignedQuantity: parseFloat(formData.assignedQuantity),
       })
 
-      toast.success(`${formData.assignedQuantity} KG assigned to ${selectedLocal.LocalName}`)
+      setLastAssignedData({
+        quantity: formData.assignedQuantity,
+        localName: selectedLocal.LocalName
+      })
+      setShowSuccessModal(true)
+
+      // Reset form but keep modal open
       setFormData({ LocalID: "", assignedQuantity: "" })
       setSelectedLocal(null)
+      setShowDropdown(false)
     } catch (error) {
       const errorMsg = error.response?.data?.message || "Failed to assign imli"
       toast.error(`${errorMsg}`)
@@ -297,6 +307,14 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
           </div>
         </div>
       </div>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Assignment Successful!"
+        message={`${lastAssignedData?.quantity} KG of Raw Imli has been successfully assigned to ${lastAssignedData?.localName}.`}
+        subMessage="The inventory has been updated accordingly."
+      />
     </div>
   )
 }

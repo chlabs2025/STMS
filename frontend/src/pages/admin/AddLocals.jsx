@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MdPersonAdd, MdCancel, MdCheckCircle, MdError, MdPerson, MdHome, MdPhone, MdPayment, MdSchedule } from 'react-icons/md'
 import api from "../../api/axios"
 
@@ -16,9 +16,38 @@ export default function AddLocals() {
     const [loading, setLoading] = useState(false)
     const [successMessage, setSuccessMessage] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
+    const [existingLocals, setExistingLocals] = useState([])
+    const [idError, setIdError] = useState("")
+
+    // Fetch existing locals on mount
+    useEffect(() => {
+        const fetchLocals = async () => {
+            try {
+                // Using the return_local endpoint to get all locals
+                const response = await api.post("/return_local")
+                if (response.data && response.data.data) {
+                    setExistingLocals(response.data.data)
+                }
+            } catch (error) {
+                console.error("Failed to fetch existing locals:", error)
+            }
+        }
+        fetchLocals()
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
+
+        // Real-time validation for LocalID
+        if (name === "LocalID") {
+            const isDuplicate = existingLocals.some(local => String(local.LocalID) === String(value))
+            if (isDuplicate) {
+                setIdError("⚠️ This Local ID is already taken. Please choose another.")
+            } else {
+                setIdError("")
+            }
+        }
+
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -27,6 +56,14 @@ export default function AddLocals() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        // Final check before submission
+        const isDuplicate = existingLocals.some(local => String(local.LocalID) === String(formData.LocalID))
+        if (isDuplicate) {
+            setErrorMessage("⚠️ Cannot add local: Local ID already exists.")
+            return
+        }
+
         setLoading(true)
         setSuccessMessage("")
         setErrorMessage("")
@@ -42,12 +79,21 @@ export default function AddLocals() {
                 LocalPhone: "",
                 LocalUPI: "",
             })
+            // Refresh list of locals to include the new one
+            const refreshResponse = await api.post("/return_local")
+            if (refreshResponse.data && refreshResponse.data.data) {
+                setExistingLocals(refreshResponse.data.data)
+            }
 
             console.log("Response:", response.data)
         } catch (error) {
-            setErrorMessage(
-                error.response?.data?.message || "Failed to add local. Please try again."
-            )
+            if (error.response?.status === 409) {
+                setErrorMessage("⚠️ Local ID already exists. Please use a different ID.")
+            } else {
+                setErrorMessage(
+                    error.response?.data?.message || "Failed to add local. Please try again."
+                )
+            }
             console.error("Error:", error)
         } finally {
             setLoading(false)
@@ -64,6 +110,7 @@ export default function AddLocals() {
         })
         setSuccessMessage("")
         setErrorMessage("")
+        setIdError("")
     }
 
     return (
@@ -124,9 +171,15 @@ export default function AddLocals() {
                                         value={formData.LocalID}
                                         onChange={handleChange}
                                         placeholder="Enter unique local ID"
-                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                                        className={`w-full px-4 py-3 bg-white border ${idError ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-orange-500/20 focus:border-orange-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 text-base font-medium`}
                                         required
                                     />
+                                    {idError && (
+                                        <p className="mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+                                            <MdError className="text-sm" />
+                                            {idError}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="relative">
@@ -206,7 +259,7 @@ export default function AddLocals() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={loading || !!idError}
                                     className="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
                                 >
                                     {loading ? (

@@ -92,32 +92,6 @@ const Dashboard = ({ navigateToAssignImli, onPageChange }) => {
     },
   ];
 
-  const activities = [
-    {
-      title: "LATEST ENTRIES",
-      items: [
-        { description: "1500 KG RAW IMLI ADDED IN STOCK", date: "27th September 2025" },
-        { description: "1200 KG RAW IMLI ADDED IN STOCK", date: "27th September 2025" },
-        { description: "1200 KG RAW IMLI ADDED IN STOCK", date: "27th September 2025" },
-      ],
-    },
-    {
-      title: "RETURN CLEAN IMLI",
-      items: [
-        { description: "1500 KG CLEANED IMLI RETURNED BY CLEANER 343", date: "27th September 2025" },
-        { description: "1900 KG CLEANED IMLI RETURNED BY CLEANER 313", date: "27th September 2025" },
-        { description: "2000 KG CLEANED IMLI RETURNED BY CLEANER 313", date: "27th September 2025" },
-      ],
-    },
-    {
-      title: "ASSIGNMENT",
-      items: [
-        { description: "800 KG RAW IMLI ASSIGNED TO CLEANER 543", date: "27th September 2025" },
-        { description: "800 KG RAW IMLI ASSIGNED TO CLEANER 543", date: "27th September 2025" },
-        { description: "800 KG RAW IMLI ASSIGNED TO CLEANER 543", date: "27th September 2025" },
-      ],
-    },
-  ];
 
   return (
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen overflow-x-hidden">
