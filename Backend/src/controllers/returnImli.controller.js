@@ -31,13 +31,13 @@ export const returnImli = asyncHandler(async (req, res) => {
   const updatedLocal = await localData.findOneAndUpdate(
     { LocalID },
     { $inc: { totalAssignedQuantity: -returnedQuantity } },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   const totalReturnedQuantity = await localData.findOneAndUpdate(
     { LocalID },
     { $inc: { totalReturnedQuantity: returnedQuantity } },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   const returned = await imliReturn.create({

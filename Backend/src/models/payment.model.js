@@ -13,7 +13,7 @@ const paymentSchema = new Schema(
 
     method: {
       type: String,
-      enum: ["UPI", "CASH"],
+      enum: ["Cash", "Online"],
     },
 
     upiId: {

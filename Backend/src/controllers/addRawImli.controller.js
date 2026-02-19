@@ -15,18 +15,18 @@ export const addRawImli = asyncHandler(async (req, res) => {
     {},
     { $inc: { rawImliQuantity } }, // add quantity
     {
-      new: true, // return updated doc
+      returnDocument: 'after', // return updated doc
       upsert: true, // create if not exists (first time)
     }
   );
 
   return res
-  .status(200)
-  .json(
-    new ApiResponse(
+    .status(200)
+    .json(
+      new ApiResponse(
         200,
         imli,
         "raw Imli added successfully"
+      )
     )
-  )
 });

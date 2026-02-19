@@ -3,10 +3,10 @@ import { generateQRCode } from "../service/qrGenerator.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
-import {Config} from "../models/config.model.js"
-import {imliReturn} from "../models/imliReturn.model.js"
-import {ImliAssign} from "../models/imliAssign.model.js"
-import {localData} from "../models/local.model.js"
+import { Config } from "../models/config.model.js"
+import { imliReturn } from "../models/imliReturn.model.js"
+import { ImliAssign } from "../models/imliAssign.model.js"
+import { localData } from "../models/local.model.js"
 
 export const qrHandler = asyncHandler(async (req, res) => {
     const { upiId } = req.body;
@@ -29,13 +29,13 @@ export const qrHandler = asyncHandler(async (req, res) => {
 });
 
 
-export const Imli_price_changer=asyncHandler(async(req, res)=>{
+export const Imli_price_changer = asyncHandler(async (req, res) => {
 
-   const {price} = req.body;
-   const config = await Config.findOneAndUpdate(
+    const { price } = req.body;
+    const config = await Config.findOneAndUpdate(
         {},
         { $set: { price_per_cleaned_imli: price } },
-        { new: true, upsert: true }
+        { returnDocument: 'after', upsert: true }
     );
     return res.status(200).json(
         new ApiResponse(200, { price: config.price_per_cleaned_imli }, "Price updated successfully")
@@ -45,7 +45,7 @@ export const Imli_price_changer=asyncHandler(async(req, res)=>{
 
 export const orderReference = asyncHandler(async (req, res) => {
     const { localID } = req.body;
-    
+
     if (!localID) throw new ApiError(400, "localID required");
 
     const r = await imliReturn.findOne({ localID });
@@ -63,8 +63,8 @@ export const orderReference = asyncHandler(async (req, res) => {
             price_per_cleaned_imli: p.price_per_cleaned_imli,
             total,
         }, "Order details fetched successfully")
-      );
-    });
+    );
+});
 
 export const confirmPayment = asyncHandler(async (req, res) => {
     const { localId, method } = req.body;
@@ -81,8 +81,8 @@ export const confirmPayment = asyncHandler(async (req, res) => {
     if (!local) throw new ApiError(404, "Local not found");
 
     const total = r.returnedQuantity * p.price_per_cleaned_imli;
-    let localtotal=0;
-    localtotal+=total;
+    let localtotal = 0;
+    localtotal += total;
 
     if (method === "Cash") {
         try {

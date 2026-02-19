@@ -35,15 +35,15 @@ export const assignImli = asyncHandler(async (req, res) => {
   const totalAssignedQuantity = await localData.findOneAndUpdate(
     { LocalID },
     { $inc: { totalAssignedQuantity: assignedQuantity } },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   return res.json(
     new ApiResponse(
       201,
       {
-        assign:assign,
-        totalAssignedQuantity:totalAssignedQuantity.totalAssignedQuantity
+        assign: assign,
+        totalAssignedQuantity: totalAssignedQuantity.totalAssignedQuantity
       },
       "Imli assigned successfully"
     )
