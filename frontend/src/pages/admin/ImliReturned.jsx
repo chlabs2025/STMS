@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { MdKeyboardReturn, MdSearch, MdPerson, MdScale, MdCancel, MdCheck, MdSchedule, MdLocationOn, MdInventory } from 'react-icons/md'
 import api from "../../api/axios"
 import toast from "react-hot-toast"
+import SuccessModal from "../../components/common/SuccessModal"
 
 const ImliReturned = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,8 @@ const ImliReturned = () => {
   const [selectedLocal, setSelectedLocal] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fetchingLocals, setFetchingLocals] = useState(true)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [lastReturnedData, setLastReturnedData] = useState(null)
 
   // Fetch all locals on component mount
   useEffect(() => {
@@ -127,9 +130,15 @@ const ImliReturned = () => {
         )
       )
 
-      toast.success(`${returnedQuantity} KG returned from ${selectedLocal.LocalName}`)
+      setLastReturnedData({
+        quantity: returnedQuantity,
+        localName: selectedLocal.LocalName
+      })
+      setShowSuccessModal(true)
+
       setFormData({ LocalID: "", returnedQuantity: "" })
       setSelectedLocal(null)
+      setShowDropdown(false)
     } catch (error) {
       const errorMsg = error.response?.data?.message || "Failed to return imli"
       toast.error(`${errorMsg}`)
@@ -311,6 +320,14 @@ const ImliReturned = () => {
           </div>
         </div>
       </div>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Return Successful!"
+        message={`${lastReturnedData?.quantity} KG of Cleaned Imli has been successfully returned from ${lastReturnedData?.localName}.`}
+        subMessage="The inventory and assignment records have been updated."
+      />
     </div>
   )
 }
