@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:12px;
+}
+
+table{
+  border-collapse:collapse;
+  width:100%;
+}
+
+td,th{
+  border:1px solid #000;
+  padding:5px;
+  vertical-align:top;
+}
+
+.no-border{
+  border:none !important;
+}
+
+.center{text-align:center;}
+.right{text-align:right;}
+.bold{font-weight:bold;}
+.big{font-size:18px;}
+
+</style>
+</head>
+
+<body>
+
+<!-- TITLE -->
+<table>
+<tr>
+<td class="center bold big" colspan="4">TAX INVOICE</td>
+</tr>
+
+<!-- SELLER + INVOICE DETAILS -->
+<tr>
+<td colspan="2" style="width:60%">
+<b><%= invoice.seller.businessName %></b><br>
+<%= invoice.seller.address %><br>
+GSTIN/UIN: <%= invoice.seller.gstin %><br>
+State Name : <%= invoice.seller.state %>, Code : <%= invoice.seller.stateCode %>
+</td>
+
+<td colspan="2">
+Invoice No.: <b><%= invoice.invoiceNumber %></b><br>
+Dated: <%= new Date(invoice.invoiceDate).toLocaleDateString() %>
+</td>
+</tr>
+
+<!-- BUYER -->
+<tr>
+<td colspan="2">
+<b>Buyer (Bill to)</b><br>
+<b><%= invoice.customer.name %></b><br>
+<%= invoice.customer.address %><br>
+GSTIN/UIN : <%= invoice.customer.gstin %><br>
+State Name : <%= invoice.customer.state %>, Code : <%= invoice.customer.stateCode %>
+</td>
+
+<td colspan="2">
+Delivery Note: <%= invoice.transport.deliveryNote || "" %><br>
+Dispatch Doc No: <%= invoice.transport.dispatchDocNo || "" %><br>
+Destination: <%= invoice.transport.destination || "" %><br>
+Motor Vehicle No: <%= invoice.transport.vehicleNo || "" %><br>
+LR/RR No: <%= invoice.transport.lrNo || "" %>
+</td>
+</tr>
+</table>
+
+<br>
+
+<!-- ITEM TABLE -->
+<table>
+<tr class="center bold">
+<th>Sl</th>
+<th>Description of Goods</th>
+<th>HSN/SAC</th>
+<th>Quantity</th>
+<th>Rate</th>
+<th>per</th>
+<th>Amount</th>
+</tr>
+
+<% invoice.items.forEach((item,i)=>{ %>
+<tr>
+<td class="center"><%= i+1 %></td>
+<td><%= item.description %></td>
+<td class="center"><%= item.hsn %></td>
+<td class="center"><%= item.quantity %> <%= item.unit %></td>
+<td class="right">₹ <%= item.rate %></td>
+<td class="center">kgs</td>
+<td class="right">₹ <%= item.amount.toFixed(2) %></td>
+</tr>
+<% }) %>
+
+<!-- TAX ROW -->
+<tr>
+<td colspan="5" class="right bold">IGST</td>
+<td class="right">₹ <%= invoice.igstTotal.toFixed(2) %></td>
+</tr>
+
+<tr>
+<td colspan="5" class="right bold">Total</td>
+<td class="right bold">₹ <%= invoice.grandTotal.toFixed(2) %></td>
+</tr>
+</table>
+
+<br>
+
+<!-- AMOUNT WORDS -->
+<table>
+<tr>
+<td colspan="2">
+Amount Chargeable (in words)<br>
+<b>INR <%= invoice.amountWords %></b>
+</td>
+<td class="center">E. & O.E</td>
+</tr>
+</table>
+
+<br>
+
+<br>
+
+<!-- HSN TAX SUMMARY BOX -->
+<table>
+<tr class="center bold">
+  <th>HSN/SAC</th>
+  <th>Taxable Value</th>
+  <th>IGST Rate</th>
+  <th>IGST Amount</th>
+  <th>Total Tax Amount</th>
+</tr>
+
+<%
+let taxableTotal = 0;
+let taxTotal = 0;
+
+invoice.items.forEach(item=>{
+  taxableTotal += item.amount;
+  taxTotal += item.igst;
+});
+%>
+
+<% invoice.items.forEach(item=>{ %>
+<tr>
+  <td class="center"><%= item.hsn %></td>
+  <td class="right">₹ <%= item.amount.toFixed(2) %></td>
+  <td class="center"><%= item.gstPercent %>%</td>
+  <td class="right">₹ <%= item.igst.toFixed(2) %></td>
+  <td class="right">₹ <%= item.igst.toFixed(2) %></td>
+</tr>
+<% }) %>
+
+<tr class="bold">
+  <td class="right">Total</td>
+  <td class="right">₹ <%= taxableTotal.toFixed(2) %></td>
+  <td></td>
+  <td class="right">₹ <%= taxTotal.toFixed(2) %></td>
+  <td class="right">₹ <%= taxTotal.toFixed(2) %></td>
+</tr>
+</table>
+
+<br>
+
+<!-- TAX AMOUNT IN WORDS -->
+<table>
+<tr>
+<td>
+Tax Amount (in words): 
+<b>
+INR <%= invoice.taxAmountWords %>
+</b>
+</td>
+</tr>
+</table>
+
+<!-- DECLARATION -->
+<table>
+<tr>
+<td style="width:70%">
+<b>Declaration</b><br>
+We declare that this invoice shows the actual price of the goods described
+and that all particulars are true and correct.
+</td>
+
+<td class="center">
+for <b><%= invoice.seller.businessName %></b><br><br><br><br>
+Authorised Signatory
+</td>
+</tr>
+</table>
+
+<br>
+
+<div class="center">
+This is a Computer Generated Invoice
+</div>
+
+</body>
+</html>

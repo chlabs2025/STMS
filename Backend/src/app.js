@@ -39,6 +39,10 @@ app.use("/api", returnImli)
 import localRoutes from "./route/local.operation.js";
 app.use("/api", localRoutes);
 
+import invoiceRoutes from "./route/invoice.route.js"
+app.use("/api",invoiceRoutes)
+
+
 // Global error handler — converts ApiError to JSON response
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
