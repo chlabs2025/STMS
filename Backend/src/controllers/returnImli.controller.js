@@ -27,14 +27,8 @@ export const returnImli = asyncHandler(async (req, res) => {
     );
   }
 
-  // Decrease totalAssignedQuantity from Local
+  // Sirf totalReturnedQuantity badhao, totalAssignedQuantity ko mat chhuo
   const updatedLocal = await localData.findOneAndUpdate(
-    { LocalID },
-    { $inc: { totalAssignedQuantity: -returnedQuantity } },
-    { returnDocument: 'after' }
-  );
-
-  const totalReturnedQuantity = await localData.findOneAndUpdate(
     { LocalID },
     { $inc: { totalReturnedQuantity: returnedQuantity } },
     { returnDocument: 'after' }
@@ -52,7 +46,7 @@ export const returnImli = asyncHandler(async (req, res) => {
       {
         returned: returned,
         totalAssignedQuantity: updatedLocal.totalAssignedQuantity,
-        totalReturnedQuantity: totalReturnedQuantity.totalReturnedQuantity,
+        totalReturnedQuantity: updatedLocal.totalReturnedQuantity,
       },
       "Imli returned successfully"
     )

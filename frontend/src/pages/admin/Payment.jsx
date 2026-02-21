@@ -22,9 +22,9 @@ const Payment = () => {
         fetchLocals()
     }, [])
 
-    const fetchLocals = async () => {
+    const fetchLocals = async (silent = false) => {
         try {
-            setLoading(true)
+            if (!silent) setLoading(true)
             setError(null)
             const response = await api.post("/return_local")
             if (response.data.data) {
@@ -33,9 +33,9 @@ const Payment = () => {
             }
         } catch (error) {
             console.error("Error fetching locals:", error)
-            setError("Failed to load locals. Please try again.")
+            if (!silent) setError("Failed to load locals. Please try again.")
         } finally {
-            setLoading(false)
+            if (!silent) setLoading(false)
         }
     }
 
@@ -98,12 +98,35 @@ const Payment = () => {
             const response = await api.post("/confirm-payment", {
                 localId: localId,
                 method: paymentMethod,
+                // Online Step 1: no status sent → backend creates PENDING
+                // Cash: no status needed → backend always SUCCESS
             })
             setPaymentResult(response.data.data)
-            // Refresh locals list after successful payment
-            fetchLocals()
+            // Cash ke baad silent refresh + collapse
+            if (paymentMethod === "Cash") {
+                await fetchLocals(true)
+            }
         } catch (error) {
             setPaymentError(error.response?.data?.message || "Payment failed. Please try again.")
+        } finally {
+            setPaymentLoading(false)
+        }
+    }
+
+    // Online Step 2: Admin confirms SUCCESS or REJECTED
+    const handleOnlineStatus = async (localId, newStatus) => {
+        try {
+            setPaymentLoading(true)
+            setPaymentError(null)
+            const response = await api.post("/confirm-payment", {
+                localId: localId,
+                method: "Online",
+                status: newStatus,
+            })
+            setPaymentResult(response.data.data)
+            await fetchLocals(true)
+        } catch (error) {
+            setPaymentError(error.response?.data?.message || "Status update failed.")
         } finally {
             setPaymentLoading(false)
         }
@@ -316,35 +339,90 @@ const Payment = () => {
                                                 </div>
 
                                                 <div className="lg:w-1/3 flex flex-col justify-between p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
-                                                    {/* Payment Success */}
+                                                    {/* Payment Result */}
                                                     {paymentResult ? (
                                                         <div className="text-center space-y-4">
-                                                            <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                                                <MdCheckCircle className="text-4xl text-green-500" />
-                                                            </div>
-                                                            <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
-                                                            <div className="space-y-2 text-sm">
-                                                                <div className="flex justify-between py-2 border-b border-gray-100">
-                                                                    <span className="text-gray-500">Amount</span>
-                                                                    <span className="font-bold text-green-600">₹{paymentResult.total}</span>
-                                                                </div>
-                                                                <div className="flex justify-between py-2 border-b border-gray-100">
-                                                                    <span className="text-gray-500">Method</span>
-                                                                    <span className="font-semibold">{paymentResult.method}</span>
-                                                                </div>
-                                                                <div className="flex justify-between py-2">
-                                                                    <span className="text-gray-500">Total Paid</span>
-                                                                    <span className="font-bold text-orange-600">₹{paymentResult.localTotalPaid}</span>
-                                                                </div>
-                                                            </div>
+                                                            {/* PENDING — Online Step 1: Show QR + Confirm/Reject buttons */}
+                                                            {paymentResult.status === "PENDING" ? (
+                                                                <>
+                                                                    <div className="bg-yellow-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                        <MdOnlinePayment className="text-4xl text-yellow-500" />
+                                                                    </div>
+                                                                    <h3 className="text-lg font-bold text-gray-900">Scan QR to Pay</h3>
+                                                                    <p className="text-2xl font-bold text-orange-600">₹{paymentResult.total}</p>
 
-                                                            {/* Show QR for Online */}
-                                                            {paymentResult.method === "Online" && paymentResult.qr && (
-                                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                                    <p className="text-xs text-gray-500 mb-2 font-medium">Scan to Pay</p>
-                                                                    <img src={paymentResult.qr} alt="UPI QR Code" className="w-40 h-40 mx-auto rounded-lg" />
-                                                                    <p className="text-xs text-gray-600 mt-2 font-mono">{paymentResult.upiId}</p>
-                                                                </div>
+                                                                    {paymentResult.qr && (
+                                                                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                                                            <img src={paymentResult.qr} alt="UPI QR Code" className="w-44 h-44 mx-auto rounded-lg" />
+                                                                            <p className="text-xs text-gray-600 mt-2 font-mono">{paymentResult.upiId}</p>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Payment Error */}
+                                                                    {paymentError && (
+                                                                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                                                            <p className="text-red-700 text-sm font-medium">{paymentError}</p>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Confirm / Reject buttons */}
+                                                                    <div className="grid grid-cols-2 gap-3 pt-2">
+                                                                        <button
+                                                                            onClick={() => handleOnlineStatus(local.LocalID, "REJECTED")}
+                                                                            disabled={paymentLoading}
+                                                                            className="py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                                        >
+                                                                            ✕ Reject
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleOnlineStatus(local.LocalID, "SUCCESS")}
+                                                                            disabled={paymentLoading}
+                                                                            className="py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                                                                        >
+                                                                            {paymentLoading ? (
+                                                                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <MdCheckCircle className="text-lg" />
+                                                                                    Confirm
+                                                                                </>
+                                                                            )}
+                                                                        </button>
+                                                                    </div>
+                                                                </>
+
+                                                            ) : paymentResult.status === "SUCCESS" ? (
+                                                                /* SUCCESS — Cash direct or Online confirmed */
+                                                                <>
+                                                                    <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                        <MdCheckCircle className="text-4xl text-green-500" />
+                                                                    </div>
+                                                                    <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
+                                                                    <div className="space-y-2 text-sm">
+                                                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                                                            <span className="text-gray-500">Amount</span>
+                                                                            <span className="font-bold text-green-600">₹{paymentResult.total}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                                                            <span className="text-gray-500">Method</span>
+                                                                            <span className="font-semibold">{paymentResult.method}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between py-2">
+                                                                            <span className="text-gray-500">Total Paid</span>
+                                                                            <span className="font-bold text-orange-600">₹{paymentResult.localTotalPaid}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+
+                                                            ) : (
+                                                                /* REJECTED */
+                                                                <>
+                                                                    <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                        <MdError className="text-4xl text-red-500" />
+                                                                    </div>
+                                                                    <h3 className="text-xl font-bold text-gray-900">Payment Rejected</h3>
+                                                                    <p className="text-gray-500 text-sm">No deductions were made</p>
+                                                                </>
                                                             )}
                                                         </div>
                                                     ) : orderData ? (

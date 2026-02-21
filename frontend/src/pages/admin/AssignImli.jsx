@@ -134,6 +134,9 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
       const errorMsg = error.response?.data?.message || "Failed to assign imli"
       toast.error(`${errorMsg}`)
       console.error("Error:", error)
+      console.error("Response status:", error.response?.status)
+      console.error("Response data:", JSON.stringify(error.response?.data))
+      console.error("Sent payload:", JSON.stringify({ LocalID: selectedLocal?.LocalID, assignedQuantity: formData.assignedQuantity }))
     } finally {
       setLoading(false)
     }

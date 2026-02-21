@@ -118,14 +118,14 @@ const ImliReturned = () => {
       // Update the selectedLocal state dynamically
       setSelectedLocal((prev) => ({
         ...prev,
-        totalAssignedQuantity: prev.totalAssignedQuantity - returnedQuantity,
+        totalReturnedQuantity: (prev.totalReturnedQuantity || 0) + returnedQuantity,
       }))
 
       // Update allLocals to reflect the change
       setAllLocals((prev) =>
         prev.map((local) =>
           local.LocalID === selectedLocal.LocalID
-            ? { ...local, totalAssignedQuantity: local.totalAssignedQuantity - returnedQuantity }
+            ? { ...local, totalReturnedQuantity: (local.totalReturnedQuantity || 0) + returnedQuantity }
             : local
         )
       )

@@ -3,8 +3,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Config } from "../models/config.model.js"
-import { imliReturn } from "../models/imliReturn.model.js"
-import { ImliAssign } from "../models/imliAssign.model.js"
 import { localData } from "../models/local.model.js"
 
 
@@ -27,18 +25,22 @@ export const orderReference = asyncHandler(async (req, res) => {
 
     if (!localID) throw new ApiError(400, "localID required");
 
-    const r = await imliReturn.findOne({ localID, returnedQuantity: { $gt: 0 } });
-    if (!r) throw new ApiError(404, "No pending return record found");
+    const local = await localData.findOne({ LocalID: localID });
+    if (!local) throw new ApiError(404, "Local not found");
+
+    if (!local.totalReturnedQuantity || local.totalReturnedQuantity <= 0) {
+        throw new ApiError(404, "No pending return for this local");
+    }
 
     const p = await Config.findOne();
     if (!p) throw new ApiError(404, "Price config not found");
 
-    const total = r.returnedQuantity * p.price_per_cleaned_imli;
+    const total = local.totalReturnedQuantity * p.price_per_cleaned_imli;
 
     return res.status(200).json(
         new ApiResponse(200, {
-            orderReference: r._id,
-            quantity: r.returnedQuantity,
+            orderReference: local._id,
+            quantity: local.totalReturnedQuantity,
             price_per_cleaned_imli: p.price_per_cleaned_imli,
             total,
         }, "Order details fetched successfully")
@@ -46,98 +48,131 @@ export const orderReference = asyncHandler(async (req, res) => {
 });
 
 export const confirmPayment = asyncHandler(async (req, res) => {
-    const { localId, method } = req.body;
+    const { localId, method, status } = req.body;
 
     if (!localId || !method) throw new ApiError(400, "localId and method are required");
-
-    const r = await imliReturn.findOne({ localID: localId, returnedQuantity: { $gt: 0 } });
-    if (!r) throw new ApiError(404, "No pending return record found");
-
-    const p = await Config.findOne();
-    if (!p) throw new ApiError(404, "Price config not found");
 
     const local = await localData.findOne({ LocalID: localId });
     if (!local) throw new ApiError(404, "Local not found");
 
-    const total = r.returnedQuantity * p.price_per_cleaned_imli;
-    // localTotalPaid = is local ko ab tak total kitna paid hua (existing + is baar ka)
-    const localTotalPaid = local.totalPaidAmount + total;
-
-    if (method === "Cash") {
-        try {
-            await Payment.create({
-                local: local._id,
-                localID: localId,
-                method,
-                amount: total
-            });
-
-            await localData.findOneAndUpdate(
-                { LocalID: localId },
-                { $inc: { totalPaidAmount: total } }
-            );
-
-            await ImliAssign.findOneAndUpdate(
-                { localID: localId },
-                { $inc: { assignedQuantity: -r.returnedQuantity } }
-            );
-
-            await imliReturn.findOneAndUpdate(
-                { _id: r._id },
-                { $inc: { returnedQuantity: -r.returnedQuantity } }
-            );
-
-            return res.status(201).json(
-                new ApiResponse(201, {
-                    orderReference: r._id,
-                    total,
-                    localTotalPaid,
-                    method,
-                }, "Payment successful")
-            );
-        } catch (err) {
-            throw new ApiError(500, err.message);
-        }
+    if (!local.totalReturnedQuantity || local.totalReturnedQuantity <= 0) {
+        throw new ApiError(404, "No pending return for payment");
     }
 
-    if (method === "Online") {
-        try {
-            if (!local.upiId || !local.upiQrCode) throw new ApiError(404, "UPI not configured for this local");
+    const p = await Config.findOne();
+    if (!p) throw new ApiError(404, "Price config not found");
 
-            await Payment.create({
+    const total = local.totalReturnedQuantity * p.price_per_cleaned_imli;
+    const localTotalPaid = local.totalPaidAmount + total;
+
+    // ─── CASH: direct SUCCESS ───
+    if (method === "Cash") {
+        await Payment.create({
+            local: local._id,
+            localID: localId,
+            method,
+            amount: total,
+            status: "SUCCESS"
+        });
+
+        await localData.findOneAndUpdate(
+            { LocalID: localId },
+            {
+                $inc: { totalPaidAmount: total },
+                $set: { totalAssignedQuantity: 0, totalReturnedQuantity: 0 }
+            }
+        );
+
+        return res.status(201).json(
+            new ApiResponse(201, {
+                orderReference: local._id,
+                total,
+                localTotalPaid,
+                method,
+                status: "SUCCESS"
+            }, "Payment successful")
+        );
+    }
+
+    // ─── ONLINE: 2-step flow ───
+    if (method === "Online") {
+        if (!local.upiId || !local.upiQrCode) {
+            throw new ApiError(404, "UPI not configured for this local");
+        }
+
+        // Step 1: No status → PENDING + QR
+        if (!status) {
+            const payment = await Payment.create({
                 local: local._id,
                 localID: localId,
                 method,
-                amount: total
+                amount: total,
+                status: "PENDING"
             });
-
-            await localData.findOneAndUpdate(
-                { LocalID: localId },
-                { $inc: { totalPaidAmount: total } }
-            );
-
-            await ImliAssign.findOneAndUpdate(
-                { localID: localId },
-                { $inc: { assignedQuantity: -r.returnedQuantity } }
-            );
-
-            await imliReturn.findOneAndUpdate(
-                { _id: r._id },
-                { $inc: { returnedQuantity: -r.returnedQuantity } }
-            );
 
             return res.status(200).json(
                 new ApiResponse(200, {
-                    orderReference: r._id,
+                    paymentId: payment._id,
+                    orderReference: local._id,
                     total,
-                    localTotalPaid,
                     method,
+                    status: "PENDING",
                     upiId: local.upiId,
                     qr: local.upiQrCode,
                 }, "Scan QR to pay")
             );
-        } catch (err) {
-            throw new ApiError(500, err.message);
         }
+
+        // Step 2: SUCCESS or REJECTED
+        const pendingPayment = await Payment.findOne({
+            localID: localId,
+            method: "Online",
+            status: "PENDING"
+        });
+        if (!pendingPayment) throw new ApiError(404, "No pending payment found");
+
+        if (status === "SUCCESS") {
+            await Payment.findOneAndUpdate(
+                { _id: pendingPayment._id },
+                { $set: { status: "SUCCESS" } }
+            );
+
+            await localData.findOneAndUpdate(
+                { LocalID: localId },
+                {
+                    $inc: { totalPaidAmount: total },
+                    $set: { totalAssignedQuantity: 0, totalReturnedQuantity: 0 }
+                }
+            );
+
+            return res.status(200).json(
+                new ApiResponse(200, {
+                    orderReference: local._id,
+                    total,
+                    localTotalPaid,
+                    method,
+                    status: "SUCCESS"
+                }, "Online payment confirmed")
+            );
+        }
+
+        if (status === "REJECTED") {
+            await Payment.findOneAndUpdate(
+                { _id: pendingPayment._id },
+                { $set: { status: "REJECTED" } }
+            );
+
+            return res.status(200).json(
+                new ApiResponse(200, {
+                    orderReference: local._id,
+                    method,
+                    status: "REJECTED"
+                }, "Payment rejected")
+            );
+        }
+
+        throw new ApiError(400, "Invalid status. Use SUCCESS or REJECTED");
     }
+
+    throw new ApiError(400, "Invalid method. Use Cash or Online");
 });
