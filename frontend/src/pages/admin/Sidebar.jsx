@@ -9,6 +9,7 @@ import {
   MdPerson,
   MdPayment,
   MdSettings,
+  MdReceipt,
   MdChevronLeft,
   MdChevronRight
 } from 'react-icons/md';
@@ -22,6 +23,7 @@ export default function Sidebar({ activePage, onPageChange, isCollapsed, onToggl
     { id: "imliReturned", label: "Imli Returned", icon: MdKeyboardReturn },
     { id: "localsProfile", label: "Locals Profile", icon: MdPerson },
     { id: "payment", label: "Payment", icon: MdPayment },
+    { id: "billing", label: "Billing", icon: MdReceipt }
   ]
 
   return (
