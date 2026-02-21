@@ -13,8 +13,12 @@ export const assignImli = asyncHandler(async (req, res) => {
     throw new ApiError(400, "assignedQuantity is required");
 
   const stock = await ImliData.findOne();
-  if (!stock || stock.rawImliQuantity < assignedQuantity) {
-    throw new ApiError(400, "Not enough imli in stock");
+
+  if (!stock) {
+    throw new ApiError(400, "No stock found. Please add Raw Imli first.");
+  }
+  if (stock.rawImliQuantity < assignedQuantity) {
+    throw new ApiError(400, `Not enough imli in stock. Available: ${stock.rawImliQuantity}, Requested: ${assignedQuantity}`);
   }
 
   await ImliData.findOneAndUpdate(
