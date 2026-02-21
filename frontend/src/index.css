@@ -6,6 +6,13 @@
     line-height: 1.8;
 }
 
+/* Only Urdu display strings get Nastaliq — English text is never touched */
+.nastaliq-text {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    line-height: 1.9;
+    display: inline;
+}
+
 /* Custom Scrollbar for a premium feel */
 ::-webkit-scrollbar {
     width: 10px;

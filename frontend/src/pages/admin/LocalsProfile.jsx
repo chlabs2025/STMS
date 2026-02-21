@@ -3,8 +3,11 @@ import { MdPeople, MdRefresh, MdSearch, MdVisibility, MdAssignment, MdError, MdP
 import axios from "../../api/axios"
 import { IoEye, IoPencil, IoAdd } from "react-icons/io5"
 import LocalDetailsModal from "../../components/LocalDetailsModal"
+import { useLang } from "../../context/LanguageContext"
+import T from "../../i18n/T"
 
 const LocalsProfile = ({ navigateToAssignImli }) => {
+  const { lang } = useLang()
   const [locals, setLocals] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -86,8 +89,8 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
           <div className="bg-orange-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-orange-200">
             <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <div className="text-2xl font-bold text-gray-800 mb-2">Loading Locals...</div>
-          <div className="text-gray-600">Please wait while we fetch the data</div>
+          <div className="text-2xl font-bold text-gray-800 mb-2"><T k="Loading Locals..." /></div>
+          <div className="text-gray-600"><T k="Please wait while we fetch the data" /></div>
         </div>
       </div>
     )
@@ -100,14 +103,14 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
           <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
             <MdError className="text-3xl text-red-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Error Loading Data</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3"><T k="Error Loading Data" /></h3>
           <p className="text-gray-600 mb-8 leading-relaxed">{error}</p>
           <button
             onClick={fetchLocals}
             className="px-8 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 mx-auto"
           >
             <MdRefresh className="text-lg" />
-            Try Again
+            <T k="Try Again" />
           </button>
         </div>
       </div>
@@ -123,8 +126,8 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
               <MdPeople className="text-3xl text-orange-600" />
             </div>
             <div>
-              <h2 className="text-4xl font-bold text-gray-900">Locals Profile</h2>
-              <p className="text-gray-600 font-medium">Manage and view local worker information</p>
+              <h2 className="text-4xl font-bold text-gray-900"><T k="Locals Profile" /></h2>
+              <p className="text-gray-600 font-medium"><T k="Manage and view local worker information" /></p>
             </div>
           </div>
           <button
@@ -133,7 +136,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
             aria-label="Refresh locals list"
           >
             <MdRefresh className="text-lg" />
-            Refresh
+            <T k="Refresh" />
           </button>
         </div>
 
@@ -155,7 +158,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
             </div>
             <div className="bg-orange-50 px-4 py-2 rounded-lg border border-orange-100">
               <div className="text-sm text-gray-700 font-medium">
-                <span className="font-bold text-orange-600">{filteredLocals.length}</span> locals
+                <span className="font-bold text-orange-600">{filteredLocals.length}</span> <T k="locals" />
               </div>
             </div>
           </div>
@@ -168,22 +171,22 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
             <MdSearch className="text-4xl text-gray-300" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">
-            {searchTerm ? "No matching locals found" : "No locals available"}
+            {searchTerm ? <T k="No matching locals found" /> : <T k="No locals available" />}
           </h3>
           <p className="text-gray-500 text-lg mb-6">
-            {searchTerm ? "Try adjusting your search criteria" : "Start by adding some locals to the system"}
+            {searchTerm ? <T k="Try adjusting your search criteria" /> : <T k="Start by adding some locals to the system" />}
           </p>
           {searchTerm ? (
             <button
               onClick={() => setSearchTerm("")}
               className="px-6 py-2.5 bg-white text-orange-600 border border-orange-500 rounded-lg hover:bg-orange-50 transition-all duration-200 font-medium shadow-sm"
             >
-              Clear Search
+              <T k="Clear Search" />
             </button>
           ) : (
             <button className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium shadow-sm flex items-center gap-2 mx-auto">
               <MdPersonAdd className="text-lg" />
-              Add New Local
+              <T k="Add New Local" />
             </button>
           )}
         </div>
@@ -194,13 +197,13 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Local
+                    <T k="Local" />
                   </th>
                   <th className="px-4 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                    Status
+                    <T k="Status" />
                   </th>
                   <th className="px-4 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider pr-6 whitespace-nowrap">
-                    Actions
+                    <T k="Actions" />
                   </th>
                 </tr>
               </thead>
@@ -230,7 +233,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                     <td className="px-4 py-5">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></div>
-                        Active
+                        <T k="Active" />
                       </span>
                     </td>
                     <td className="px-4 py-5 text-right pr-6">
@@ -241,7 +244,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                           title="View Details"
                         >
                           <MdVisibility className="w-4 h-4 mr-2" />
-                          View
+                          <T k="View" />
                         </button>
                         <button
                           onClick={() => navigateToAssignImli && navigateToAssignImli(local)}
@@ -249,7 +252,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                           title="Assign Imli"
                         >
                           <MdAssignment className="w-4 h-4 mr-2" />
-                          Assign
+                          <T k="Assign" />
                         </button>
                       </div>
                     </td>
@@ -274,7 +277,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                   {filteredLocals.length}
                 </span>{" "}
                 of <span className="font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">{locals.length}</span>{" "}
-                total locals
+                <T k="total locals" />
               </p>
             </div>
             {searchTerm && (
@@ -282,7 +285,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                 onClick={() => setSearchTerm("")}
                 className="text-sm text-gray-600 hover:text-gray-900 font-medium bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-all duration-200"
               >
-                Clear Search
+                <T k="Clear Search" />
               </button>
             )}
           </div>

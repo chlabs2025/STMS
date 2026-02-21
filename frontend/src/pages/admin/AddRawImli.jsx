@@ -4,8 +4,11 @@ import { useState } from "react"
 import { MdEco, MdAdd, MdCancel, MdScale, MdSchedule } from 'react-icons/md'
 import api from "../../api/axios"
 import toast from "react-hot-toast"
+import { useLang } from "../../context/LanguageContext"
+import T from "../../i18n/T"
 
 const AddRawImli = () => {
+  const { lang } = useLang()
   const [rawImliQuantity, setRawImliQuantity] = useState("")
 
   const handleSubmit = async (e) => {
@@ -41,8 +44,8 @@ const AddRawImli = () => {
                   <MdEco className="text-2xl text-orange-600" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Add Imli Stock</h1>
-                  <p className="text-gray-500 text-sm font-medium">Add raw imli to inventory</p>
+                  <h1 className="text-2xl font-bold text-gray-900"><T k="Add Imli Stock" /></h1>
+                  <p className="text-gray-500 text-sm font-medium"><T k="Add raw imli to inventory" /></p>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
@@ -64,7 +67,7 @@ const AddRawImli = () => {
               <div className="relative">
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
                   <MdScale className="text-orange-500 text-lg" />
-                  <span>Imli Quantity</span>
+                  <span><T k="Imli Quantity" /></span>
                 </label>
                 <div className="relative">
                   <input
@@ -81,7 +84,7 @@ const AddRawImli = () => {
                     KG
                   </div>
                 </div>
-                <p className="text-gray-400 text-xs mt-1.5 ml-1">Enter the weight of raw imli to add to inventory</p>
+                <p className="text-gray-400 text-xs mt-1.5 ml-1"><T k="Enter the weight of raw imli to add to inventory" /></p>
               </div>
 
               <div className="flex gap-3 pt-4 border-t border-gray-100 mt-6">
@@ -90,7 +93,7 @@ const AddRawImli = () => {
                   onClick={() => setRawImliQuantity("")}
                   className="flex-1 px-4 py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm text-sm"
                 >
-                  Cancel
+                  <T k="Cancel" />
                 </button>
 
                 <button
@@ -99,7 +102,7 @@ const AddRawImli = () => {
                   className="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
                 >
                   <MdAdd className="text-lg" />
-                  <span>Add to Stock</span>
+                  <span><T k="Add to Stock" /></span>
                 </button>
               </div>
             </form>

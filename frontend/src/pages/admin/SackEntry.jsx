@@ -4,6 +4,9 @@ import { MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import toast, { Toaster } from 'react-hot-toast';
 
 import api from "../../api/axios";
+import { t } from '../../i18n/translations';
+import { useLang } from '../../context/LanguageContext';
+import T from '../../i18n/T';
 
 const DropdownPortal = ({ children, parentRef, isOpen, onClose }) => {
     const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
@@ -72,16 +75,17 @@ const SackEntryColumn = ({
     addRow,
     setActiveDropdown,
     quantityInputRefs,
-    inputRefs
+    inputRefs,
+    lang
 }) => {
     return (
         <div className="bg-white rounded-xl border border-gray-200 flex flex-col h-full shadow-sm overflow-hidden">
             {/* Header */}
             <div className="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <div className="flex-1 text-xs font-bold text-gray-500 uppercase tracking-wider pl-1">ID / Name</div>
-                <div className="flex-1 text-xs font-bold text-gray-500 uppercase tracking-wider text-right pr-4">Quantity</div>
+                <div className="flex-1 text-xs font-bold text-gray-500 uppercase tracking-wider pl-1"><T k="ID / NAME" /></div>
+                <div className="flex-1 text-xs font-bold text-gray-500 uppercase tracking-wider text-right pr-4"><T k="QUANTITY" /></div>
                 <div className="w-[100px] flex flex-col items-center justify-center border-l border-gray-200 pl-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Delivered</span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1"><T k="DELIVERED" /></span>
                     <input
                         type="checkbox"
                         checked={allDelivered}
@@ -169,7 +173,7 @@ const SackEntryColumn = ({
                     <div className="bg-gray-100 group-hover:bg-orange-100 p-1 rounded-full transition-colors">
                         <MdAdd className="text-lg" />
                     </div>
-                    <span className="text-sm">Add New Row</span>
+                    <span className="text-sm"><T k="Add New Row" /></span>
                 </button>
             </div>
         </div>
@@ -177,6 +181,7 @@ const SackEntryColumn = ({
 };
 
 const SackEntry = () => {
+    const { lang } = useLang();
     // START: Date & Persistence Logic
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isDateLoading, setIsDateLoading] = useState(false);
@@ -362,7 +367,7 @@ const SackEntry = () => {
             <div className="flex items-center justify-between mb-6 shrink-0">
                 <div className="flex items-center gap-4">
                     <h3 className="text-lg font-bold text-gray-900">
-                        Sack Entry
+                        <T k="Sack Entry" />
                     </h3>
                     {/* Date Navigation */}
                     <div className="flex items-center bg-gray-100 rounded-full border border-gray-200 p-1">
@@ -412,6 +417,7 @@ const SackEntry = () => {
                     setActiveDropdown={setActiveDropdown}
                     quantityInputRefs={quantityInputRefs}
                     inputRefs={inputRefs}
+                    lang={lang}
                 />
             </div>
         </div>

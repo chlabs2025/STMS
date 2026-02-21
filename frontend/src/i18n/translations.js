@@ -1,6 +1,6 @@
 // All Urdu translations in one place
 // Usage: import { t } from '../i18n/translations'
-// Then:  t("Raw Imli") → "خام املی"
+// Usage with lang: t("Raw Imli", lang) → "خام املی" when lang="ur", "Raw Imli" when lang="en"
 
 const translations = {
     // ─── Dashboard Stats ───
@@ -140,16 +140,74 @@ const translations = {
 
     // ─── Add Raw Imli ───
     "Add Raw Imli": "خام املی شامل کریں",
+    "Add Imli Stock": "املی اسٹاک شامل کریں",
+    "Add raw imli to inventory": "خام املی انوینٹری میں شامل کریں",
+    "Imli Quantity": "املی کی مقدار",
+    "Enter the weight of raw imli to add to inventory": "انوینٹری میں شامل کرنے کے لیے خام املی کا وزن درج کریں",
+    "Add to Stock": "اسٹاک میں شامل کریں",
     "Raw Imli Quantity": "خام املی کی مقدار",
     "raw Imli added successfully": "خام املی کامیابی سے شامل ہو گئی",
+
+    // ─── Dashboard ───
+    "Add New Row": "نئی قطار شامل کریں",
+    "kgs": "کلو",
+    "ID / NAME": "آئی ڈی / نام",
+    "QUANTITY": "مقدار",
+    "DELIVERED": "فراہم شدہ",
+
+    // ─── Assign Imli ───
+    "Assign Imli to Local": "مقامی کو املی تقسیم کریں",
+    "Assign Imli": "املی تقسیم کریں",
+    "Distribute raw imli to local workers": "مقامی کارکنوں میں خام املی تقسیم کریں",
+    "Select Local": "مقامی منتخب کریں",
+    "Start typing to search for local workers": "مقامی کارکنوں کو تلاش کرنے کے لیے ٹائپ کریں",
+    "Enter the amount of raw imli to assign": "تقسیم کرنے کے لیے خام املی کی مقدار درج کریں",
+    "Assign": "تقسیم کریں",
+    "Assigning...": "تقسیم ہو رہی ہے...",
+    "Loading locals data...": "مقامی ڈیٹا لوڈ ہو رہا ہے...",
+    "Imli assigned successfully": "املی کامیابی سے تقسیم ہو گئی",
+    "Failed to assign imli": "املی تقسیم کرنے میں ناکامی",
+
+    // ─── Imli Returned ───
+    "Return Imli": "املی واپس کریں",
+    "Returned": "واپس شدہ",
+    "Returning...": "واپس ہو رہی ہے...",
+    "Imli returned successfully": "املی کامیابی سے واپس ہو گئی",
+    "Failed to return imli": "املی واپس کرنے میں ناکامی",
+
+    // ─── Locals Profile ───
+    "Local Profile": "مقامی پروفائل",
+    "Locals Profile": "مقامی پروفائل",
+    "Manage and view local worker information": "مقامی کارکنوں کی معلومات دیکھیں اور منظم کریں",
+    "All Locals": "تمام مقامی",
+    "Active": "فعال",
+    "Inactive": "غیر فعال",
+    "Local": "مقامی",
+    "locals": "مقامی",
+    "total locals": "کل مقامی",
+    "Add New Local": "نیا مقامی شامل کریں",
+    "Loading Locals...": "مقامی لوڈ ہو رہے ہیں...",
+    "Showing": "دکھایا جا رہا ہے",
+    "of": "میں سے",
+
+    // ─── LocalDetailsModal ───
+    "Local Details": "مقامی تفصیلات",
+    "Transaction History": "لین دین کی تاریخ",
+    "No transactions found": "کوئی لین دین نہیں ملا",
 };
 
 /**
- * Get Urdu translation for an English key
- * @param {string} key - English text
- * @returns {string} Urdu translation (or key itself if not found)
+ * Get translation for a key.
+ * @param {string} key   - English text (used as the key)
+ * @param {string} lang  - "en" (default) or "ur"
+ * @returns {string}     - English key for "en", Urdu string for "ur"
  */
-export const t = (key) => translations[key] || key;
+export const t = (key, lang = "en") => {
+    if (lang === "ur") {
+        return translations[key] || key;
+    }
+    return key;
+};
 
 /**
  * Check if a translation exists
