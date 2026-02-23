@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Config } from "../models/config.model.js"
 import { localData } from "../models/local.model.js"
-
+import {logs} from "../models/logs.model.js"
 
 export const Imli_price_changer = asyncHandler(async (req, res) => {
 
@@ -75,6 +75,17 @@ export const confirmPayment = asyncHandler(async (req, res) => {
             status: "SUCCESS"
         });
 
+        await logs.create({ 
+                localID:localId,
+                period:new Date(),
+                assignedQty:local.totalAssignedQuantity,
+                cleanedQty:local.totalReturnedQuantity,
+                rate:p.price_per_cleaned_imli,
+                totalAmount:total,
+                paymentMethod:"Cash",
+                paymentStatus:"SUCCESS"
+        });
+
         await localData.findOneAndUpdate(
             { LocalID: localId },
             {
@@ -82,6 +93,8 @@ export const confirmPayment = asyncHandler(async (req, res) => {
                 $set: { totalAssignedQuantity: 0, totalReturnedQuantity: 0 }
             }
         );
+
+        
 
         return res.status(201).json(
             new ApiResponse(201, {
@@ -136,6 +149,17 @@ export const confirmPayment = asyncHandler(async (req, res) => {
                 { _id: pendingPayment._id },
                 { $set: { status: "SUCCESS" } }
             );
+
+            await logs.create({ 
+                localID:localId,
+                period:new Date(),
+                assignedQty:local.totalAssignedQuantity,
+                cleanedQty:local.totalReturnedQuantity,
+                rate:p.price_per_cleaned_imli,
+                totalAmount:total,
+                paymentMethod:"Online",
+                paymentStatus:"SUCCESS"
+            });
 
             await localData.findOneAndUpdate(
                 { LocalID: localId },
