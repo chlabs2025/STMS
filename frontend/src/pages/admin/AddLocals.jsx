@@ -119,22 +119,22 @@ export default function AddLocals() {
     }
 
     return (
-        <div className="min-h-screen bg-white p-6 overflow-x-hidden">
+        <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
             <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 overflow-hidden">
                     {/* Header */}
-                    <div className="bg-white px-8 py-6 border-b border-gray-100">
+                    <div className="bg-white px-4 md:px-8 py-4 md:py-6 md:border-b md:border-gray-100">
                         <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
-                                    <MdPersonAdd className="text-2xl text-orange-600" />
+                            <div className="flex items-center gap-3 md:gap-4">
+                                <div className="bg-orange-50 p-2 md:p-3 rounded-lg md:border md:border-orange-100">
+                                    <MdPersonAdd className="text-xl md:text-2xl text-orange-600" />
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-900"><T k="Add Local" /></h1>
-                                    <p className="text-gray-500 text-sm font-medium"><T k="Register a new local worker" /></p>
+                                    <h1 className="text-xl md:text-2xl font-bold text-gray-900"><T k="Add Local" /></h1>
+                                    <p className="text-gray-500 text-xs md:text-sm font-medium"><T k="Register a new local worker" /></p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
+                            <div className="hidden md:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
                                 <MdSchedule className="text-gray-400" />
                                 <p className="text-gray-500 text-xs font-medium">
                                     {new Date().toLocaleDateString("en-US", {
@@ -148,23 +148,23 @@ export default function AddLocals() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-8">
+                    <div className="px-4 md:px-8 py-5 md:py-8">
                         {successMessage && (
-                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm flex items-center gap-3">
-                                <MdCheckCircle className="text-green-500 text-lg" />
+                            <div className="mb-4 md:mb-6 p-3 md:p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm flex items-center gap-3">
+                                <MdCheckCircle className="text-green-500 text-lg flex-shrink-0" />
                                 <p className="text-green-800 font-medium text-sm">{successMessage}</p>
                             </div>
                         )}
 
                         {errorMessage && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg shadow-sm flex items-center gap-3">
-                                <MdError className="text-red-500 text-lg" />
+                            <div className="mb-4 md:mb-6 p-3 md:p-4 bg-red-50 border border-red-200 rounded-lg shadow-sm flex items-center gap-3">
+                                <MdError className="text-red-500 text-lg flex-shrink-0" />
                                 <p className="text-red-800 font-medium text-sm">{errorMessage}</p>
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="relative">
                                     <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
                                         <MdPerson className="text-orange-500" />
@@ -177,6 +177,7 @@ export default function AddLocals() {
                                         onChange={handleChange}
                                         placeholder={t("Enter unique local ID", lang)}
                                         className={`w-full px-4 py-3 bg-white border ${idError ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-orange-500/20 focus:border-orange-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 text-base font-medium`}
+                                        style={{ fontSize: '16px' }}
                                         required
                                     />
                                     {idError && (
@@ -199,6 +200,7 @@ export default function AddLocals() {
                                         onChange={handleChange}
                                         placeholder={t("Enter full name", lang)}
                                         className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                                        style={{ fontSize: '16px' }}
                                         required
                                     />
                                 </div>
@@ -216,11 +218,12 @@ export default function AddLocals() {
                                     onChange={handleChange}
                                     placeholder={t("Enter complete address with landmarks", lang)}
                                     className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                                    style={{ fontSize: '16px' }}
                                     required
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="relative">
                                     <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
                                         <MdPhone className="text-orange-500" />
@@ -233,6 +236,7 @@ export default function AddLocals() {
                                         onChange={handleChange}
                                         placeholder={t("Enter 10-digit mobile number", lang)}
                                         className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                                        style={{ fontSize: '16px' }}
                                         required
                                     />
                                 </div>
@@ -249,6 +253,7 @@ export default function AddLocals() {
                                         onChange={handleChange}
                                         placeholder={t("username@upi or mobile@upi", lang)}
                                         className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                                        style={{ fontSize: '16px' }}
                                     />
                                 </div>
                             </div>
@@ -257,14 +262,14 @@ export default function AddLocals() {
                                 <button
                                     type="button"
                                     onClick={handleCancel}
-                                    className="flex-1 px-4 py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm text-sm"
+                                    className="flex-1 px-4 py-3 md:py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm text-sm"
                                 >
                                     <T k="Cancel" />
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading || !!idError}
-                                    className="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
+                                    className="flex-1 px-4 py-3 md:py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
                                 >
                                     {loading ? (
                                         <>

@@ -158,22 +158,22 @@ const ImliReturned = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 overflow-x-hidden">
+    <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-white px-8 py-6 border-b border-gray-100">
+          <div className="bg-white px-4 md:px-8 py-4 md:py-6 md:border-b md:border-gray-100">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
-                  <MdKeyboardReturn className="text-2xl text-orange-600" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="bg-orange-50 p-2 md:p-3 rounded-lg md:border md:border-orange-100">
+                  <MdKeyboardReturn className="text-xl md:text-2xl text-orange-600" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900"><T k="Return Imli" /></h1>
-                  <p className="text-gray-500 text-sm font-medium"><T k="Process cleaned imli returns from locals" /></p>
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900"><T k="Return Imli" /></h1>
+                  <p className="text-gray-500 text-xs md:text-sm font-medium"><T k="Process cleaned imli returns from locals" /></p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
+              <div className="hidden md:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
                 <MdSchedule className="text-gray-400" />
                 <p className="text-gray-500 text-xs font-medium">
                   {new Date().toLocaleDateString("en-US", {
@@ -187,7 +187,7 @@ const ImliReturned = () => {
           </div>
 
           {/* Content */}
-          <div className="p-8">
+          <div className="px-4 md:px-8 py-5 md:py-8">
             {fetchingLocals ? (
               <div className="text-center py-12">
                 <div className="bg-orange-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100">
@@ -196,7 +196,7 @@ const ImliReturned = () => {
                 <p className="text-gray-500 font-medium"><T k="Loading locals data..." /></p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form onSubmit={handleSubmit} className="space-y-5 md:space-y-8">
                 {/* Local Search with Dropdown */}
                 <div className="relative overflow-visible z-50">
                   <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
@@ -211,6 +211,7 @@ const ImliReturned = () => {
                       onChange={handleSearchChange}
                       onFocus={() => filteredLocals.length > 0 && setShowDropdown(true)}
                       className="w-full px-4 py-3 pl-10 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                      style={{ fontSize: '16px' }}
                     />
                     <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   </div>
@@ -244,21 +245,21 @@ const ImliReturned = () => {
 
                 {/* Selected Local Display */}
                 {selectedLocal && (
-                  <div className="p-5 bg-orange-50 rounded-lg border border-orange-100 flex items-center justify-between">
+                  <div className="p-4 md:p-5 bg-orange-50 rounded-lg border border-orange-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="bg-white p-2 rounded-full border border-orange-200 shadow-sm">
                         <MdCheck className="text-orange-600 text-lg" />
                       </div>
                       <div>
-                        <p className="text-gray-900 font-bold text-base">
+                        <p className="text-gray-900 font-bold text-sm md:text-base">
                           {selectedLocal.LocalName}
                         </p>
                         <p className="text-gray-500 text-xs font-medium">ID: {selectedLocal.LocalID}</p>
                       </div>
                     </div>
-                    <div className="bg-white px-3 py-1.5 rounded border border-orange-200/50 shadow-sm">
+                    <div className="bg-white px-3 py-1.5 rounded border border-orange-200/50 shadow-sm ml-11 sm:ml-0">
                       <span className="text-xs text-gray-500 font-medium uppercase tracking-wider mr-2"><T k="Assigned" /></span>
-                      <span className="text-orange-600 font-bold text-lg">
+                      <span className="text-orange-600 font-bold text-base md:text-lg">
                         {selectedLocal.totalAssignedQuantity} <span className="text-xs text-gray-400 font-normal">KG</span>
                       </span>
                     </div>
@@ -282,6 +283,7 @@ const ImliReturned = () => {
                         value={formData.returnedQuantity}
                         onChange={handleQuantityChange}
                         className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                        style={{ fontSize: '16px' }}
                         required
                       />
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium text-sm bg-gray-50 px-2 py-1 rounded border border-gray-200">
@@ -296,14 +298,14 @@ const ImliReturned = () => {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="flex-1 px-4 py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm text-sm"
+                    className="flex-1 px-4 py-3 md:py-2.5 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm text-sm"
                   >
                     <T k="Cancel" />
                   </button>
                   <button
                     type="submit"
                     disabled={loading || !selectedLocal || !formData.returnedQuantity}
-                    className="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
+                    className="flex-1 px-4 py-3 md:py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
                   >
                     {loading ? (
                       <>
@@ -336,4 +338,3 @@ const ImliReturned = () => {
 }
 
 export default ImliReturned
-

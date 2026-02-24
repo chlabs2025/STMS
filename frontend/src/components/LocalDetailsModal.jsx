@@ -1,6 +1,7 @@
 import { IoClose, IoTrash } from "react-icons/io5"
+import { MdPerson, MdPhone, MdLocationOn, MdAssignment, MdEdit, MdInventory } from "react-icons/md"
 import { useState } from "react"
-import axios from "../api/axios"
+import api from "../api/axios"
 
 const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false)
@@ -11,18 +12,12 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await axios.post("http://localhost:8000/api/delete_local", {
+      await api.post("/delete_local", {
         localId: local._id
       })
-      
-      // Call parent's onDelete to refresh the list
       onDelete(local._id)
-      
-      // Close modal and confirmation
       setShowConfirmDelete(false)
       onClose()
-      
-      // Could add toast notification here
       alert("Local deleted successfully!")
     } catch (error) {
       console.error("Error deleting local:", error)
@@ -32,192 +27,181 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
     }
   }
 
+  const pendingQuantity = (local.totalAssignedQuantity || 0) - (local.totalReturnedQuantity || 0)
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop overlay with blur effect */}
-      <div 
-        className="fixed inset-0 bg-white/30 backdrop-blur-sm transition-all duration-300"
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-all duration-300"
         onClick={onClose}
       />
-      
-      {/* Modal container */}
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100">
-          {/* Modal Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900">
-              Local Details - {local.LocalName}
-            </h3>
+
+      {/* Modal */}
+      <div className="flex min-h-screen items-end md:items-center justify-center md:p-4">
+        <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg max-h-[92vh] overflow-y-auto">
+
+          {/* ─── Profile Header ─── */}
+          <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 px-5 pt-5 pb-6 rounded-t-2xl md:rounded-t-2xl">
+            {/* Close Button */}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+              className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm p-1.5 rounded-full text-white hover:bg-white/30 transition-colors"
             >
-              <IoClose className="w-6 h-6" />
+              <IoClose className="w-5 h-5" />
             </button>
-          </div>
 
-          {/* Modal Body */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Local ID
-                  </label>
-                  <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
-                    {local.LocalID}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Local Name
-                  </label>
-                  <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
-                    {local.LocalName || "N/A"}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
-                    {local.LocalPhone || "N/A"}
-                  </p>
-                </div>
+            {/* Avatar + Name */}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold border-2 border-white/30">
+                {(local.LocalName || "U").charAt(0).toUpperCase()}
               </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg min-h-[3rem]">
-                    {local.LocalAddress || "N/A"}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Total Assigned Quantity
-                  </label>
-                  <p className="text-lg font-bold text-blue-600 bg-blue-50 p-3 rounded-lg">
-                    {local.totalAssignedQuantity || 0} units
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Total Returned Quantity
-                  </label>
-                  <p className="text-lg font-bold text-green-600 bg-green-50 p-3 rounded-lg">
-                    {local.totalReturnedQuantity || 0} units
-                  </p>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold text-white truncate">
+                  {local.LocalName || "Unnamed"}
+                </h3>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                    ID: {local.LocalID}
+                  </span>
+                  <span className="flex items-center gap-1 bg-green-400/30 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                    <div className="w-1.5 h-1.5 bg-green-300 rounded-full"></div>
+                    Active
+                  </span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Payment Information */}
+          {/* ─── Quick Stats ─── */}
+          <div className="grid grid-cols-3 gap-0 border-b border-gray-100">
+            <div className="text-center py-4 border-r border-gray-100">
+              <p className="text-lg font-bold text-blue-600">{local.totalAssignedQuantity || 0}</p>
+              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Assigned</p>
+            </div>
+            <div className="text-center py-4 border-r border-gray-100">
+              <p className="text-lg font-bold text-green-600">{local.totalReturnedQuantity || 0}</p>
+              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Returned</p>
+            </div>
+            <div className="text-center py-4">
+              <p className="text-lg font-bold text-orange-600">{pendingQuantity}</p>
+              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Pending</p>
+            </div>
+          </div>
+
+          {/* ─── Details ─── */}
+          <div className="px-5 py-4 space-y-4">
+            {/* Phone */}
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <MdPhone className="text-blue-600 text-lg" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Phone</p>
+                <p className="text-sm font-semibold text-gray-900 truncate">{local.LocalPhone || "N/A"}</p>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <MdLocationOn className="text-purple-600 text-lg" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Address</p>
+                <p className="text-sm font-semibold text-gray-900">{local.LocalAddress || "N/A"}</p>
+              </div>
+            </div>
+
+            {/* Payment Info (if available) */}
             {local.payment && (
-              <div className="mt-6 border-t pt-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Payment Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      UPI ID
-                    </label>
-                    <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">
-                      {local.payment.localUPI || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      UPI Amount
-                    </label>
-                    <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">
-                      ₹{local.payment.UPIAmount || 0}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      Cash Amount
-                    </label>
-                    <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">
-                      ₹{local.payment.cashAmount || 0}
-                    </p>
+              <>
+                <div className="border-t border-gray-100 pt-4">
+                  <p className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-3">Payment Info</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-[10px] text-gray-400 font-medium uppercase">UPI ID</p>
+                      <p className="text-sm font-semibold text-gray-900 mt-0.5 truncate">{local.payment.localUPI || "N/A"}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-[10px] text-gray-400 font-medium uppercase">UPI Amount</p>
+                      <p className="text-sm font-semibold text-gray-900 mt-0.5">₹{local.payment.UPIAmount || 0}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+                      <p className="text-[10px] text-gray-400 font-medium uppercase">Cash Amount</p>
+                      <p className="text-sm font-semibold text-gray-900 mt-0.5">₹{local.payment.cashAmount || 0}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
 
-          {/* Modal Footer */}
-          <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              onClick={() => setShowConfirmDelete(true)}
-              disabled={isDeleting}
-              className="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <IoTrash className="w-4 h-4 mr-2" />
-              {isDeleting ? "Deleting..." : "Delete Local"}
-            </button>
-            
-            <div className="flex items-center space-x-3">
+          {/* ─── Action Buttons ─── */}
+          <div className="px-5 pb-5 pt-2 space-y-2.5">
+            {/* Primary Actions */}
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                disabled={isDeleting}
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 text-white rounded-xl text-sm font-semibold hover:bg-yellow-600 active:bg-yellow-700 transition-colors disabled:opacity-50"
+              >
+                <MdEdit className="text-base" />
+                Edit
+              </button>
+              <button
+                disabled={isDeleting}
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:opacity-50"
+              >
+                <MdAssignment className="text-base" />
+                Assign Imli
+              </button>
+            </div>
+
+            {/* Secondary: Close & Delete */}
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 onClick={onClose}
                 disabled={isDeleting}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 active:bg-gray-300 transition-colors disabled:opacity-50"
               >
                 Close
               </button>
-              <button 
+              <button
+                onClick={() => setShowConfirmDelete(true)}
                 disabled={isDeleting}
-                className="px-4 py-2 bg-yellow-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 active:bg-red-200 transition-colors disabled:opacity-50 border border-red-200"
               >
-                Edit Local
-              </button>
-              <button 
-                disabled={isDeleting}
-                className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
-              >
-                Assign Imli
+                <IoTrash className="text-sm" />
+                Delete
               </button>
             </div>
           </div>
 
-          {/* Confirmation Dialog */}
+          {/* ─── Delete Confirmation ─── */}
           {showConfirmDelete && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-              <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
-                <div className="flex items-center mb-4">
-                  <div className="flex-shrink-0">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-2xl z-20">
+              <div className="bg-white rounded-2xl p-5 max-w-xs mx-4 shadow-2xl">
+                <div className="text-center mb-4">
+                  <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
                     <IoTrash className="w-6 h-6 text-red-600" />
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Delete Local
-                    </h3>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600">
-                    Are you sure you want to delete <strong>{local.LocalName}</strong>? 
-                    This action cannot be undone and will permanently remove the local from the system.
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Delete Local?</h3>
+                  <p className="text-sm text-gray-500">
+                    <strong>{local.LocalName}</strong> will be permanently removed. This cannot be undone.
                   </p>
                 </div>
-                <div className="flex justify-end space-x-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   <button
                     onClick={() => setShowConfirmDelete(false)}
                     disabled={isDeleting}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                    className="px-4 py-2.5 bg-gray-100 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50"
+                    className="px-4 py-2.5 bg-red-600 rounded-xl text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
                   >
                     {isDeleting ? "Deleting..." : "Delete"}
                   </button>

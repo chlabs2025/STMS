@@ -5,7 +5,7 @@ const LOCAL_URL = "http://localhost:8000/api"       // local development
 const NETWORK_URL = "http://10.101.36.1:8000/api"    // LAN / network access
 
 // Switch between LOCAL_URL and NETWORK_URL as needed
-const BASE_URL = LOCAL_URL
+const BASE_URL = NETWORK_URL
 
 // ─────────────────────────────────────────────────────────────────────────────
 
