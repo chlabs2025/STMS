@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+
+body{
+  font-family: Arial;
+  padding:20px;
+  font-size:14px;
+}
+
+.header{
+  text-align:center;
+  border-bottom:2px solid black;
+  margin-bottom:10px;
+}
+
+.title{
+  font-size:26px;
+  font-weight:bold;
+  color:#b00000;
+}
+
+.subtitle{
+  font-size:13px;
+  font-weight:bold;
+}
+
+.info{
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  border:1px solid black;
+  padding:6px;
+  text-align:center;
+}
+
+.total{
+  font-weight:bold;
+}
+
+.signature{
+  margin-top:40px;
+  text-align:right;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="title"><%= slip.senderName %></div>
+  <div class="subtitle"><%= slip.senderAddress %></div>
+</div>
+
+<div class="info">
+<b>Slip No:</b> <%= slip.slipNumber %><br>
+<b>Name:</b> <%= slip.receiverName %><br>
+<b>Date:</b> <%= new Date(slip.date).toLocaleDateString() %>
+</div>
+
+<table>
+<tr>
+<th>Product</th>
+<th>Quantity</th>
+<th>Weight (KG)</th>
+<th>Amount ₹</th>
+</tr>
+
+<% slip.items.forEach(item=>{ %>
+<tr>
+<td><%= item.product %></td>
+<td><%= item.quantity %></td>
+<td><%= item.weight %></td>
+<td><%= item.amount %></td>
+</tr>
+<% }) %>
+
+<tr class="total">
+<td>Total</td>
+<td></td>
+<td><%= slip.totalWeight %> kg</td>
+<td>₹ <%= slip.totalAmount %></td>
+</tr>
+</table>
+
+<div class="info">
+<b>Driver Name:</b> <%= slip.driverName %><br>
+</div>
+<div class="signature">
+For SUPER IMLI TRADERS<br><br><br>
+Authorised Signature
+</div>
+
+</body>
+</html>
