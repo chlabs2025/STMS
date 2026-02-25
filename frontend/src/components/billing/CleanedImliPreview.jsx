@@ -9,11 +9,11 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
     const totalAmount = rows.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0)
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-5 md:space-y-8">
             {/* Section Title */}
             <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Preview Bill</h3>
-                <p className="text-gray-500 text-sm font-medium">Review all details before submitting</p>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Preview Bill</h3>
+                <p className="text-gray-500 text-xs md:text-sm font-medium">Review all details before submitting</p>
             </div>
 
             {/* Sender Info */}
@@ -40,25 +40,25 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-orange-50/60 border-b border-orange-200">
-                                <th className="px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-xs">#</th>
-                                <th className="px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-xs">Product</th>
-                                <th className="px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-xs">Quantity</th>
-                                <th className="px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-xs">Weight (kg)</th>
-                                <th className="px-5 py-3 text-right font-bold text-orange-700 uppercase tracking-wide text-xs">Amount (₹)</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">#</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Product</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Qty</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Weight</th>
+                                <th className="px-3 md:px-5 py-3 text-right font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rows.map((row, index) => (
                                 <tr key={index} className={`border-b border-gray-100 last:border-0 ${index % 2 === 0 ? "" : "bg-gray-50/50"}`}>
-                                    <td className="px-5 py-3 font-semibold text-gray-400">{index + 1}</td>
-                                    <td className="px-5 py-3 font-semibold text-gray-900">{row.product || "—"}</td>
-                                    <td className="px-5 py-3 font-medium text-gray-700">
+                                    <td className="px-3 md:px-5 py-3 font-semibold text-gray-400 text-xs md:text-sm">{index + 1}</td>
+                                    <td className="px-3 md:px-5 py-3 font-semibold text-gray-900 text-xs md:text-sm">{row.product || "—"}</td>
+                                    <td className="px-3 md:px-5 py-3 font-medium text-gray-700 text-xs md:text-sm">
                                         {row.quantity || "0"} {row.unit === "bag" ? "bags" : row.unit === "box" ? "boxes" : ""}
                                     </td>
-                                    <td className="px-5 py-3 font-medium text-gray-700">
+                                    <td className="px-3 md:px-5 py-3 font-medium text-gray-700 text-xs md:text-sm">
                                         {parseFloat(row.weight || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                                     </td>
-                                    <td className="px-5 py-3 font-semibold text-gray-900 text-right">
+                                    <td className="px-3 md:px-5 py-3 font-semibold text-gray-900 text-right text-xs md:text-sm">
                                         ₹ {parseFloat(row.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                                     </td>
                                 </tr>
@@ -66,11 +66,11 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                         </tbody>
                         <tfoot>
                             <tr className="bg-orange-50/80 border-t-2 border-orange-200">
-                                <td className="px-5 py-3 font-bold text-gray-700 uppercase" colSpan={3}>Total</td>
-                                <td className="px-5 py-3 font-bold text-orange-700">
+                                <td className="px-3 md:px-5 py-3 font-bold text-gray-700 uppercase text-xs md:text-sm" colSpan={3}>Total</td>
+                                <td className="px-3 md:px-5 py-3 font-bold text-orange-700 text-xs md:text-sm">
                                     {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg
                                 </td>
-                                <td className="px-5 py-3 font-bold text-orange-700 text-right">
+                                <td className="px-3 md:px-5 py-3 font-bold text-orange-700 text-right text-xs md:text-sm">
                                     ₹ {totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                                 </td>
                             </tr>
@@ -80,12 +80,12 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
             </div>
 
             {/* Grand Total Card */}
-            <div className="bg-orange-50 rounded-xl border-2 border-orange-200 p-6 flex items-center justify-between">
+            <div className="bg-orange-50 rounded-xl border-2 border-orange-200 p-4 md:p-6 flex items-center justify-between">
                 <div>
-                    <p className="text-sm font-bold text-orange-700 uppercase tracking-wide">Grand Total</p>
-                    <p className="text-xs text-orange-600/70 font-medium mt-0.5">Total weight: {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg</p>
+                    <p className="text-xs md:text-sm font-bold text-orange-700 uppercase tracking-wide">Grand Total</p>
+                    <p className="text-[10px] md:text-xs text-orange-600/70 font-medium mt-0.5">Total weight: {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg</p>
                 </div>
-                <div className="text-3xl font-bold text-orange-600">
+                <div className="text-2xl md:text-3xl font-bold text-orange-600">
                     ₹ {totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </div>
             </div>

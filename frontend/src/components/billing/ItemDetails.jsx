@@ -43,15 +43,15 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
     const totalWithGst = (item.amount || 0) + (item.igst || 0) + (item.cgst || 0) + (item.sgst || 0)
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-5 md:space-y-8">
             {/* Section Title */}
             <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Item Details</h3>
-                <p className="text-gray-500 text-sm font-medium">Enter quantity, rate, and GST for the selected product</p>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Item Details</h3>
+                <p className="text-gray-500 text-xs md:text-sm font-medium">Enter quantity, rate, and GST for the selected product</p>
             </div>
 
             {/* Product Info Badge */}
-            <div className="flex items-center gap-3 p-4 bg-orange-50/60 rounded-xl border border-orange-200">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 md:p-4 bg-orange-50/60 rounded-xl border border-orange-200">
                 <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
                     <MdInventory className="text-white text-xl" />
                 </div>
@@ -59,15 +59,15 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                     <p className="text-sm font-bold text-orange-700">{formData.description || "—"}</p>
                     <p className="text-xs text-orange-600/70 font-medium">HSN: {formData.hsn || "—"}</p>
                 </div>
-                <div className="ml-auto">
-                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${isInterstate ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                <div className="sm:ml-auto">
+                    <span className={`px-2.5 md:px-3 py-1 rounded-lg text-[10px] md:text-xs font-bold ${isInterstate ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
                         {isInterstate ? "Interstate → IGST" : "Intrastate → CGST + SGST"}
                     </span>
                 </div>
             </div>
 
             {/* Form Fields */}
-            <div className="space-y-5">
+            <div className="space-y-4 md:space-y-5">
                 {/* Quantity + Unit */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
@@ -82,6 +82,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                             min="0"
                             step="0.01"
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                            style={{ fontSize: '16px' }}
                             required
                         />
                     </div>
@@ -94,6 +95,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                             onChange={(e) => handleChange("unit", e.target.value)}
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium appearance-none cursor-pointer"
                             style={{
+                                fontSize: '16px',
                                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                 backgroundPosition: 'right 0.75rem center',
                                 backgroundRepeat: 'no-repeat',
@@ -123,6 +125,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                             min="0"
                             step="0.01"
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                            style={{ fontSize: '16px' }}
                             required
                         />
                     </div>
@@ -139,6 +142,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                             max="28"
                             step="0.01"
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                            style={{ fontSize: '16px' }}
                             required
                         />
                     </div>
@@ -183,23 +187,23 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t border-gray-100">
+            <div className="flex gap-3 pt-4 border-t border-gray-100">
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center gap-2"
+                    className="flex-1 md:flex-none py-3 md:px-6 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
                 >
-                    <MdArrowBack className="text-lg" />
+                    <MdArrowBack className="text-base" />
                     Back
                 </button>
                 <button
                     type="button"
                     onClick={onNext}
                     disabled={!isValid}
-                    className="px-8 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 md:flex-none py-3 md:px-8 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none text-sm"
                 >
                     Next
-                    <MdArrowForward className="text-lg" />
+                    <MdArrowForward className="text-base" />
                 </button>
             </div>
         </div>

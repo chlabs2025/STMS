@@ -12,7 +12,7 @@ const selectStyle = {
 }
 
 export default function CleanedImliForm({ imliData, setImliData, onNext, onBack }) {
-    const { senderName = "", rows = [{ ...EMPTY_ROW }, { ...EMPTY_ROW }] } = imliData
+    const { senderName = "", rows = [{ ...EMPTY_ROW }] } = imliData
 
     const updateSenderName = (value) => {
         setImliData({ ...imliData, senderName: value, rows })
@@ -40,7 +40,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
     }
 
     const removeRow = (index) => {
-        if (rows.length <= 2) return
+        if (rows.length <= 1) return
         setImliData({ ...imliData, senderName, rows: rows.filter((_, i) => i !== index) })
     }
 
@@ -53,11 +53,11 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
     const totalAmount = rows.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0)
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5 md:space-y-6">
             {/* Section Title */}
             <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Cleaned Imli Bill</h3>
-                <p className="text-gray-500 text-sm font-medium">Fill in sender and item details</p>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Cleaned Imli Bill</h3>
+                <p className="text-gray-500 text-xs md:text-sm font-medium">Fill in sender and item details</p>
             </div>
 
             {/* Sender Name */}
@@ -72,12 +72,14 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                     onChange={(e) => updateSenderName(e.target.value)}
                     placeholder="e.g. Rajesh Kumar"
                     className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium"
+                    style={{ fontSize: '16px' }}
                     required
                 />
             </div>
 
             {/* Items Table */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
+            {/* ─── Desktop Table (hidden on mobile) ─── */}
+            <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
                 {/* Table Header */}
                 <div className="grid grid-cols-[2fr_1.2fr_1fr_1.2fr_auto] bg-orange-50 border-b border-orange-200">
                     <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Product</div>
@@ -185,6 +187,97 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 </div>
             </div>
 
+            {/* ─── Mobile Card Layout (hidden on desktop) ─── */}
+            <div className="md:hidden space-y-4">
+                {rows.map((row, index) => (
+                    <div key={index} className={`pb-4 space-y-3 ${index > 0 ? 'pt-4 border-t border-gray-100' : ''}`}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Item {index + 1}</span>
+                            {rows.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => removeRow(index)}
+                                    className="text-xs text-red-400 font-medium flex items-center gap-1 active:text-red-600 transition-colors"
+                                >
+                                    <MdDelete className="text-sm" />
+                                    Remove
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Product */}
+                        <div>
+                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Product</label>
+                            <select
+                                value={row.product}
+                                onChange={(e) => updateRow(index, "product", e.target.value)}
+                                className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 appearance-none cursor-pointer"
+                                style={{ ...selectStyle, fontSize: '16px' }}
+                            >
+                                <option value="">Select Product</option>
+                                <option value="HT">HT</option>
+                                <option value="1kg Packet">1kg Packet</option>
+                            </select>
+                        </div>
+
+                        {/* Quantity */}
+                        <div>
+                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">
+                                Quantity {row.unit ? `(${row.unit === "bag" ? "bags" : "boxes"})` : ""}
+                            </label>
+                            <input
+                                type="number"
+                                value={row.quantity}
+                                onChange={(e) => updateRow(index, "quantity", e.target.value)}
+                                placeholder="0"
+                                min="0"
+                                className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                style={{ fontSize: '16px' }}
+                            />
+                        </div>
+
+                        {/* Weight + Amount row */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Weight (kg)</label>
+                                <input
+                                    type="number"
+                                    value={row.weight}
+                                    onChange={(e) => updateRow(index, "weight", e.target.value)}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.01"
+                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                    style={{ fontSize: '16px' }}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Amount (₹)</label>
+                                <input
+                                    type="number"
+                                    value={row.amount}
+                                    onChange={(e) => updateRow(index, "amount", e.target.value)}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.01"
+                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                    style={{ fontSize: '16px' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {/* Mobile Totals */}
+                <div className="bg-orange-50/70 rounded-xl p-3 flex items-center justify-between mt-2">
+                    <div>
+                        <p className="text-[11px] font-semibold text-orange-700 uppercase">Total</p>
+                        <p className="text-[10px] text-orange-600/60 font-medium">{totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg</p>
+                    </div>
+                    <p className="text-lg font-semibold text-orange-700">₹ {totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</p>
+                </div>
+            </div>
+
             {/* Add Row */}
             <button
                 type="button"
@@ -195,24 +288,24 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 Add Row
             </button>
 
-            {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t border-gray-100">
+            {/* Navigation — even buttons on mobile */}
+            <div className="flex gap-3 pt-4 border-t border-gray-100">
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center gap-2"
+                    className="flex-1 md:flex-none py-3 md:px-6 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
                 >
-                    <MdArrowBack className="text-lg" />
+                    <MdArrowBack className="text-base" />
                     Back
                 </button>
                 <button
                     type="button"
                     onClick={onNext}
                     disabled={!isValid}
-                    className="px-8 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 md:flex-none py-3 md:px-8 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none text-sm"
                 >
                     Preview
-                    <MdArrowForward className="text-lg" />
+                    <MdArrowForward className="text-base" />
                 </button>
             </div>
         </div>

@@ -15,7 +15,7 @@ const LandingPage = () => {
   const navigate = useNavigate()
 
   const handleGetStarted = () => {
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
 
   useEffect(() => {

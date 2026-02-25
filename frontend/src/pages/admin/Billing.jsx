@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { MdReceipt, MdCheckCircle, MdError } from "react-icons/md"
 import ProductSelect from "../../components/billing/ProductSelect"
 import CustomerDetails from "../../components/billing/CustomerDetails"
@@ -76,8 +76,40 @@ function Billing() {
     setFormData((prev) => ({ ...prev, ...updates }))
   }
 
-  const goNext = () => setCurrentStep((s) => Math.min(s + 1, maxStep))
-  const goBack = () => setCurrentStep((s) => Math.max(s - 1, 1))
+  // ── Browser history integration for multi-step form ──
+  const isStepPopState = useRef(false)
+
+  // Push initial step into history when Billing mounts
+  useEffect(() => {
+    window.history.pushState({ billingStep: 1 }, "")
+    return () => {
+      // Clean up: no special cleanup needed
+    }
+  }, [])
+
+  // Listen for popstate to handle back button within steps
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.billingStep !== undefined) {
+        isStepPopState.current = true
+        setCurrentStep(event.state.billingStep)
+      }
+    }
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [])
+
+  const goNext = () => {
+    const nextStep = Math.min(currentStep + 1, maxStep)
+    setCurrentStep(nextStep)
+    window.history.pushState({ billingStep: nextStep }, "")
+  }
+  const goBack = () => {
+    if (currentStep > 1) {
+      // Use browser history.back() which will trigger popstate
+      window.history.back()
+    }
+  }
 
   // Tamarind Seeds submit (existing)
   const handleSubmit = async () => {
@@ -247,32 +279,32 @@ function Billing() {
   // Success / Error screen
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-white p-6 overflow-x-hidden">
+      <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-12 text-center">
             {submitResult.success ? (
               <>
-                <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-200">
-                  <MdCheckCircle className="text-4xl text-green-500" />
+                <div className="bg-green-50 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 border-2 border-green-200">
+                  <MdCheckCircle className="text-3xl md:text-4xl text-green-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">
                   {isImli ? "Bill Generated!" : "Invoice Generated!"}
                 </h2>
-                <p className="text-gray-600 mb-8">{submitResult.message}</p>
+                <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">{submitResult.message}</p>
               </>
             ) : (
               <>
-                <div className="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-red-200">
-                  <MdError className="text-4xl text-red-500" />
+                <div className="bg-red-50 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 border-2 border-red-200">
+                  <MdError className="text-3xl md:text-4xl text-red-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">Something Went Wrong</h2>
-                <p className="text-gray-600 mb-8">{submitResult.message}</p>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">Something Went Wrong</h2>
+                <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">{submitResult.message}</p>
               </>
             )}
             <div className="flex gap-3 justify-center">
               <button
                 onClick={handleReset}
-                className="px-8 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 shadow-sm"
+                className="px-6 md:px-8 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 shadow-sm text-sm md:text-base"
               >
                 Create New {isImli ? "Bill" : "Invoice"}
               </button>
@@ -284,36 +316,45 @@ function Billing() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 overflow-x-hidden">
+    <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-white px-8 py-6 border-b border-gray-100">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
-                <MdReceipt className="text-2xl text-orange-600" />
+          <div className="bg-white px-4 py-4 md:px-8 md:py-6 border-b border-gray-100">
+            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+              <div className="bg-orange-50 p-2.5 md:p-3 rounded-lg border border-orange-100">
+                <MdReceipt className="text-xl md:text-2xl text-orange-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-lg md:text-2xl font-bold text-gray-900">
                   {isImli ? "Generate Bill" : "Generate Invoice"}
                 </h1>
-                <p className="text-gray-500 text-sm font-medium">
+                <p className="text-gray-500 text-xs md:text-sm font-medium">
                   {isImli ? "Create a new cleaned imli bill" : "Create a new tax invoice"}
                 </p>
               </div>
             </div>
 
             {/* Stepper Progress Bar */}
-            <div className="flex items-center justify-between">
-              {STEPS.map((step, index) => {
-                const isActive = currentStep === step.id
-                const isCompleted = currentStep > step.id
-                return (
-                  <div key={step.id} className="flex items-center flex-1 last:flex-none">
-                    {/* Step circle + label */}
-                    <div className="flex flex-col items-center">
+            <div className="relative">
+              {/* Connector lines — behind circles */}
+              <div className="absolute top-3.5 md:top-[18px] left-0 right-0 flex items-center px-[10%] md:px-[10%] pointer-events-none" style={{ paddingLeft: `${100 / STEPS.length / 2}%`, paddingRight: `${100 / STEPS.length / 2}%` }}>
+                {STEPS.slice(0, -1).map((step, index) => (
+                  <div key={index} className="flex-1">
+                    <div className={`h-0.5 transition-all duration-300 ${currentStep > step.id ? "bg-orange-500" : "bg-gray-200"}`}></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Step circles + labels — on top */}
+              <div className="relative z-10 flex items-start">
+                {STEPS.map((step) => {
+                  const isActive = currentStep === step.id
+                  const isCompleted = currentStep > step.id
+                  return (
+                    <div key={step.id} className="flex flex-col items-center" style={{ width: `${100 / STEPS.length}%` }}>
                       <div
-                        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${isCompleted
+                        className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 ${isCompleted
                           ? "bg-orange-500 text-white shadow-sm"
                           : isActive
                             ? "bg-orange-500 text-white ring-4 ring-orange-500/20 shadow-md"
@@ -321,7 +362,7 @@ function Billing() {
                           }`}
                       >
                         {isCompleted ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         ) : (
@@ -329,28 +370,20 @@ function Billing() {
                         )}
                       </div>
                       <span
-                        className={`mt-2 text-xs font-semibold whitespace-nowrap ${isActive || isCompleted ? "text-orange-600" : "text-gray-400"
+                        className={`mt-1 md:mt-2 text-[10px] md:text-xs font-medium whitespace-nowrap ${isActive || isCompleted ? "text-orange-600" : "text-gray-400"
                           }`}
                       >
                         {step.label}
                       </span>
                     </div>
-
-                    {/* Connector line */}
-                    {index < STEPS.length - 1 && (
-                      <div className="flex-1 mx-3 mt-[-1.25rem]">
-                        <div className={`h-0.5 transition-all duration-300 ${currentStep > step.id ? "bg-orange-500" : "bg-gray-200"
-                          }`}></div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
 
           {/* Step Content */}
-          <div className="p-8">
+          <div className="p-4 md:p-8">
             {/* Step 1 is always Product Select */}
             {currentStep === 1 && (
               <ProductSelect

@@ -37,9 +37,9 @@ function Login() {
       const role = res.data.data.user.role
 
       if (role === "admin") {
-        navigate("/admin/dashboard")
+        navigate("/admin/dashboard", { replace: true })
       } else if (role === "operator") {
-        navigate("/operator/dashboard")
+        navigate("/operator/dashboard", { replace: true })
       } else {
         alert("Invalid role")
       }

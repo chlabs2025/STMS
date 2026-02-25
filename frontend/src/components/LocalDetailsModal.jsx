@@ -30,16 +30,16 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const pendingQuantity = (local.totalAssignedQuantity || 0) - (local.totalReturnedQuantity || 0)
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-40 overflow-hidden">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-all duration-300"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="flex min-h-screen items-end md:items-center justify-center md:p-4">
-        <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg max-h-[92vh] overflow-y-auto">
+      {/* Modal — sits above the 64px bottom nav on mobile */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 md:inset-0 md:flex md:items-center md:justify-center md:p-4 z-40">
+        <div className="relative bg-white rounded-t-3xl md:rounded-2xl shadow-2xl w-full md:max-w-lg max-h-[calc(100vh-64px)] md:max-h-[90vh] flex flex-col overflow-hidden">
 
           {/* ─── Profile Header ─── */}
           <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 px-5 pt-5 pb-6 rounded-t-2xl md:rounded-t-2xl">
@@ -73,105 +73,89 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
             </div>
           </div>
 
-          {/* ─── Quick Stats ─── */}
-          <div className="grid grid-cols-3 gap-0 border-b border-gray-100">
-            <div className="text-center py-4 border-r border-gray-100">
-              <p className="text-lg font-bold text-blue-600">{local.totalAssignedQuantity || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Assigned</p>
-            </div>
-            <div className="text-center py-4 border-r border-gray-100">
-              <p className="text-lg font-bold text-green-600">{local.totalReturnedQuantity || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Returned</p>
-            </div>
-            <div className="text-center py-4">
-              <p className="text-lg font-bold text-orange-600">{pendingQuantity}</p>
-              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide mt-0.5">Pending</p>
-            </div>
-          </div>
-
-          {/* ─── Details ─── */}
-          <div className="px-5 py-4 space-y-4">
-            {/* Phone */}
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <MdPhone className="text-blue-600 text-lg" />
+          {/* ─── Scrollable Content Area ─── */}
+          <div className="flex-1 overflow-y-auto pb-4">
+            {/* ─── Quick Stats ─── */}
+            <div className="grid grid-cols-3 gap-0 border-b border-gray-100 bg-gray-50/50">
+              <div className="text-center py-4 border-r border-gray-100">
+                <p className="text-xl font-bold text-blue-600">{local.totalAssignedQuantity || 0}</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">Assigned</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Phone</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{local.LocalPhone || "N/A"}</p>
+              <div className="text-center py-4 border-r border-gray-100">
+                <p className="text-xl font-bold text-green-600">{local.totalReturnedQuantity || 0}</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">Returned</p>
+              </div>
+              <div className="text-center py-4">
+                <p className="text-xl font-bold text-orange-600">{pendingQuantity}</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">Pending</p>
               </div>
             </div>
 
-            {/* Address */}
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <MdLocationOn className="text-purple-600 text-lg" />
+            {/* ─── Details ─── */}
+            <div className="px-6 py-5 space-y-6">
+              {/* Phone */}
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-100">
+                  <MdPhone className="text-blue-600 text-xl" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Phone Number</p>
+                  <p className="text-base font-bold text-gray-900 truncate tracking-tight">{local.LocalPhone || "N/A"}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Address</p>
-                <p className="text-sm font-semibold text-gray-900">{local.LocalAddress || "N/A"}</p>
-              </div>
-            </div>
 
-            {/* Payment Info (if available) */}
-            {local.payment && (
-              <>
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-3">Payment Info</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-[10px] text-gray-400 font-medium uppercase">UPI ID</p>
-                      <p className="text-sm font-semibold text-gray-900 mt-0.5 truncate">{local.payment.localUPI || "N/A"}</p>
+              {/* Address */}
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm border border-purple-100">
+                  <MdLocationOn className="text-purple-600 text-xl" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Address</p>
+                  <p className="text-base font-semibold text-gray-900 leading-relaxed">{local.LocalAddress || "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Payment Info (if available) */}
+              {local.payment && (
+                <div className="bg-gray-50/80 rounded-2xl p-5 border border-gray-100 shadow-inner">
+                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Payment Information</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-gray-500 font-bold uppercase">UPI ID</p>
+                      <p className="text-sm font-bold text-gray-900 truncate">{local.payment.localUPI || "N/A"}</p>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-[10px] text-gray-400 font-medium uppercase">UPI Amount</p>
-                      <p className="text-sm font-semibold text-gray-900 mt-0.5">₹{local.payment.UPIAmount || 0}</p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-gray-500 font-bold uppercase">UPI Amount</p>
+                      <p className="text-sm font-bold text-blue-600">₹{local.payment.UPIAmount || 0}</p>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3 col-span-2">
-                      <p className="text-[10px] text-gray-400 font-medium uppercase">Cash Amount</p>
-                      <p className="text-sm font-semibold text-gray-900 mt-0.5">₹{local.payment.cashAmount || 0}</p>
+                    <div className="col-span-2 pt-2 border-t border-gray-200 mt-2">
+                      <div className="flex justify-between items-center">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Cash Amount</p>
+                        <p className="text-base font-bold text-green-600">₹{local.payment.cashAmount || 0}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* ─── Action Buttons ─── */}
-          <div className="px-5 pb-5 pt-2 space-y-2.5">
-            {/* Primary Actions */}
-            <div className="grid grid-cols-2 gap-2.5">
+          {/* ─── Sticky Action Footer ─── */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-100 p-5 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 disabled={isDeleting}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 text-white rounded-xl text-sm font-semibold hover:bg-yellow-600 active:bg-yellow-700 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white rounded-2xl text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
               >
-                <MdEdit className="text-base" />
-                Edit
-              </button>
-              <button
-                disabled={isDeleting}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:opacity-50"
-              >
-                <MdAssignment className="text-base" />
-                Assign Imli
-              </button>
-            </div>
-
-            {/* Secondary: Close & Delete */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                onClick={onClose}
-                disabled={isDeleting}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 active:bg-gray-300 transition-colors disabled:opacity-50"
-              >
-                Close
+                <MdEdit className="text-xl" />
+                Edit Profile
               </button>
               <button
                 onClick={() => setShowConfirmDelete(true)}
                 disabled={isDeleting}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 active:bg-red-200 transition-colors disabled:opacity-50 border border-red-200"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-red-50 text-red-600 rounded-2xl text-base font-bold border border-red-100 active:scale-[0.98] transition-all disabled:opacity-50"
               >
-                <IoTrash className="text-sm" />
+                <IoTrash className="text-xl" />
                 Delete
               </button>
             </div>

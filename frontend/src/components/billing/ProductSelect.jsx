@@ -31,11 +31,11 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-5 md:space-y-8">
             {/* Section Title */}
             <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Select Product</h3>
-                <p className="text-gray-500 text-sm font-medium">Choose the product type for this invoice</p>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Select Product</h3>
+                <p className="text-gray-500 text-xs md:text-sm font-medium">Choose the product type for this invoice</p>
             </div>
 
             {/* Product Cards */}
@@ -48,9 +48,9 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
                             key={product.id}
                             type="button"
                             onClick={() => handleSelect(product)}
-                            className={`relative p-6 rounded-xl border-2 text-left transition-all duration-200 group cursor-pointer ${isSelected
-                                    ? "border-orange-500 bg-orange-50/60 ring-2 ring-orange-500/20 shadow-md"
-                                    : "border-gray-200 bg-white hover:border-orange-300 hover:shadow-sm"
+                            className={`relative p-4 md:p-6 rounded-xl border-2 text-left transition-all duration-200 group cursor-pointer ${isSelected
+                                ? "border-orange-500 bg-orange-50/60 ring-2 ring-orange-500/20 shadow-md"
+                                : "border-gray-200 bg-white hover:border-orange-300 hover:shadow-sm"
                                 }`}
                         >
                             {/* Selected Check */}
@@ -62,12 +62,12 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
                                 </div>
                             )}
 
-                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-colors ${isSelected ? "bg-orange-500" : "bg-gray-100 group-hover:bg-orange-100"
+                            <div className={`w-11 h-11 md:w-14 md:h-14 rounded-xl flex items-center justify-center mb-3 md:mb-4 transition-colors ${isSelected ? "bg-orange-500" : "bg-gray-100 group-hover:bg-orange-100"
                                 }`}>
-                                <Icon className={`text-2xl ${isSelected ? "text-white" : "text-gray-500 group-hover:text-orange-600"}`} />
+                                <Icon className={`text-xl md:text-2xl ${isSelected ? "text-white" : "text-gray-500 group-hover:text-orange-600"}`} />
                             </div>
 
-                            <h4 className={`text-lg font-bold mb-1 ${isSelected ? "text-orange-700" : "text-gray-900"}`}>
+                            <h4 className={`text-base md:text-lg font-bold mb-1 ${isSelected ? "text-orange-700" : "text-gray-900"}`}>
                                 {product.label}
                             </h4>
                             <p className={`text-sm font-medium ${isSelected ? "text-orange-600/80" : "text-gray-500"}`}>
@@ -88,10 +88,10 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
                     type="button"
                     onClick={onNext}
                     disabled={!selected}
-                    className="px-8 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="w-full md:w-auto py-3 md:px-8 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none text-sm"
                 >
                     Next
-                    <MdArrowForward className="text-lg" />
+                    <MdArrowForward className="text-base" />
                 </button>
             </div>
         </div>

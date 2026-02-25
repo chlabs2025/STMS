@@ -57,7 +57,7 @@ const Navbar = () => {
                 {/* Right Side Actions */}
                 <div className="hidden md:block">
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/login', { replace: true })}
                         className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${scrolled
                             ? 'bg-[#ff5a1f] text-white hover:bg-[#e64f1b]'
                             : 'bg-[#ff5a1f] text-white hover:bg-[#e64f1b]'
@@ -93,7 +93,7 @@ const Navbar = () => {
                         </button>
                     ))}
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/login', { replace: true })}
                         className="mt-2 w-full bg-[#ff5a1f] text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
                     >
                         Access Portal <ArrowRight size={16} />

@@ -134,13 +134,13 @@ const Payment = () => {
 
     if (loading) {
         return (
-            <div className="p-6 lg:p-8 bg-white min-h-screen flex items-center justify-center overflow-x-hidden">
+            <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen flex items-center justify-center overflow-x-hidden">
                 <div className="text-center">
-                    <div className="bg-orange-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-orange-200">
-                        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="bg-orange-50 w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-sm border border-orange-200">
+                        <div className="w-8 h-8 md:w-12 md:h-12 border-3 md:border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                    <div className="text-2xl font-bold text-gray-800 mb-2">Loading Payments...</div>
-                    <div className="text-gray-600">Please wait while we fetch the data</div>
+                    <div className="text-xl md:text-2xl font-bold text-gray-800 mb-1 md:mb-2">Loading Payments...</div>
+                    <div className="text-gray-600 text-sm md:text-base">Please wait while we fetch the data</div>
                 </div>
             </div>
         )
@@ -148,16 +148,16 @@ const Payment = () => {
 
     if (error) {
         return (
-            <div className="p-6 lg:p-8 bg-white min-h-screen flex items-center justify-center overflow-x-hidden">
-                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center border border-orange-200">
-                    <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <MdError className="text-3xl text-red-600" />
+            <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen flex items-center justify-center overflow-x-hidden">
+                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 max-w-md text-center border border-orange-200 mx-3">
+                    <div className="bg-red-50 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                        <MdError className="text-2xl md:text-3xl text-red-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Error Loading Data</h3>
-                    <p className="text-gray-600 mb-8 leading-relaxed">{error}</p>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">Error Loading Data</h3>
+                    <p className="text-gray-600 mb-6 md:mb-8 leading-relaxed text-sm md:text-base">{error}</p>
                     <button
                         onClick={fetchLocals}
-                        className="px-8 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-all duration-200 shadow-md flex items-center justify-center gap-2 mx-auto border border-orange-600"
+                        className="px-6 md:px-8 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-all duration-200 shadow-md flex items-center justify-center gap-2 mx-auto border border-orange-600 text-sm md:text-base"
                     >
                         <MdRefresh className="text-lg" />
                         Try Again
@@ -168,21 +168,21 @@ const Payment = () => {
     }
 
     return (
-        <div className="p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
-            <div className="mb-8">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-white p-3 rounded-xl shadow-sm border border-orange-500/30">
-                            <MdPayment className="text-3xl text-orange-600" />
+        <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
+            <div className="mb-4 md:mb-8">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
+                        <div className="bg-white p-2 md:p-3 rounded-xl shadow-sm border border-orange-500/30">
+                            <MdPayment className="text-2xl md:text-3xl text-orange-600" />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-bold text-gray-900">Payment</h2>
-                            <p className="text-gray-600 font-medium">Manage payments for locals</p>
+                            <h2 className="text-2xl md:text-4xl font-bold text-gray-900">Payment</h2>
+                            <p className="text-gray-600 font-medium text-xs md:text-base">Manage payments for locals</p>
                         </div>
                     </div>
                     <button
                         onClick={fetchLocals}
-                        className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-200 flex items-center gap-2 self-start lg:self-auto shadow-md font-semibold border border-orange-600"
+                        className="px-4 md:px-6 py-2 md:py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-200 flex items-center gap-2 self-start lg:self-auto shadow-md font-semibold border border-orange-600 text-sm"
                         aria-label="Refresh payments list"
                     >
                         <MdRefresh className="text-lg" />
@@ -191,11 +191,11 @@ const Payment = () => {
                 </div>
 
                 {/* Search Bar with Count */}
-                <div className="bg-white rounded-2xl border border-orange-500/20 shadow-md p-4 mb-6">
+                <div className="bg-white rounded-2xl border border-orange-500/20 shadow-md p-3 md:p-4 mb-4 md:mb-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center flex-1 mr-6">
-                            <div className="bg-orange-50 p-2.5 rounded-xl mr-4 border border-orange-100">
-                                <MdSearch className="text-orange-600 text-xl" />
+                        <div className="flex items-center flex-1 mr-3 md:mr-6">
+                            <div className="bg-orange-50 p-2 md:p-2.5 rounded-xl mr-3 md:mr-4 border border-orange-100">
+                                <MdSearch className="text-orange-600 text-lg md:text-xl" />
                             </div>
                             <input
                                 type="text"
@@ -203,12 +203,13 @@ const Payment = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 aria-label="Search locals"
-                                className="flex-1 border-none outline-none text-gray-900 placeholder-gray-400 bg-transparent text-base font-medium"
+                                className="flex-1 border-none outline-none text-gray-900 placeholder-gray-400 bg-transparent text-sm md:text-base font-medium"
+                                style={{ fontSize: '16px' }}
                             />
                         </div>
-                        <div className="bg-orange-50 px-4 py-2 rounded-xl border border-orange-100">
-                            <div className="text-sm text-gray-700 font-medium">
-                                <span className="font-bold text-orange-600">{filteredLocals.length}</span> locals
+                        <div className="bg-orange-50 px-3 md:px-4 py-1.5 md:py-2 rounded-xl border border-orange-100 flex-shrink-0">
+                            <div className="text-xs md:text-sm text-gray-700 font-medium">
+                                <span className="font-bold text-orange-600">{filteredLocals.length}</span> <span className="hidden sm:inline">locals</span>
                             </div>
                         </div>
                     </div>
@@ -216,14 +217,14 @@ const Payment = () => {
             </div>
 
             {filteredLocals.length === 0 ? (
-                <div className="bg-white rounded-2xl p-12 text-center shadow-lg border border-orange-500/20">
-                    <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <MdSearch className="text-4xl text-gray-300" />
+                <div className="bg-white rounded-2xl p-6 md:p-12 text-center shadow-lg border border-orange-500/20">
+                    <div className="bg-gray-50 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                        <MdSearch className="text-3xl md:text-4xl text-gray-300" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">
                         {searchTerm ? "No matching locals found" : "No locals available"}
                     </h3>
-                    <p className="text-gray-500 text-lg mb-6">
+                    <p className="text-gray-500 text-sm md:text-lg mb-4 md:mb-6">
                         {searchTerm ? "Try adjusting your search criteria" : "Start by adding some locals to the system"}
                     </p>
                     {searchTerm && (
@@ -236,7 +237,7 @@ const Payment = () => {
                     )}
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div className="space-y-3 md:space-y-6">
                     {filteredLocals.map((local) => {
                         const isExpanded = expandedLocalId === local._id
                         const cleanedQty = local.totalReturnedQuantity || 0
@@ -245,22 +246,22 @@ const Payment = () => {
                         return (
                             <div key={local._id} className={`bg-white rounded-2xl shadow-sm border transition-all duration-300 overflow-hidden ${isExpanded ? 'border-orange-500 ring-1 ring-orange-500/20 shadow-orange-100 shadow-xl' : 'border-gray-200 hover:border-orange-300'}`}>
                                 {/* Header Row */}
-                                <div className={`p-3 flex items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-orange-50/30' : 'bg-white hover:bg-gray-50'}`} onClick={() => toggleExpand(local)}>
-                                    <div className="flex items-center space-x-3">
+                                <div className={`p-2.5 md:p-3 flex items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-orange-50/30' : 'bg-white hover:bg-gray-50'}`} onClick={() => toggleExpand(local)}>
+                                    <div className="flex items-center space-x-2.5 md:space-x-3">
                                         <div className="flex-shrink-0">
-                                            <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm border-2 transition-all duration-300 ${isExpanded ? 'bg-orange-500 border-orange-400' : 'bg-white border-orange-500'}`}>
-                                                <span className={`text-lg font-bold ${isExpanded ? 'text-white' : 'text-orange-600'}`}>
+                                            <div className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center shadow-sm border-2 transition-all duration-300 ${isExpanded ? 'bg-orange-500 border-orange-400' : 'bg-white border-orange-500'}`}>
+                                                <span className={`text-base md:text-lg font-bold ${isExpanded ? 'text-white' : 'text-orange-600'}`}>
                                                     {(local.LocalName || "U").charAt(0).toUpperCase()}
                                                 </span>
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-gray-900">
+                                            <div className="text-sm md:text-lg font-bold text-gray-900">
                                                 {local.LocalName || "Unnamed Local"}
                                             </div>
-                                            <div className="mt-0.5 flex items-center gap-2">
-                                                <span className="text-xs font-semibold text-gray-500">Local ID:</span>
-                                                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                                            <div className="mt-0.5 flex items-center gap-1.5 md:gap-2">
+                                                <span className="text-[10px] md:text-xs font-semibold text-gray-500">ID:</span>
+                                                <span className="px-1.5 md:px-2 py-0.5 rounded-md text-[9px] md:text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">
                                                     {local.LocalID}
                                                 </span>
                                             </div>
@@ -280,7 +281,7 @@ const Payment = () => {
 
                                 {/* Expanded Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                    <div className="p-8 bg-white border-t border-gray-100">
+                                    <div className="p-4 md:p-8 bg-white border-t border-gray-100">
                                         {orderLoading ? (
                                             <div className="flex items-center justify-center py-12">
                                                 <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
@@ -291,9 +292,9 @@ const Payment = () => {
                                                 <p className="text-yellow-800 font-medium">{paymentError}</p>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col lg:flex-row justify-between gap-10">
+                                            <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10">
                                                 <div className="lg:w-2/3">
-                                                    <div className="mb-8 p-4 bg-orange-50/50 rounded-lg border-l-4 border-orange-500 text-gray-700 font-medium text-sm">
+                                                    <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-lg border-l-4 border-orange-500 text-gray-700 font-medium text-xs md:text-sm">
                                                         {(() => {
                                                             const date = local.updatedAt ? new Date(local.updatedAt) : new Date();
                                                             const day = date.getDay();
@@ -307,7 +308,8 @@ const Payment = () => {
                                                         })()}
                                                     </div>
 
-                                                    <div className="overflow-hidden rounded-lg border border-gray-200">
+                                                    {/* Mobile: Cards | Desktop: Table */}
+                                                    <div className="hidden md:block overflow-hidden rounded-lg border border-gray-200">
                                                         <table className="w-full text-left">
                                                             <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold tracking-wider">
                                                                 <tr>
@@ -336,9 +338,33 @@ const Payment = () => {
                                                             </tbody>
                                                         </table>
                                                     </div>
+
+                                                    {/* Mobile order details cards */}
+                                                    <div className="md:hidden space-y-3">
+                                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Date</p>
+                                                            <p className="text-sm font-bold text-gray-900">
+                                                                {local.updatedAt ? new Date(local.updatedAt).toLocaleDateString("en-GB", {
+                                                                    day: "numeric",
+                                                                    month: "short",
+                                                                    year: "numeric"
+                                                                }) : "-"}
+                                                            </p>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                                                                <p className="text-[10px] text-blue-500 font-bold uppercase tracking-wider mb-1">Assigned</p>
+                                                                <p className="text-xl font-bold text-blue-700">{assignedQty}</p>
+                                                            </div>
+                                                            <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                                                                <p className="text-[10px] text-green-500 font-bold uppercase tracking-wider mb-1">Cleaned</p>
+                                                                <p className="text-xl font-bold text-green-700">{cleanedQty}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div className="lg:w-1/3 flex flex-col justify-between p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+                                                <div className="lg:w-1/3 flex flex-col justify-between p-4 md:p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
                                                     {/* Payment Result */}
                                                     {paymentResult ? (
                                                         <div className="text-center space-y-4">
@@ -348,8 +374,8 @@ const Payment = () => {
                                                                     <div className="bg-yellow-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                                                                         <MdOnlinePayment className="text-4xl text-yellow-500" />
                                                                     </div>
-                                                                    <h3 className="text-lg font-bold text-gray-900">Scan QR to Pay</h3>
-                                                                    <p className="text-2xl font-bold text-orange-600">₹{paymentResult.total}</p>
+                                                                    <h3 className="text-base md:text-lg font-bold text-gray-900">Scan QR to Pay</h3>
+                                                                    <p className="text-xl md:text-2xl font-bold text-orange-600">₹{paymentResult.total}</p>
 
                                                                     {paymentResult.qr && (
                                                                         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -397,7 +423,7 @@ const Payment = () => {
                                                                     <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                                                                         <MdCheckCircle className="text-4xl text-green-500" />
                                                                     </div>
-                                                                    <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
+                                                                    <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Successful!</h3>
                                                                     <div className="space-y-2 text-sm">
                                                                         <div className="flex justify-between py-2 border-b border-gray-100">
                                                                             <span className="text-gray-500">Amount</span>
@@ -420,7 +446,7 @@ const Payment = () => {
                                                                     <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                                                                         <MdError className="text-4xl text-red-500" />
                                                                     </div>
-                                                                    <h3 className="text-xl font-bold text-gray-900">Payment Rejected</h3>
+                                                                    <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Rejected</h3>
                                                                     <div className="space-y-2 text-sm">
                                                                         <div className="flex justify-between py-2 border-b border-gray-100">
                                                                             <span className="text-gray-500">Amount</span>
@@ -459,21 +485,21 @@ const Payment = () => {
                                                             </div>
 
                                                             {/* Amount */}
-                                                            <div className="text-center mb-8 pb-8 border-b border-gray-100">
+                                                            <div className="text-center mb-5 md:mb-8 pb-5 md:pb-8 border-b border-gray-100">
                                                                 <div className="text-gray-500 text-xs font-medium mb-2 uppercase tracking-wide">Amount to Pay</div>
-                                                                <div className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                                                                <div className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-1.5 md:gap-2 flex-wrap">
                                                                     <span>{orderData.quantity}</span>
-                                                                    <span className="text-gray-400 text-xl">×</span>
+                                                                    <span className="text-gray-400 text-lg md:text-xl">×</span>
                                                                     <span>{orderData.price_per_cleaned_imli}</span>
-                                                                    <span className="text-gray-400 text-xl">=</span>
+                                                                    <span className="text-gray-400 text-lg md:text-xl">=</span>
                                                                     <span className="text-orange-600">₹{orderData.total}</span>
                                                                 </div>
                                                             </div>
 
                                                             {/* Payment Method + Confirm */}
                                                             <div className="space-y-4">
-                                                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Payment Method</div>
-                                                                <div className="grid grid-cols-2 gap-3 mb-6">
+                                                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Payment Method</div>
+                                                                <div className="grid grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6">
                                                                     <button
                                                                         onClick={() => setPaymentMethod("Cash")}
                                                                         className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${paymentMethod === "Cash" ? 'bg-orange-50 border-orange-200 text-orange-700 ring-1 ring-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}

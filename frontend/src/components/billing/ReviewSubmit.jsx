@@ -11,33 +11,33 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
 
     const SectionCard = ({ icon: Icon, title, children }) => (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
-                <Icon className="text-orange-600" />
-                <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">{title}</span>
+            <div className="px-4 md:px-5 py-2.5 md:py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                <Icon className="text-orange-600 text-sm" />
+                <span className="text-xs md:text-sm font-semibold text-gray-700 uppercase tracking-wide">{title}</span>
             </div>
-            <div className="p-5">{children}</div>
+            <div className="px-4 py-3 md:p-5">{children}</div>
         </div>
     )
 
     const InfoRow = ({ label, value, highlight }) => (
-        <div className="flex justify-between py-2 border-b border-gray-50 last:border-0">
-            <span className="text-sm text-gray-500 font-medium">{label}</span>
-            <span className={`text-sm font-semibold ${highlight ? 'text-orange-600' : 'text-gray-900'}`}>
+        <div className="flex justify-between gap-4 py-1.5 md:py-2 border-b border-gray-50 last:border-0">
+            <span className="text-xs md:text-sm text-gray-500 font-medium shrink-0">{label}</span>
+            <span className={`text-xs md:text-sm font-medium text-right ${highlight ? 'text-orange-600' : 'text-gray-900'}`}>
                 {value || "—"}
             </span>
         </div>
     )
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-5 md:space-y-8">
             {/* Section Title */}
             <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Review & Submit</h3>
-                <p className="text-gray-500 text-sm font-medium">Verify all details before generating the invoice</p>
+                <h3 className="text-base md:text-xl font-semibold text-gray-900 mb-0.5">Review & Submit</h3>
+                <p className="text-gray-400 text-xs md:text-sm font-medium">Verify all details before generating the invoice</p>
             </div>
 
             {/* Review Cards */}
-            <div className="space-y-5">
+            <div className="space-y-3 md:space-y-5">
                 {/* Product */}
                 <SectionCard icon={MdInventory} title="Product">
                     <InfoRow label="Product" value={formData.description} />
@@ -76,42 +76,42 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
                 </SectionCard>
 
                 {/* Grand Total Card */}
-                <div className="bg-orange-50 rounded-xl border-2 border-orange-200 p-6 flex items-center justify-between">
+                <div className="bg-orange-50/70 rounded-xl p-4 md:p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-bold text-orange-700 uppercase tracking-wide">Grand Total</p>
-                        <p className="text-xs text-orange-600/70 font-medium mt-0.5">Including all taxes</p>
+                        <p className="text-[11px] md:text-sm font-semibold text-orange-700 uppercase tracking-wide">Grand Total</p>
+                        <p className="text-[10px] md:text-xs text-orange-500 font-medium mt-0.5">Including all taxes</p>
                     </div>
-                    <div className="text-3xl font-bold text-orange-600">
+                    <div className="text-xl md:text-3xl font-semibold text-orange-600">
                         ₹ {totalWithGst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                     </div>
                 </div>
             </div>
 
-            {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t border-gray-100">
+            {/* Navigation — even buttons on mobile */}
+            <div className="flex gap-3 pt-4 border-t border-gray-100">
                 <button
                     type="button"
                     onClick={onBack}
                     disabled={isSubmitting}
-                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
+                    className="flex-1 md:flex-none py-3 md:px-6 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
                 >
-                    <MdArrowBack className="text-lg" />
+                    <MdArrowBack className="text-base" />
                     Back
                 </button>
                 <button
                     type="button"
                     onClick={onSubmit}
                     disabled={isSubmitting}
-                    className="px-8 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 shadow-sm flex items-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 md:flex-none py-3 md:px-8 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm"
                 >
                     {isSubmitting ? (
                         <>
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Generating Invoice...
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Generating...
                         </>
                     ) : (
                         <>
-                            <MdSend className="text-lg" />
+                            <MdSend className="text-base" />
                             Generate Invoice
                         </>
                     )}

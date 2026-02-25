@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Sidebar from "./Sidebar"
 import Header from "./Header"
 import Dashboard from "./Dashboard"
@@ -18,16 +18,71 @@ const AdminLayout = () => {
   const [activePage, setActivePage] = useState("dashboard")
   const [navigationProps, setNavigationProps] = useState({})
   const [isSidebarCollapsed] = useState(false) // Always expanded
+  const isPopState = useRef(false)
+
+  // ── Browser history integration ──
+  // Replace current entry + add guard entries to prevent escaping to login/landing
+  useEffect(() => {
+    const currentUrl = window.location.href
+    // Tag the current entry as our base
+    window.history.replaceState({ page: "dashboard", guard: true }, "", currentUrl)
+    // Push a guard entry (same URL so React Router doesn't navigate away)
+    window.history.pushState({ page: "dashboard" }, "", currentUrl)
+  }, [])
+
+  // Listen for browser back/forward button
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const state = event.state
+
+      // Billing step navigation — let Billing component handle it
+      if (state && state.billingStep !== undefined) {
+        return
+      }
+
+      // Normal page navigation within the app
+      if (state && state.page && !state.guard) {
+        isPopState.current = true
+        setNavigationProps({})
+        setActivePage(state.page)
+        return
+      }
+
+      // Guard entry or unknown state — user trying to leave the app!
+      // Force them back to dashboard
+      const currentUrl = window.location.pathname === "/admin/dashboard"
+        ? window.location.href
+        : "/admin/dashboard"
+
+      // Re-add guard entries to rebuild the buffer
+      window.history.replaceState({ page: "dashboard", guard: true }, "", currentUrl)
+      window.history.pushState({ page: "dashboard" }, "", currentUrl)
+      isPopState.current = true
+      setActivePage("dashboard")
+    }
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [])
 
   const navigateToAssignImli = (localData) => {
     setNavigationProps({ prefilledLocalId: localData.LocalID, prefilledLocal: localData })
     setActivePage("assignImli")
+    window.history.pushState({ page: "assignImli" }, "")
   }
 
-  const handlePageChange = (pageId) => {
+  const handlePageChange = useCallback((pageId) => {
     setNavigationProps({}) // Clear navigation props when changing pages normally
     setActivePage(pageId)
-  }
+
+    // Only push history if this is NOT a popstate event (user pressing back)
+    if (isPopState.current) {
+      isPopState.current = false
+      return
+    }
+
+    // Push a new history entry so browser back button works
+    window.history.pushState({ page: pageId }, "")
+  }, [])
 
   const pageConfig = {
     dashboard: { component: Dashboard, title: "DASHBOARD GENERAL", props: { navigateToAssignImli, onPageChange: handlePageChange } },
@@ -67,3 +122,4 @@ const AdminLayout = () => {
 }
 
 export default AdminLayout
+

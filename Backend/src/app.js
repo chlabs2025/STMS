@@ -10,7 +10,8 @@ const app = express()
 // ─── Allowed Origins (add your network IP origin here) ───────────────────────
 const allowedOrigins = [
     "http://localhost:5173",          // local browser
-    "http://10.101.36.1:5173",        // LAN / mobile access
+    "http://10.101.36.1:5173",
+    "http://10.76.145.1:5173"       // LAN / mobile access
 ]
 
 app.use(cors({
