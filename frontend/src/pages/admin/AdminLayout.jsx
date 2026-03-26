@@ -110,7 +110,7 @@ const AdminLayout = () => {
         <Header
           title={currentPage.title}
         />
-        <div className="flex-1 overflow-auto pb-16 md:pb-0">
+        <div className="flex-1 overflow-auto pb-20 md:pb-0">
           <CurrentComponent {...currentPage.props} />
         </div>
       </div>

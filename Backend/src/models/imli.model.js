@@ -2,7 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 const imliSchema = new Schema({
     rawImliQuantity:{
-        type:Number
+        type:Number,
+        default: 0
+    },
+    totalCleanedImli:{
+        type:Number,
+        default: 0
     }
 },{timestamp:true})
 

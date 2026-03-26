@@ -171,8 +171,8 @@ export default function MobileNav({ activePage, onPageChange }) {
             </div>
 
             {/* Bottom Tab Bar */}
-            <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
-                <div className="flex items-center justify-around h-16 px-1 pb-[env(safe-area-inset-bottom)]">
+            <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/80 backdrop-blur-xl border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+                <div className="flex items-center justify-around h-[72px] px-1 pb-[env(safe-area-inset-bottom)]">
                     {NAV_GROUPS.map((group) => {
                         const Icon = group.icon
                         const isActive = activeGroup === group.id
@@ -181,15 +181,14 @@ export default function MobileNav({ activePage, onPageChange }) {
                             <button
                                 key={group.id}
                                 onClick={() => handleTabClick(group)}
-                                className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 transition-all duration-200 active:scale-95 relative ${isActive ? "text-orange-600" : "text-gray-400"
-                                    }`}
+                                className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 transition-all duration-300 active:scale-90 relative`}
                             >
-                                {/* Active indicator dot */}
+                                {/* Pill-shaped active background */}
                                 {isActive && (
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-orange-500 rounded-full" />
+                                    <div className="absolute inset-x-2 inset-y-1 bg-orange-50 rounded-2xl nav-pill-glow transition-all duration-300" />
                                 )}
-                                <Icon className={`text-[22px] transition-all duration-200 ${isActive ? "text-orange-600" : "text-gray-400"} ${isOpen ? "scale-110" : ""}`} />
-                                <span className={`text-[10px] font-semibold leading-tight ${isActive ? "text-orange-600" : "text-gray-400"}`}>
+                                <Icon className={`text-[22px] transition-all duration-300 relative z-10 ${isActive ? "text-orange-600" : "text-gray-400"} ${isOpen ? "scale-110" : ""}`} />
+                                <span className={`text-[10px] font-bold leading-tight relative z-10 transition-all duration-300 ${isActive ? "text-orange-600" : "text-gray-400"}`}>
                                     {group.label}
                                 </span>
                             </button>

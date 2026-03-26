@@ -4,6 +4,18 @@ import { ApiError } from "../utils/ApiError.js";
 
 import { ImliData } from "../models/imli.model.js";
 
+export const getRawImli = asyncHandler(async (req, res) => {
+  const imli = await ImliData.findOne({});
+  const rawImliQuantity = imli ? imli.rawImliQuantity : 0;
+  const totalCleanedImli = imli ? imli.totalCleanedImli : 0;
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { rawImliQuantity, totalCleanedImli }, "Imli data fetched successfully")
+    );
+});
+
 export const addRawImli = asyncHandler(async (req, res) => {
   const { rawImliQuantity } = req.body;
 

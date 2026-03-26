@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Config } from "../models/config.model.js"
 import { localData } from "../models/local.model.js"
 import { logs } from "../models/logs.model.js"
+import { ImliData } from "../models/imli.model.js"
 
 export const Imli_price_changer = asyncHandler(async (req, res) => {
 
@@ -95,6 +96,13 @@ export const confirmPayment = asyncHandler(async (req, res) => {
             paymentStatus: "SUCCESS"
         });
 
+        // Accumulate cleaned imli into global tracker before resetting
+        await ImliData.findOneAndUpdate(
+            {},
+            { $inc: { totalCleanedImli: local.totalReturnedQuantity } },
+            { upsert: true }
+        );
+
         await localData.findOneAndUpdate(
             { LocalID: localId },
             {
@@ -171,6 +179,13 @@ export const confirmPayment = asyncHandler(async (req, res) => {
                 paymentStatus: "SUCCESS"
             });
 
+
+            // Accumulate cleaned imli into global tracker before resetting
+            await ImliData.findOneAndUpdate(
+                {},
+                { $inc: { totalCleanedImli: local.totalReturnedQuantity } },
+                { upsert: true }
+            );
 
             await localData.findOneAndUpdate(
                 { LocalID: localId },

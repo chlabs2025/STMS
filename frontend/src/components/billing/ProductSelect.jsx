@@ -28,6 +28,8 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
             description: product.label,
             hsn: product.hsn,
         })
+        // Directly advance to the next step
+        onNext()
     }
 
     return (
@@ -42,57 +44,29 @@ export default function ProductSelect({ formData, updateFormData, onNext }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {products.map((product) => {
                     const Icon = product.icon
-                    const isSelected = selected === product.id
                     return (
                         <button
                             key={product.id}
                             type="button"
                             onClick={() => handleSelect(product)}
-                            className={`relative p-4 md:p-6 rounded-xl border-2 text-left transition-all duration-200 group cursor-pointer ${isSelected
-                                ? "border-orange-500 bg-orange-50/60 ring-2 ring-orange-500/20 shadow-md"
-                                : "border-gray-200 bg-white hover:border-orange-300 hover:shadow-sm"
-                                }`}
+                            className="relative p-4 md:p-6 rounded-xl border-2 text-left transition-all duration-200 group cursor-pointer border-gray-200 bg-white hover:border-orange-300 hover:shadow-sm"
                         >
-                            {/* Selected Check */}
-                            {isSelected && (
-                                <div className="absolute top-4 right-4 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                            )}
-
-                            <div className={`w-11 h-11 md:w-14 md:h-14 rounded-xl flex items-center justify-center mb-3 md:mb-4 transition-colors ${isSelected ? "bg-orange-500" : "bg-gray-100 group-hover:bg-orange-100"
-                                }`}>
-                                <Icon className={`text-xl md:text-2xl ${isSelected ? "text-white" : "text-gray-500 group-hover:text-orange-600"}`} />
+                            <div className="w-11 h-11 md:w-14 md:h-14 rounded-xl flex items-center justify-center mb-3 md:mb-4 transition-colors bg-gray-100 group-hover:bg-orange-100">
+                                <Icon className="text-xl md:text-2xl text-gray-500 group-hover:text-orange-600" />
                             </div>
 
-                            <h4 className={`text-base md:text-lg font-bold mb-1 ${isSelected ? "text-orange-700" : "text-gray-900"}`}>
+                            <h4 className="text-base md:text-lg font-bold mb-1 text-gray-900">
                                 {product.label}
                             </h4>
-                            <p className={`text-sm font-medium ${isSelected ? "text-orange-600/80" : "text-gray-500"}`}>
+                            <p className="text-sm font-medium text-gray-500">
                                 {product.description}
                             </p>
-                            <div className={`mt-3 inline-block px-3 py-1 rounded-lg text-xs font-semibold ${isSelected ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500"
-                                }`}>
+                            <div className="mt-3 inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-500">
                                 HSN: {product.hsn}
                             </div>
                         </button>
                     )
                 })}
-            </div>
-
-            {/* Next Button */}
-            <div className="flex justify-end pt-4 border-t border-gray-100">
-                <button
-                    type="button"
-                    onClick={onNext}
-                    disabled={!selected}
-                    className="w-full md:w-auto py-3 md:px-8 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none text-sm"
-                >
-                    Next
-                    <MdArrowForward className="text-base" />
-                </button>
             </div>
         </div>
     )

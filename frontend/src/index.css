@@ -46,3 +46,60 @@ input[type=number] {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
+/* ── Premium Mobile Dashboard Styles ── */
+
+/* Stat card gradient backgrounds */
+.stat-gradient-0 {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+}
+
+.stat-gradient-1 {
+    background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 50%, #99f6e4 100%);
+}
+
+.stat-gradient-2 {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+}
+
+.stat-gradient-3 {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+}
+
+/* Card entrance animation for mobile */
+@keyframes card-slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-card-enter {
+    animation: card-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-fill-mode: both;
+}
+
+/* Staggered animation delays for stat cards */
+.animate-delay-1 { animation-delay: 0.05s; }
+.animate-delay-2 { animation-delay: 0.1s; }
+.animate-delay-3 { animation-delay: 0.15s; }
+.animate-delay-4 { animation-delay: 0.2s; }
+
+/* Premium nav pill glow */
+.nav-pill-glow {
+    box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
+}
+
+/* Mobile-only scrollbar: thinner */
+@media (max-width: 767px) {
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+        border: none;
+    }
+}

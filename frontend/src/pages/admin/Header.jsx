@@ -4,7 +4,7 @@ const Header = ({ title }) => {
   const { lang, toggleLang } = useLang()
 
   return (
-    <header className="bg-white px-4 md:px-8 py-3 flex items-center justify-between h-[56px] md:h-[64px] border-b border-gray-200 transition-colors duration-300">
+    <header className="bg-white px-4 md:px-8 py-3.5 md:py-3 flex items-center justify-between h-[60px] md:h-[64px] border-b border-gray-200 transition-colors duration-300 relative">
       <div className="flex items-center gap-3">
         {/* Mobile: show logo + title since sidebar is hidden */}
         <div className="flex md:hidden items-center gap-2.5">
@@ -15,7 +15,7 @@ const Header = ({ title }) => {
               className="h-5 w-auto"
             />
           </div>
-          <h2 className="text-sm font-bold tracking-wide truncate text-orange-600 uppercase">{title}</h2>
+          <h2 className="text-sm font-bold tracking-wide truncate text-orange-600">{title}</h2>
         </div>
         {/* Desktop: just the title (sidebar has logo) */}
         <h2 className="hidden md:block text-sm font-bold tracking-wide truncate text-orange-600">{title}</h2>
@@ -34,6 +34,9 @@ const Header = ({ title }) => {
           اردو
         </span>
       </button>
+
+      {/* Premium mobile accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-orange-500/0 via-orange-500/40 to-orange-500/0 md:hidden" />
     </header>
   )
 }

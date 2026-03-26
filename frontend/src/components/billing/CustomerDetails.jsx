@@ -134,7 +134,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <div className="flex gap-3 pt-4 border-t border-gray-100 md:justify-end">
                 <button
                     type="button"
                     onClick={onBack}

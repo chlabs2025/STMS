@@ -2,7 +2,7 @@ import axios from "axios"
 
 // ─── Base URLs ────────────────────────────────────────────────────────────────
 const LOCAL_URL = "http://localhost:8000/api"       // local development
-const NETWORK_URL = "http://[IP_ADDRESS]/api"    // LAN / network access
+const NETWORK_URL = "http://[IP_ADDRESS]:8000/api"    // LAN / network access
 
 // Switch between LOCAL_URL and NETWORK_URL as needed
 const BASE_URL = LOCAL_URL

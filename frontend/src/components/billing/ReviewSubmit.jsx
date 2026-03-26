@@ -88,7 +88,7 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
             </div>
 
             {/* Navigation — even buttons on mobile */}
-            <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <div className="flex gap-3 pt-4 border-t border-gray-100 md:justify-end">
                 <button
                     type="button"
                     onClick={onBack}

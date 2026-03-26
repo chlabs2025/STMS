@@ -119,51 +119,41 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
 
   return (
     <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
-      <div className="mb-4 md:mb-8">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 md:mb-6 gap-3 md:gap-4">
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm border border-orange-500/30">
-              <MdPeople className="text-2xl md:text-3xl text-orange-600" />
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900"><T k="Locals Profile" /></h2>
-              <p className="text-gray-600 font-medium text-xs md:text-base"><T k="Manage and view local worker information" /></p>
+      {/* Search Bar with Icon, Count & Refresh */}
+      <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
+        <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
+          {/* Icon */}
+          <div className="bg-white p-2 md:p-2.5 rounded-lg shadow-sm border border-orange-500/30 flex-shrink-0">
+            <MdPeople className="text-xl md:text-2xl text-orange-600" />
+          </div>
+          {/* Search Input */}
+          <div className="flex items-center flex-1 min-w-0 bg-gray-50 rounded-lg px-2.5 md:px-3 py-1.5 md:py-2">
+            <MdSearch className="text-orange-600 text-lg md:text-xl mr-1.5 md:mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search locals"
+              className="flex-1 min-w-0 border-none outline-none text-gray-900 placeholder-gray-400 bg-transparent text-sm md:text-base font-medium"
+              style={{ fontSize: '16px' }}
+            />
+          </div>
+          {/* Count Badge */}
+          <div className="bg-orange-50 px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-orange-100 flex-shrink-0">
+            <div className="text-xs md:text-sm text-gray-700 font-medium">
+              <span className="font-bold text-orange-600">{filteredLocals.length}</span> <span className="hidden sm:inline"><T k="locals" /></span>
             </div>
           </div>
+          {/* Refresh Button */}
           <button
             onClick={fetchLocals}
-            className="px-4 md:px-6 py-2 md:py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 flex items-center gap-2 self-start lg:self-auto shadow-sm font-medium border border-orange-600 text-sm"
+            className="px-2.5 md:px-5 py-1.5 md:py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 flex items-center gap-1.5 md:gap-2 shadow-sm font-medium border border-orange-600 text-sm flex-shrink-0"
             aria-label="Refresh locals list"
           >
             <MdRefresh className="text-lg" />
-            <T k="Refresh" />
+            <span className="hidden sm:inline"><T k="Refresh" /></span>
           </button>
-        </div>
-
-        {/* Search Bar with Count */}
-        <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center flex-1">
-              <div className="bg-orange-50 p-2 md:p-2.5 rounded-lg mr-3 md:mr-4 border border-orange-100">
-                <MdSearch className="text-orange-600 text-lg md:text-xl" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search by name, phone, or ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label="Search locals by name, phone, or ID"
-                className="flex-1 border-none outline-none text-gray-900 placeholder-gray-400 bg-transparent text-sm md:text-base font-medium"
-                style={{ fontSize: '16px' }}
-              />
-            </div>
-            <div className="bg-orange-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-orange-100 flex-shrink-0">
-              <div className="text-xs md:text-sm text-gray-700 font-medium">
-                <span className="font-bold text-orange-600">{filteredLocals.length}</span> <span className="hidden sm:inline"><T k="locals" /></span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

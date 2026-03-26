@@ -213,8 +213,7 @@ function Billing() {
     }
 
     try {
-      // TODO: Replace with actual backend URL when ready
-      const response = await api.post("/generateImliInvoice", payload, {
+      const response = await api.post("/generateInvoice", { ...payload, billType: "slip", receiverName: imliData.senderName, driverName: "" }, {
         responseType: "blob",
       })
 

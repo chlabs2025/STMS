@@ -363,7 +363,7 @@ const SackEntry = () => {
     };
 
     return (
-        <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-6 shadow-sm border border-gray-200 h-full flex flex-col relative">
+        <div className="bg-white rounded-2xl md:rounded-xl p-3.5 md:p-6 shadow-md md:shadow-sm border-0 md:border md:border-gray-200 h-full flex flex-col relative">
             <Toaster position="top-center" />
             <div className="flex items-center justify-between mb-3 md:mb-6 shrink-0">
                 <div className="flex items-center gap-2 md:gap-4">
