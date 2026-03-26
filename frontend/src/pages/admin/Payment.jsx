@@ -21,6 +21,8 @@ const Payment = () => {
     const [paymentResult, setPaymentResult] = useState(null)
     const [paymentError, setPaymentError] = useState(null)
     const [activeTab, setActiveTab] = useState("payment")
+    const [assignmentHistory, setAssignmentHistory] = useState([])
+    const [historyLoading, setHistoryLoading] = useState(false)
 
 
     useEffect(() => {
@@ -58,6 +60,19 @@ const Payment = () => {
         return () => clearTimeout(debounceTimer)
     }, [searchTerm, locals])
 
+    const fetchAssignmentHistory = async (localID) => {
+        try {
+            setHistoryLoading(true)
+            const response = await api.get("/assignment-history", { params: { localID } })
+            setAssignmentHistory(response.data?.data || [])
+        } catch (error) {
+            console.error("Error fetching assignment history:", error)
+            setAssignmentHistory([])
+        } finally {
+            setHistoryLoading(false)
+        }
+    }
+
     const fetchOrderReference = async (localID) => {
         try {
             setOrderLoading(true)
@@ -91,7 +106,9 @@ const Payment = () => {
             setPaymentResult(null)
             setPaymentError(null)
             setActiveTab("payment")
+            setAssignmentHistory([])
             fetchOrderReference(local.LocalID)
+            fetchAssignmentHistory(local.LocalID)
         }
     }
 
@@ -328,18 +345,28 @@ const Payment = () => {
                                                 ) : (
                                                     <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10">
                                                         <div className="lg:w-2/3">
-                                                            <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-lg border-l-4 border-orange-500 text-gray-700 font-medium text-xs md:text-sm">
-                                                                {(() => {
-                                                                    const date = local.updatedAt ? new Date(local.updatedAt) : new Date();
-                                                                    const day = date.getDay();
-                                                                    const diff = date.getDate() - day + (day >= 4 ? 4 : -3);
-                                                                    const start = new Date(date);
-                                                                    start.setDate(diff);
-                                                                    const end = new Date(start);
-                                                                    end.setDate(start.getDate() + 7);
-                                                                    const format = (d) => `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-                                                                    return `Period: Thursday ${format(start)} to ${format(end)}`;
-                                                                })()}
+                                                            <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-xl border border-orange-100 flex items-center gap-3">
+                                                                <div className="bg-orange-500 text-white rounded-lg p-2 flex-shrink-0">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider">Weekly Period</p>
+                                                                    {(() => {
+                                                                        const date = local.updatedAt ? new Date(local.updatedAt) : new Date();
+                                                                        const day = date.getDay();
+                                                                        const diff = date.getDate() - day + (day >= 4 ? 4 : -3);
+                                                                        const start = new Date(date);
+                                                                        start.setDate(diff);
+                                                                        const end = new Date(start);
+                                                                        end.setDate(start.getDate() + 6);
+                                                                        const fmt = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+                                                                        return (
+                                                                            <p className="text-sm md:text-base font-bold text-gray-800 mt-0.5">
+                                                                                {fmt(start)} <span className="text-orange-400 mx-1">→</span> {fmt(end)}
+                                                                            </p>
+                                                                        );
+                                                                    })()}
+                                                                </div>
                                                             </div>
 
                                                             {/* Desktop Table */}
@@ -347,52 +374,74 @@ const Payment = () => {
                                                                 <table className="w-full text-left">
                                                                     <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold tracking-wider">
                                                                         <tr>
-                                                                            <th className="px-6 py-4">Date</th>
+                                                                            <th className="px-6 py-4">Date & Time</th>
                                                                             <th className="px-6 py-4">Assigned Quantity</th>
                                                                             <th className="px-6 py-4">Cleaned Qty.</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
-                                                                        <tr className="hover:bg-gray-50/50 transition-colors">
-                                                                            <td className="px-6 py-4 font-medium">
-                                                                                {local.updatedAt ? new Date(local.updatedAt).toLocaleDateString("en-GB", {
-                                                                                    day: "numeric",
-                                                                                    month: "short",
-                                                                                    year: "numeric"
-                                                                                }) : "-"}
-                                                                            </td>
-                                                                            <td className="px-6 py-4">{assignedQty}</td>
-                                                                            <td className="px-6 py-4">{cleanedQty}</td>
-                                                                        </tr>
-                                                                        <tr className="bg-gray-50/50 text-gray-900 font-semibold">
-                                                                            <td className="px-6 py-4">Total :</td>
-                                                                            <td className="px-6 py-4">{assignedQty}</td>
-                                                                            <td className="px-6 py-4">{cleanedQty}</td>
+                                                                        {assignmentHistory.length > 0 ? (
+                                                                            assignmentHistory.map((entry, idx) => (
+                                                                                <tr key={entry._id || idx} className="hover:bg-gray-50/50 transition-colors">
+                                                                                    <td className="px-6 py-4 font-medium">
+                                                                                        <div>{new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
+                                                                                        <div className="text-xs text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</div>
+                                                                                    </td>
+                                                                                    <td className="px-6 py-4">{entry.assignedQuantity}</td>
+                                                                                    <td className="px-6 py-4 text-gray-400">—</td>
+                                                                                </tr>
+                                                                            ))
+                                                                        ) : (
+                                                                            <tr className="hover:bg-gray-50/50 transition-colors">
+                                                                                <td className="px-6 py-4 font-medium text-gray-400" colSpan="3">
+                                                                                    {historyLoading ? "Loading..." : "No assignment records found"}
+                                                                                </td>
+                                                                            </tr>
+                                                                        )}
+                                                                        <tr className="bg-orange-50/50 text-gray-900 font-semibold border-t-2 border-orange-200">
+                                                                            <td className="px-6 py-4">Total</td>
+                                                                            <td className="px-6 py-4">{assignedQty} KG</td>
+                                                                            <td className="px-6 py-4 text-green-700">{cleanedQty} KG</td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
                                                             </div>
 
                                                             {/* Mobile cards */}
-                                                            <div className="md:hidden space-y-3">
-                                                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Date</p>
-                                                                    <p className="text-sm font-bold text-gray-900">
-                                                                        {local.updatedAt ? new Date(local.updatedAt).toLocaleDateString("en-GB", {
-                                                                            day: "numeric",
-                                                                            month: "short",
-                                                                            year: "numeric"
-                                                                        }) : "-"}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="grid grid-cols-2 gap-3">
-                                                                    <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                                                                        <p className="text-[10px] text-blue-500 font-bold uppercase tracking-wider mb-1">Assigned</p>
-                                                                        <p className="text-xl font-bold text-blue-700">{assignedQty}</p>
+                                                            <div className="md:hidden space-y-2">
+                                                                {assignmentHistory.length > 0 ? (
+                                                                    assignmentHistory.map((entry, idx) => (
+                                                                        <div key={entry._id || idx} className="bg-gray-50 rounded-xl p-3 border border-gray-100 flex items-center justify-between">
+                                                                            <div>
+                                                                                <p className="text-sm font-bold text-gray-900">
+                                                                                    {new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                                                                                </p>
+                                                                                <p className="text-[11px] text-gray-400 mt-0.5">
+                                                                                    {new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                                                                                </p>
+                                                                            </div>
+                                                                            <div className="bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+                                                                                <span className="text-base font-bold text-blue-700">{entry.assignedQuantity} KG</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
+                                                                        <p className="text-sm text-gray-400">{historyLoading ? "Loading..." : "No assignment records"}</p>
                                                                     </div>
-                                                                    <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-                                                                        <p className="text-[10px] text-green-500 font-bold uppercase tracking-wider mb-1">Cleaned</p>
-                                                                        <p className="text-xl font-bold text-green-700">{cleanedQty}</p>
+                                                                )}
+                                                                {/* Total Summary */}
+                                                                <div className="bg-orange-50 rounded-xl p-3 border border-orange-200 flex items-center justify-between mt-1">
+                                                                    <span className="text-sm font-bold text-gray-900">Total</span>
+                                                                    <div className="flex gap-4">
+                                                                        <div className="text-center">
+                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Assigned</p>
+                                                                            <p className="text-base font-bold text-blue-700">{assignedQty} KG</p>
+                                                                        </div>
+                                                                        <div className="text-center">
+                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Cleaned</p>
+                                                                            <p className="text-base font-bold text-green-700">{cleanedQty} KG</p>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>

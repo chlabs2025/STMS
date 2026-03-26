@@ -73,14 +73,22 @@ const PaymentLogs = ({ localID }) => {
                 const start = new Date(date);
                 start.setDate(diff);
                 const end = new Date(start);
-                end.setDate(start.getDate() + 7);
-                const format = (d) => `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+                end.setDate(start.getDate() + 6);
+                const fmt = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
                 return (
                     <div key={log._id} className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10 p-4 md:p-8 bg-white border border-gray-200 rounded-2xl shadow-sm mb-6">
                         <div className="lg:w-2/3">
-                            <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-lg border-l-4 border-orange-500 text-gray-700 font-medium text-xs md:text-sm">
-                                Period: Thursday {format(start)} to {format(end)}
+                            <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-xl border border-orange-100 flex items-center gap-3">
+                                <div className="bg-orange-500 text-white rounded-lg p-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider">Weekly Period</p>
+                                    <p className="text-sm md:text-base font-bold text-gray-800 mt-0.5">
+                                        {fmt(start)} <span className="text-orange-400 mx-1">→</span> {fmt(end)}
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Mobile: Cards | Desktop: Table */}

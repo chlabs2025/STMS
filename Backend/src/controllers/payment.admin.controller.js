@@ -6,6 +6,7 @@ import { Config } from "../models/config.model.js"
 import { localData } from "../models/local.model.js"
 import { logs } from "../models/logs.model.js"
 import { ImliData } from "../models/imli.model.js"
+import { ImliAssign } from "../models/imliAssign.model.js"
 
 export const Imli_price_changer = asyncHandler(async (req, res) => {
 
@@ -245,3 +246,17 @@ export const logsdetails = asyncHandler(async (req, res) => {
         new ApiResponse(200, logDetails, "Log details fetched")
     );
 });
+
+export const getAssignmentHistory = asyncHandler(async (req, res) => {
+    const { localID } = req.query;
+
+    if (!localID) {
+        throw new ApiError(400, "localID is required");
+    }
+
+    const assignments = await ImliAssign.find({ localID: String(localID) }).sort({ createdAt: -1 });
+
+    return res.status(200).json(
+        new ApiResponse(200, assignments || [], "Assignment history fetched")
+    );
+});
