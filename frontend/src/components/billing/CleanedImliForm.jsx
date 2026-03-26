@@ -1,8 +1,18 @@
 "use client"
 
+import { useState } from 'react'
 import { MdArrowForward, MdArrowBack, MdAdd, MdDelete, MdPerson } from 'react-icons/md'
 
-const EMPTY_ROW = { product: "", quantity: "", unit: "", weight: "", amount: "" }
+const EMPTY_ROW = { product: "", quantity: "", unit: "", rate: "", weight: "", amount: "" }
+
+const UNIT_OPTIONS = [
+    { value: "Ht", label: "Ht" },
+    { value: "Ns", label: "Ns" },
+    { value: "St", label: "St" },
+    { value: "Htc", label: "Htc" },
+    { value: "HT", label: "HT" },
+    { value: "1kg Packet", label: "1kg Packet" },
+]
 
 const selectStyle = {
     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
@@ -14,6 +24,9 @@ const selectStyle = {
 export default function CleanedImliForm({ imliData, setImliData, onNext, onBack }) {
     const { senderName = "", rows = [{ ...EMPTY_ROW }] } = imliData
 
+    // Track which rows are using manual/custom unit input
+    const [manualUnitRows, setManualUnitRows] = useState({})
+
     const updateSenderName = (value) => {
         setImliData({ ...imliData, senderName: value, rows })
     }
@@ -23,16 +36,36 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
             if (i !== index) return row
             const newRow = { ...row, [field]: value }
 
-            // Auto-set unit when product changes
-            if (field === "product") {
-                if (value === "HT") newRow.unit = "bag"
-                else if (value === "1kg Packet") newRow.unit = "box"
-                else newRow.unit = ""
+            // Auto-calculate amount = quantity × rate
+            if (field === "quantity" || field === "rate") {
+                const qty = parseFloat(field === "quantity" ? value : row.quantity) || 0
+                const rate = parseFloat(field === "rate" ? value : row.rate) || 0
+                newRow.amount = qty * rate > 0 ? (qty * rate).toString() : ""
             }
 
             return newRow
         })
         setImliData({ ...imliData, senderName, rows: updated })
+    }
+
+    const handleUnitSelect = (index, value) => {
+        if (value === "__manual__") {
+            // Switch to manual input mode
+            setManualUnitRows((prev) => ({ ...prev, [index]: true }))
+            updateRow(index, "product", "")
+        } else {
+            setManualUnitRows((prev) => ({ ...prev, [index]: false }))
+            updateRow(index, "product", value)
+        }
+    }
+
+    const handleManualUnitChange = (index, value) => {
+        updateRow(index, "product", value)
+    }
+
+    const switchToDropdown = (index) => {
+        setManualUnitRows((prev) => ({ ...prev, [index]: false }))
+        updateRow(index, "product", "")
     }
 
     const addRow = () => {
@@ -42,10 +75,16 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
     const removeRow = (index) => {
         if (rows.length <= 1) return
         setImliData({ ...imliData, senderName, rows: rows.filter((_, i) => i !== index) })
+        // Clean up manual unit tracking
+        setManualUnitRows((prev) => {
+            const newState = { ...prev }
+            delete newState[index]
+            return newState
+        })
     }
 
     const isValid = senderName.trim() && rows.every(
-        (r) => r.product && r.quantity && r.weight && r.amount
+        (r) => r.product && r.quantity && r.rate && r.amount
     )
 
     // Calculate totals
@@ -81,9 +120,10 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
             {/* ─── Desktop Table (hidden on mobile) ─── */}
             <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-[2fr_1.2fr_1fr_1.2fr_auto] bg-orange-50 border-b border-orange-200">
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Product</div>
+                <div className="grid grid-cols-[1.8fr_1fr_1fr_1fr_1.2fr_auto] bg-orange-50 border-b border-orange-200">
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Unit</div>
                     <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Quantity</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Rate (₹)</div>
                     <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Weight (kg)</div>
                     <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Amount (₹)</div>
                     <div className="px-2 py-3 w-10"></div>
@@ -93,41 +133,70 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 {rows.map((row, index) => (
                     <div
                         key={index}
-                        className={`grid grid-cols-[2fr_1.2fr_1fr_1.2fr_auto] items-center border-b border-gray-100 last:border-0 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                        className={`grid grid-cols-[1.8fr_1fr_1fr_1fr_1.2fr_auto] items-center border-b border-gray-100 last:border-0 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                             }`}
                     >
-                        {/* Product Dropdown */}
+                        {/* Unit - Dropdown or Manual Input */}
                         <div className="px-3 py-2">
-                            <select
-                                value={row.product}
-                                onChange={(e) => updateRow(index, "product", e.target.value)}
-                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 appearance-none cursor-pointer"
-                                style={selectStyle}
-                            >
-                                <option value="">Select</option>
-                                <option value="HT">HT</option>
-                                <option value="1kg Packet">1kg Packet</option>
-                            </select>
+                            {manualUnitRows[index] ? (
+                                <div className="flex items-center gap-1">
+                                    <input
+                                        type="text"
+                                        value={row.product}
+                                        onChange={(e) => handleManualUnitChange(index, e.target.value)}
+                                        placeholder="Type unit..."
+                                        className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => switchToDropdown(index)}
+                                        className="text-xs text-gray-400 hover:text-orange-600 px-1.5 py-1 rounded transition-colors whitespace-nowrap"
+                                        title="Switch to dropdown"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : (
+                                <select
+                                    value={row.product}
+                                    onChange={(e) => handleUnitSelect(index, e.target.value)}
+                                    className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 appearance-none cursor-pointer"
+                                    style={selectStyle}
+                                >
+                                    <option value="">Select</option>
+                                    {UNIT_OPTIONS.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                    <option value="__manual__">✏️ Other (type manually)</option>
+                                </select>
+                            )}
                         </div>
 
-                        {/* Quantity + auto unit */}
+                        {/* Quantity */}
                         <div className="px-3 py-2">
-                            <div className="flex items-center gap-1.5">
-                                <input
-                                    type="number"
-                                    value={row.quantity}
-                                    onChange={(e) => updateRow(index, "quantity", e.target.value)}
-                                    onWheel={(e) => e.target.blur()}
-                                    placeholder="0"
-                                    min="0"
-                                    className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-                                />
-                                {row.unit && (
-                                    <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-md whitespace-nowrap border border-orange-200">
-                                        {row.unit === "bag" ? "bags" : "boxes"}
-                                    </span>
-                                )}
-                            </div>
+                            <input
+                                type="number"
+                                value={row.quantity}
+                                onChange={(e) => updateRow(index, "quantity", e.target.value)}
+                                onWheel={(e) => e.target.blur()}
+                                placeholder="0"
+                                min="0"
+                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                            />
+                        </div>
+
+                        {/* Rate */}
+                        <div className="px-3 py-2">
+                            <input
+                                type="number"
+                                value={row.rate}
+                                onChange={(e) => updateRow(index, "rate", e.target.value)}
+                                onWheel={(e) => e.target.blur()}
+                                placeholder="0"
+                                min="0"
+                                step="0.01"
+                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                            />
                         </div>
 
                         {/* Weight */}
@@ -144,18 +213,11 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                             />
                         </div>
 
-                        {/* Amount */}
+                        {/* Amount (auto-calculated) */}
                         <div className="px-3 py-2">
-                            <input
-                                type="number"
-                                value={row.amount}
-                                onChange={(e) => updateRow(index, "amount", e.target.value)}
-                                onWheel={(e) => e.target.blur()}
-                                placeholder="0"
-                                min="0"
-                                step="0.01"
-                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-                            />
+                            <div className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700">
+                                {row.amount ? `₹ ${parseFloat(row.amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "₹ 0.00"}
+                            </div>
                         </div>
 
                         {/* Delete button */}
@@ -177,8 +239,9 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 ))}
 
                 {/* Totals Row */}
-                <div className="grid grid-cols-[2fr_1.2fr_1fr_1.2fr_auto] items-center bg-orange-50/80 border-t-2 border-orange-200">
+                <div className="grid grid-cols-[1.8fr_1fr_1fr_1fr_1.2fr_auto] items-center bg-orange-50/80 border-t-2 border-orange-200">
                     <div className="px-4 py-3 text-sm font-bold text-gray-700 uppercase">Total</div>
+                    <div className="px-4 py-3 text-sm font-bold text-gray-500">—</div>
                     <div className="px-4 py-3 text-sm font-bold text-gray-500">—</div>
                     <div className="px-4 py-3 text-sm font-bold text-orange-700">
                         {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg
@@ -208,36 +271,73 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                             )}
                         </div>
 
-                        {/* Product */}
+                        {/* Unit */}
                         <div>
-                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Product</label>
-                            <select
-                                value={row.product}
-                                onChange={(e) => updateRow(index, "product", e.target.value)}
-                                className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 appearance-none cursor-pointer"
-                                style={{ ...selectStyle, fontSize: '16px' }}
-                            >
-                                <option value="">Select Product</option>
-                                <option value="HT">HT</option>
-                                <option value="1kg Packet">1kg Packet</option>
-                            </select>
+                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Unit</label>
+                            {manualUnitRows[index] ? (
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={row.product}
+                                        onChange={(e) => handleManualUnitChange(index, e.target.value)}
+                                        placeholder="Type unit..."
+                                        className="flex-1 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                        style={{ fontSize: '16px' }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => switchToDropdown(index)}
+                                        className="text-xs text-gray-400 hover:text-orange-600 px-2 py-1 rounded transition-colors"
+                                        title="Switch to dropdown"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : (
+                                <select
+                                    value={row.product}
+                                    onChange={(e) => handleUnitSelect(index, e.target.value)}
+                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 appearance-none cursor-pointer"
+                                    style={{ ...selectStyle, fontSize: '16px' }}
+                                >
+                                    <option value="">Select Unit</option>
+                                    {UNIT_OPTIONS.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                    <option value="__manual__">✏️ Other (type manually)</option>
+                                </select>
+                            )}
                         </div>
 
-                        {/* Quantity */}
-                        <div>
-                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">
-                                Quantity {row.unit ? `(${row.unit === "bag" ? "bags" : "boxes"})` : ""}
-                            </label>
-                            <input
-                                type="number"
-                                value={row.quantity}
-                                onChange={(e) => updateRow(index, "quantity", e.target.value)}
-                                onWheel={(e) => e.target.blur()}
-                                placeholder="0"
-                                min="0"
-                                className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-                                style={{ fontSize: '16px' }}
-                            />
+                        {/* Quantity + Rate row */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Quantity</label>
+                                <input
+                                    type="number"
+                                    value={row.quantity}
+                                    onChange={(e) => updateRow(index, "quantity", e.target.value)}
+                                    onWheel={(e) => e.target.blur()}
+                                    placeholder="0"
+                                    min="0"
+                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                    style={{ fontSize: '16px' }}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Rate (₹)</label>
+                                <input
+                                    type="number"
+                                    value={row.rate}
+                                    onChange={(e) => updateRow(index, "rate", e.target.value)}
+                                    onWheel={(e) => e.target.blur()}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.01"
+                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                    style={{ fontSize: '16px' }}
+                                />
+                            </div>
                         </div>
 
                         {/* Weight + Amount row */}
@@ -258,17 +358,9 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                             </div>
                             <div>
                                 <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Amount (₹)</label>
-                                <input
-                                    type="number"
-                                    value={row.amount}
-                                    onChange={(e) => updateRow(index, "amount", e.target.value)}
-                                    onWheel={(e) => e.target.blur()}
-                                    placeholder="0"
-                                    min="0"
-                                    step="0.01"
-                                    className="w-full px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-                                    style={{ fontSize: '16px' }}
-                                />
+                                <div className="w-full px-3 py-2.5 bg-orange-50/60 rounded-lg text-sm font-semibold text-gray-700 border border-orange-100" style={{ fontSize: '16px', minHeight: '42px', display: 'flex', alignItems: 'center' }}>
+                                    {row.amount ? `₹ ${parseFloat(row.amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "₹ 0.00"}
+                                </div>
                             </div>
                         </div>
                     </div>

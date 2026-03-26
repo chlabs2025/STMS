@@ -27,7 +27,7 @@ const IMLI_STEPS = [
   { id: 3, label: "Preview" },
 ]
 
-const EMPTY_ROW = { product: "", quantity: "", unit: "", weight: "", amount: "" }
+const EMPTY_ROW = { product: "", quantity: "", unit: "", rate: "", weight: "", amount: "" }
 
 function Billing() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -205,6 +205,7 @@ function Billing() {
         product: row.product,
         quantity: parseFloat(row.quantity) || 0,
         unit: row.unit,
+        rate: parseFloat(row.rate) || 0,
         weight: parseFloat(row.weight) || 0,
         amount: parseFloat(row.amount) || 0,
       })),

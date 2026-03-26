@@ -41,8 +41,9 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                         <thead>
                             <tr className="bg-orange-50/60 border-b border-orange-200">
                                 <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">#</th>
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Product</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Unit</th>
                                 <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Qty</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Rate</th>
                                 <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Weight</th>
                                 <th className="px-3 md:px-5 py-3 text-right font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Amount</th>
                             </tr>
@@ -53,7 +54,10 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                                     <td className="px-3 md:px-5 py-3 font-semibold text-gray-400 text-xs md:text-sm">{index + 1}</td>
                                     <td className="px-3 md:px-5 py-3 font-semibold text-gray-900 text-xs md:text-sm">{row.product || "—"}</td>
                                     <td className="px-3 md:px-5 py-3 font-medium text-gray-700 text-xs md:text-sm">
-                                        {row.quantity || "0"} {row.unit === "bag" ? "bags" : row.unit === "box" ? "boxes" : ""}
+                                        {row.quantity || "0"}
+                                    </td>
+                                    <td className="px-3 md:px-5 py-3 font-medium text-gray-700 text-xs md:text-sm">
+                                        ₹ {parseFloat(row.rate || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-3 md:px-5 py-3 font-medium text-gray-700 text-xs md:text-sm">
                                         {parseFloat(row.weight || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
@@ -66,7 +70,7 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                         </tbody>
                         <tfoot>
                             <tr className="bg-orange-50/80 border-t-2 border-orange-200">
-                                <td className="px-3 md:px-5 py-3 font-bold text-gray-700 uppercase text-xs md:text-sm" colSpan={3}>Total</td>
+                                <td className="px-3 md:px-5 py-3 font-bold text-gray-700 uppercase text-xs md:text-sm" colSpan={4}>Total</td>
                                 <td className="px-3 md:px-5 py-3 font-bold text-orange-700 text-xs md:text-sm">
                                     {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg
                                 </td>
