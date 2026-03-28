@@ -3,8 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors"
 import cookieParser from "cookie-parser"
 
-dotenv.config();
 const app = express()
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀");
+});
+
 app.use(cors({
     origin: [
         "http://localhost:5173",
@@ -14,9 +17,6 @@ app.use(cors({
 }));
 
 
-app.get("/", (req, res) => {
-    res.send("Backend is running 🚀");
-});
 
 //Configurations set
 // ─── Allowed Origins ─────────────────────────────────────────────────────────
