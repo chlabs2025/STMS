@@ -5,6 +5,14 @@ import cookieParser from "cookie-parser"
 
 dotenv.config();
 const app = express()
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://superimlitraders.vercel.app"
+    ],
+    credentials: true,
+}));
+
 
 app.get("/", (req, res) => {
     res.send("Backend is running 🚀");
@@ -12,19 +20,7 @@ app.get("/", (req, res) => {
 
 //Configurations set
 // ─── Allowed Origins ─────────────────────────────────────────────────────────
-const allowedOrigins = [
-    "http://localhost:5173",                        // local browser
-    "http://10.101.36.1:5173",
-    "http://10.76.145.1:5173",
-    "http://192.168.1.15:5173",                    // LAN / mobile access
-    "https://superimlitraders.vercel.app",          // Vercel production
-    process.env.FRONTEND_URL,                       // extra Vercel URL from Render env vars
-].filter(Boolean)
 
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-}));
 
 app.use(express.json({ limit: "16kb" }))  //we accept json data
 // app.use(express.urlencoded())       data is from url's
