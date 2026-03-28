@@ -11,13 +11,14 @@ app.get("/", (req, res) => {
 });
 
 //Configurations set
-// ─── Allowed Origins ──────────────────────────────────────────────────────────
+// ─── Allowed Origins ─────────────────────────────────────────────────────────
 const allowedOrigins = [
-    "http://localhost:5173",          // local browser
+    "http://localhost:5173",                        // local browser
     "http://10.101.36.1:5173",
     "http://10.76.145.1:5173",
-    "http://192.168.1.15:5173",      // LAN / mobile access
-    process.env.FRONTEND_URL,         // Vercel production URL (set in Render env vars)
+    "http://192.168.1.15:5173",                    // LAN / mobile access
+    "https://superimlitraders.vercel.app",          // Vercel production
+    process.env.FRONTEND_URL,                       // extra Vercel URL from Render env vars
 ].filter(Boolean)
 
 app.use(cors({
