@@ -22,16 +22,9 @@ const allowedOrigins = [
 ].filter(Boolean)
 
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, Postman)
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true)
-        } else {
-            callback(new Error(`CORS: Origin not allowed → ${origin}`))
-        }
-    },
+    origin: allowedOrigins,
     credentials: true,
-}))
+}));
 
 app.use(express.json({ limit: "16kb" }))  //we accept json data
 // app.use(express.urlencoded())       data is from url's
