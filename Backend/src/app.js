@@ -6,6 +6,10 @@ import cookieParser from "cookie-parser"
 dotenv.config();
 const app = express()
 
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀");
+});
+
 //Configurations set
 // ─── Allowed Origins ──────────────────────────────────────────────────────────
 const allowedOrigins = [
