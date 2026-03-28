@@ -7,13 +7,14 @@ dotenv.config();
 const app = express()
 
 //Configurations set
-// ─── Allowed Origins (add your network IP origin here) ───────────────────────
+// ─── Allowed Origins ──────────────────────────────────────────────────────────
 const allowedOrigins = [
     "http://localhost:5173",          // local browser
     "http://10.101.36.1:5173",
     "http://10.76.145.1:5173",
-    "http://192.168.1.15:5173"      // LAN / mobile access
-]
+    "http://192.168.1.15:5173",      // LAN / mobile access
+    process.env.FRONTEND_URL,         // Vercel production URL (set in Render env vars)
+].filter(Boolean)
 
 app.use(cors({
     origin: (origin, callback) => {
