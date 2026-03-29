@@ -42,7 +42,7 @@ const Navbar = () => {
 
                 {/* Centered Navigation */}
                 <div className="hidden md:flex items-center gap-18 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    {['About', 'Process', 'Gallery', 'Stats'].map((item) => (
+                    {['About', 'Process', 'Gallery'].map((item) => (
                         <button
                             key={item}
                             onClick={() => scrollToSection(item.toLowerCase())}
@@ -83,7 +83,7 @@ const Navbar = () => {
             {/* Mobile Menu */}
             {mobileMenuOpen && (
                 <div className="absolute top-full left-0 w-full bg-white border-t border-black/10 shadow-lg p-6 md:hidden flex flex-col gap-4">
-                    {['About', 'Process', 'Gallery', 'Stats'].map((item) => (
+                    {['About', 'Process', 'Gallery'].map((item) => (
                         <button
                             key={item}
                             onClick={() => scrollToSection(item.toLowerCase())}

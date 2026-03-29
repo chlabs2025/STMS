@@ -31,21 +31,20 @@ const HeroSection = () => {
                     </span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-12 font-medium leading-relaxed animate-fadeIn animation-delay-200">
+                <p className="text-lg md:text-xl text-gray-600 max-w-xl mx-auto mb-12 font-medium leading-relaxed animate-fadeIn animation-delay-200 text-justify [text-align-last:center]">
                     We bridge the gap between local tamarind farmers and global markets, ensuring fair trade and premium quality processing every step of the way.
                 </p>
 
-                <div className="flex flex-col md:flex-row items-center justify-center gap-4 animate-fadeIn animation-delay-500">
+                <div className="flex flex-row items-center justify-center gap-3 md:gap-4 animate-fadeIn animation-delay-500">
                     <button
                         onClick={scrollToAbout}
-                        className="px-8 py-4 rounded-full bg-[#ff5a1f] text-white font-bold hover:bg-[#e64f1b] transition-all flex items-center gap-2 group shadow-lg shadow-[#ff5a1f]/20"
+                        className="px-4 md:px-8 py-3.5 md:py-4 rounded-full bg-[#ff5a1f] text-white text-sm md:text-base font-bold hover:bg-[#e64f1b] transition-all flex items-center gap-2 group shadow-lg shadow-[#ff5a1f]/20"
                     >
                         Learn More
-
                     </button>
                     <button
                         onClick={scrollToHowItWorksSection}
-                        className="px-8 py-4 rounded-full border-2 border-[#ff5a1f]/30 text-[#ff5a1f] font-semibold hover:bg-[#ff5a1f]/10 transition-all backdrop-blur-sm">
+                        className="px-4 md:px-8 py-3.5 md:py-4 rounded-full border-2 border-[#ff5a1f]/30 text-[#ff5a1f] text-sm md:text-base font-semibold hover:bg-[#ff5a1f]/10 transition-all backdrop-blur-sm">
                         Our Process
                     </button>
                 </div>

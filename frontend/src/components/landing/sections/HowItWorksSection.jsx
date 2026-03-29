@@ -80,9 +80,6 @@ const HowItWorksSection = () => {
                                         <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#ff5a1f] transition-colors">
                                             {step.title}
                                         </h3>
-                                        <p className="text-sm text-gray-600 leading-relaxed px-2">
-                                            {step.description}
-                                        </p>
                                     </div>
                                 </ScrollReveal>
                             )
