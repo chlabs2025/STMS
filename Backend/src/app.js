@@ -6,33 +6,43 @@ import cookieParser from "cookie-parser"
 dotenv.config();
 const app = express()
 
-//Configurations set
-// ─── Allowed Origins (add your network IP origin here) ───────────────────────
-const allowedOrigins = [
-    "http://localhost:5173",          // local browser
-    "http://10.101.36.1:5173",
-    "http://10.76.145.1:5173",
-    "http://192.168.1.15:5173"      // LAN / mobile access
-]
-
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, Postman)
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true)
-        } else {
-            callback(new Error(`CORS: Origin not allowed → ${origin}`))
-        }
-    },
+// ─── CORS — must be FIRST ─────────────────────────────────────────────────────
+const corsOptions = {
+    origin: [
+        "http://localhost:5173",
+        "http://10.101.36.1:5173",
+        "http://10.76.145.1:5173",
+        "http://192.168.1.15:5173",
+        "https://superimlitraders.vercel.app",
+        process.env.FRONTEND_URL,
+    ].filter(Boolean),
     credentials: true,
-}))
+}
 
-app.use(express.json({ limit: "16kb" }))  //we accept json data
-// app.use(express.urlencoded())       data is from url's
+app.use(cors(corsOptions))
+app.options("/*splat", cors(corsOptions))   // handle preflight for ALL routes
+
+// ─── Body Parsers ─────────────────────────────────────────────────────────────
+app.use(express.json({ limit: "16kb" }))
 app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+// ─── Health Check ─────────────────────────────────────────────────────────────
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀");
+});
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        message: "Server is healthy 🚀",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+    });
+});
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
 import paymentRoutes from "./route/payment.admin.js"
 app.use("/api", paymentRoutes)
 
@@ -63,8 +73,7 @@ app.use("/api", settingsRoutes);
 import excelRoutes from "./route/excel.route.js";
 app.use("/api", excelRoutes);
 
-
-// Global error handler — converts ApiError to JSON response
+// ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || "Something went wrong";
