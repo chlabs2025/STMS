@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { generateQRCode } from "../service/qrGenerator.service.js";
 
 import { localData } from "../models/local.model.js";
+import { logActivity } from "./activity.controller.js";
 
 export const addLocal = asyncHandler(async (req, res) => {
   const { LocalID, LocalName, LocalAddress, LocalPhone, upiId } = req.body;
@@ -30,6 +31,13 @@ export const addLocal = asyncHandler(async (req, res) => {
     LocalPhone,
     upiId: upiId || "",
     upiQrCode,
+  });
+
+  // Log activity
+  await logActivity({
+      type: "REGISTRATION",
+      description: `Registered new local: ${LocalName}`,
+      localName: LocalName
   });
 
   return res.status(201).json(

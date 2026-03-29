@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 
 import { ImliData } from "../models/imli.model.js";
+import { logActivity } from "./activity.controller.js";
 
 export const getRawImli = asyncHandler(async (req, res) => {
   const imli = await ImliData.findOne({});
@@ -31,6 +32,14 @@ export const addRawImli = asyncHandler(async (req, res) => {
       upsert: true, // create if not exists (first time)
     }
   );
+
+  // Log activity
+  await logActivity({
+    type: "RESTOCK",
+    description: `Added ${rawImliQuantity} KG of raw Imli to stock`,
+    quantity: rawImliQuantity,
+    actor: "Admin"
+  });
 
   return res
     .status(200)

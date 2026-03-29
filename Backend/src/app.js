@@ -70,8 +70,8 @@ app.use("/api", invoiceRoutes)
 import settingsRoutes from "./route/setting.route.js";
 app.use("/api", settingsRoutes);
 
-import excelRoutes from "./route/excel.route.js";
-app.use("/api", excelRoutes);
+import dashboardRoutes from "./route/dashboard.route.js";
+app.use("/api", dashboardRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

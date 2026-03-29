@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { logActivity } from "./activity.controller.js";
 import { ApiError } from "../utils/ApiError.js";
 
 import { localData } from "../models/local.model.js";
@@ -38,6 +39,13 @@ export const returnImli = asyncHandler(async (req, res) => {
     localID: local.LocalID,
     localName: local.LocalName,
     returnedQuantity,
+  });
+
+  await logActivity({
+    type: "RETURN",
+    description: `Received ${returnedQuantity} KG from ${local.LocalName}`,
+    quantity: returnedQuantity,
+    localName: local.LocalName,
   });
 
   return res.json(

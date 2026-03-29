@@ -17,6 +17,32 @@
 /* 👉 Globally remove all box shadows across the frontend UI */
 * {
     box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent; /* Remove the blue overlay on touch */
+}
+
+html, body {
+    background-color: #f66713; /* For PWA status bar consistency */
+    overscroll-behavior-y: none; /* Prevent rubber-banding on mobile */
+    min-height: 100%;
+}
+
+body {
+    background-color: #F8FAFC; /* Main app background */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* Fix iOS Zoom on focus */
+input, textarea, select {
+    font-size: 16px !important; 
+}
+
+/* Disable selection on UI elements to feel like a native app */
+button, nav, .sidebar, .mobile-nav, img {
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* Only Urdu display strings get Nastaliq — English text is never touched */
@@ -110,9 +136,17 @@ input[type=number] {
 /* Mobile-only scrollbar: thinner */
 @media (max-width: 767px) {
     ::-webkit-scrollbar {
-        width: 4px;
+        width: 3px;
+        height: 3px;
     }
     ::-webkit-scrollbar-thumb {
         border: none;
+        background: rgba(255, 90, 31, 0.3);
     }
+}
+
+/* Utility to hide horizontal overflow which causes "glitchy" swiping */
+.no-x-scroll {
+    overflow-x: hidden;
+    width: 100%;
 }

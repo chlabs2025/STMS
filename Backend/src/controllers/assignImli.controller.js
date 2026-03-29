@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ImliData } from "../models/imli.model.js";
 import { ImliAssign } from "../models/imliAssign.model.js";
+import { logActivity } from "./activity.controller.js";
 import { localData } from "../models/local.model.js";
 
 export const assignImli = asyncHandler(async (req, res) => {

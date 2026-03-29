@@ -13,6 +13,7 @@ import LocalsProfile from "./LocalsProfile"
 import Payment from "./Payment"
 import Billing from "./Billing"
 import Settings from "./Settings"
+import AuditLogs from "./AuditLogs"
 import MobileNav from "../../components/common/MobileNav"
 
 const AdminLayout = () => {
@@ -22,12 +23,12 @@ const AdminLayout = () => {
   const [navigationProps, setNavigationProps] = useState({})
   const [isSidebarCollapsed] = useState(false) // Always expanded
 
-  const activePage = ["dashboard", "addLocals", "addRawImli", "assignImli", "imliReturned", "localsProfile", "payment", "billing", "settings"].includes(page) ? page : "dashboard"
+  const activePage = ["dashboard", "addLocals", "addRawImli", "assignImli", "imliReturned", "localsProfile", "payment", "billing", "settings", "auditLogs"].includes(page) ? page : "dashboard"
 
   const scrollRef = useRef(null)
 
   useEffect(() => {
-    if (activePage !== "assignImli") {
+    if (activePage !== "assignImli" && activePage !== "settings") {
       setNavigationProps({})
     }
   }, [activePage])
@@ -44,7 +45,8 @@ const AdminLayout = () => {
     navigate("/admin/assignImli")
   }, [navigate])
 
-  const handlePageChange = useCallback((pageId) => {
+  const handlePageChange = useCallback((pageId, props = {}) => {
+    setNavigationProps(props)
     navigate(`/admin/${pageId}`)
   }, [navigate])
 
@@ -57,7 +59,8 @@ const AdminLayout = () => {
     localsProfile: { component: LocalsProfile, title: "Locals Profile", props: { navigateToAssignImli } },
     payment: { component: Payment, title: "Payment", props: {} },
     billing: { component: Billing, title: "Billing", props: {} },
-    settings: { component: Settings, title: "Settings", props: {} },
+    settings: { component: Settings, title: "Settings", props: { ...navigationProps, onPageChange: handlePageChange } },
+    auditLogs: { component: AuditLogs, title: "System Audit Log", props: { onPageChange: handlePageChange } },
   }
 
   const currentPage = pageConfig[activePage]
@@ -73,8 +76,9 @@ const AdminLayout = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <Header
           title={currentPage.title}
+          onPageChange={handlePageChange}
         />
-        <div ref={scrollRef} className="flex-1 overflow-y-auto pb-20 md:pb-0">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto pb-20 md:pb-0 no-x-scroll relative">
           <CurrentComponent {...currentPage.props} />
         </div>
       </div>
@@ -86,4 +90,3 @@ const AdminLayout = () => {
 }
 
 export default AdminLayout
-
