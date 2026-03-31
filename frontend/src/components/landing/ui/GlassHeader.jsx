@@ -28,7 +28,7 @@ const GlassHeader = ({ onLogin }) => {
                             <div className="flex items-center gap-2">
                                 <img
                                     src="/stms-logo.svg"
-                                    alt="Super Imli Traders"
+                                    alt="SIT - Super Imli Traders"
                                     className={`h-8 w-auto transition-all duration-300 ${scrolled ? 'logo-scrolled' : ''}`}
                                 />
                             </div>

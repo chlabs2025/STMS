@@ -17,6 +17,18 @@ const LandingPage = () => {
   }
 
   useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn")
+    const role = localStorage.getItem("role")
+    if (isLoggedIn === "true" && role) {
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true })
+      } else if (role === "operator") {
+        navigate("/operator/dashboard", { replace: true })
+      }
+    }
+  }, [navigate])
+
+  useEffect(() => {
     const elements = document.querySelectorAll('.section-reveal')
     if (!elements.length) return
 

@@ -19,7 +19,7 @@ import MobileNav from "../../components/common/MobileNav"
 const AdminLayout = () => {
   const { page } = useParams()
   const navigate = useNavigate()
-  
+
   const [navigationProps, setNavigationProps] = useState({})
   const [isSidebarCollapsed] = useState(false) // Always expanded
 

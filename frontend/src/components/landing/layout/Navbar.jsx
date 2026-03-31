@@ -34,7 +34,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => scrollToSection('hero')}>
                     <img
                         src="/stms-logo.svg"
-                        alt="Super Imli Traders"
+                        alt="SIT - Super Imli Traders"
                         className={`h-10 w-auto transition-all duration-300 ${scrolled ? 'brightness-0' : 'brightness-0'}`}
                     />
 

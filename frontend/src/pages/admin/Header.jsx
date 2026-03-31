@@ -23,13 +23,15 @@ const Header = ({ title, onPageChange }) => {
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+    localStorage.removeItem("isLoggedIn")
+    localStorage.removeItem("role")
     toast.success("Logged out successfully")
     navigate("/")
   }
 
   return (
     <header className="bg-white px-4 md:px-8 py-3.5 md:py-3 flex items-center justify-between h-[60px] md:h-[64px] border-b border-gray-200 transition-colors duration-300 relative">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-0">
         {/* Mobile: show back button or logo + title */}
         <div className="flex md:hidden items-center gap-2.5">
           {title !== "Dashboard" ? (
@@ -40,15 +42,15 @@ const Header = ({ title, onPageChange }) => {
               <MdArrowBack className="text-2xl" />
             </button>
           ) : (
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+            <div className="w-18 h-18 rounded-lg flex items-center justify-center shrink-0">
               <img
                 src="/stms-logo.svg"
-                alt="STMS"
-                className="h-5 w-auto"
+                alt="SIT"
+                className="h-18 w-auto"
               />
             </div>
           )}
-          <h2 className={`text-sm font-bold tracking-wide truncate text-gray-900 ${title !== "Dashboard" ? "ml-[-4px]" : ""}`}>{title}</h2>
+          <h1 className={`text-sm font-bold tracking-wide truncate text-gray-900 ${title !== "Dashboard" ? "ml-[-12px]" : "ml-[-6px]"}`}>{title}</h1>
         </div>
         {/* Desktop: just the title (sidebar has logo) */}
         <h2 className="hidden md:block text-sm font-bold tracking-wide truncate text-orange-600">{title}</h2>
@@ -114,7 +116,7 @@ const Header = ({ title, onPageChange }) => {
 
       {/* Premium mobile accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-orange-500/0 via-orange-500/40 to-orange-500/0 md:hidden" />
-      
+
       {/* Safe Area Top Spacer for iOS PWA - Matching User Request: "Orange" */}
       <div className="md:hidden absolute top-[-env(safe-area-inset-top)] left-0 right-0 h-[env(safe-area-inset-top)] bg-orange-600" />
     </header>

@@ -44,10 +44,10 @@ export default function PWAUpdatePrompt() {
         fontFamily: 'inherit',
       }}
     >
-      <img src="/icons/icon-72x72.png" alt="STMS" style={{ width: 36, height: 36, borderRadius: 8 }} />
+      <img src="/stms logo circle.svg" alt="SIT" style={{ width: 36, height: 36, borderRadius: 8 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 600, marginBottom: 2 }}>Update Available</div>
-        <div style={{ opacity: 0.9, fontSize: 12 }}>New version of STMS is ready</div>
+        <div style={{ opacity: 0.9, fontSize: 12 }}>New version of SIT is ready</div>
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button

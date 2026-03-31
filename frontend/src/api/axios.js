@@ -5,4 +5,16 @@ const api = axios.create({
   withCredentials: true, // cookies ke liye IMPORTANT
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("isLoggedIn")
+      localStorage.removeItem("role")
+      window.location.href = "/login"
+    }
+    return Promise.reject(error)
+  }
+)
+
 export default api

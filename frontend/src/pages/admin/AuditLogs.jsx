@@ -107,14 +107,14 @@ const AuditLogs = ({ onPageChange }) => {
 
                 {/* Table Layout */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <div className="w-full">
+                        <table className="w-full text-left border-collapse table-fixed md:table-auto">
                             <thead>
                                 <tr className="bg-gray-50 border-b border-gray-100">
-                                    <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest w-1/4">Timestamp</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Activity</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest w-1/4">Subject / Entity</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-right">Quantity</th>
+                                    <th className="px-3 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest w-[85px] md:w-1/4">Timestamp</th>
+                                    <th className="px-2 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest">Activity</th>
+                                    <th className="px-2 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest w-[80px] md:w-1/4">Subject</th>
+                                    <th className="px-3 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest text-right w-[60px] md:w-auto">Qty</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -139,32 +139,32 @@ const AuditLogs = ({ onPageChange }) => {
                                         const Icon = config.icon;
                                         return (
                                             <tr key={log._id} className="hover:bg-gray-50/50 transition-colors group">
-                                                <td className="px-6 py-5 whitespace-nowrap">
+                                                <td className="px-3 md:px-6 py-4 md:py-5">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-gray-800">{moment(log.createdAt).format('DD MMM YYYY')}</span>
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{moment(log.createdAt).format('hh:mm A')}</span>
+                                                        <span className="text-[11px] md:text-sm font-bold text-gray-800 leading-tight">{moment(log.createdAt).format('DD MMM')}</span>
+                                                        <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{moment(log.createdAt).format('hh:mm A')}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-5">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`p-2 rounded-lg ${config.bg} ${config.text} border border-transparent group-hover:border-current/10`}>
-                                                            <Icon className="text-lg" />
+                                                <td className="px-2 md:px-6 py-4 md:py-5">
+                                                    <div className="flex items-center gap-1.5 md:gap-3">
+                                                        <div className={`p-1.5 md:p-2 rounded-lg ${config.bg} ${config.text} border border-transparent shrink-0`}>
+                                                            <Icon className="text-sm md:text-lg" />
                                                         </div>
-                                                        <span className={`text-[11px] font-bold uppercase tracking-wide ${config.text}`}>
-                                                            {config.label}
+                                                        <span className={`text-[9px] md:text-[11px] font-bold uppercase tracking-tight md:tracking-wide ${config.text} leading-tight`}>
+                                                            {config.label.split(' ')[1] || config.label}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-5">
-                                                    <p className="text-sm font-bold text-gray-800 tracking-tight text-right">
+                                                <td className="px-2 md:px-6 py-4 md:py-5">
+                                                    <p className="text-[11px] md:text-sm font-bold text-gray-800 tracking-tight truncate">
                                                         {log.localName || 'System'}
                                                     </p>
                                                 </td>
-                                                <td className="px-6 py-5 text-right">
+                                                <td className="px-3 md:px-6 py-4 md:py-5 text-right">
                                                     {log.quantity > 0 ? (
-                                                        <div className="flex items-baseline justify-end gap-1">
-                                                            <span className="text-base font-bold text-gray-900 tracking-tighter">{log.quantity}</span>
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">{log.unit}</span>
+                                                        <div className="flex items-baseline justify-end gap-0.5">
+                                                            <span className="text-[13px] md:text-base font-bold text-gray-900 tracking-tighter">{log.quantity}</span>
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase">{log.unit}</span>
                                                         </div>
                                                     ) : (
                                                         <span className="text-gray-300 font-bold">—</span>

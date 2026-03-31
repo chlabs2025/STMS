@@ -33,7 +33,7 @@ export default function Sidebar({ activePage, onPageChange }) {
         <div className="flex items-center justify-center rounded-lg">
           <img
             src="/stms-logo.svg"
-            alt="SITMS Portal"
+            alt="SIT - Super Imli Traders"
             className="h-12 w-auto"
           />
         </div>

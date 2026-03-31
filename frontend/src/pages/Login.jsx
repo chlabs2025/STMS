@@ -19,6 +19,18 @@ function Login() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn")
+    const role = localStorage.getItem("role")
+    if (isLoggedIn === "true" && role) {
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true })
+      } else if (role === "operator") {
+        navigate("/operator/dashboard", { replace: true })
+      }
+    }
+  }, [navigate])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -35,6 +47,9 @@ function Login() {
       })
 
       const role = res.data.data.user.role
+
+      localStorage.setItem("isLoggedIn", "true")
+      localStorage.setItem("role", role)
 
       if (role === "admin") {
         navigate("/admin/dashboard", { replace: true })

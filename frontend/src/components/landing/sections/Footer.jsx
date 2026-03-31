@@ -10,7 +10,7 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-1">
                         <img
                             src="/stms-logo.svg"
-                            alt="Super Imli Traders"
+                            alt="SIT - Super Imli Traders"
                             className="h-10 w-auto mb-6 brightness-0"
                         />
                         <p className="text-sm leading-relaxed mb-6">
@@ -70,7 +70,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-black/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-                    <p>&copy; 2004 Super Imli Traders. All rights reserved.</p>
+                    <p>&copy; 2004 SIT - Super Imli Traders. All rights reserved.</p>
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <a href="#" className="hover:text-white transition-colors">Privacy</a>
                         <a href="#" className="hover:text-white transition-colors">Terms</a>
