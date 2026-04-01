@@ -24,6 +24,8 @@ const Payment = () => {
     const [activeTab, setActiveTab] = useState("payment")
     const [assignmentHistory, setAssignmentHistory] = useState([])
     const [historyLoading, setHistoryLoading] = useState(false)
+    const [historyPage, setHistoryPage] = useState(0)
+    const HISTORY_PAGE_SIZE = 6
     const localRefs = useRef({})
 
     const fetchLocals = useCallback(async (silent = false) => {
@@ -78,6 +80,7 @@ const Payment = () => {
     const fetchAssignmentHistory = useCallback(async (localID) => {
         try {
             setHistoryLoading(true)
+            setHistoryPage(0)
             const response = await api.get(API.ASSIGNMENT_HISTORY, { params: { localID } })
             setAssignmentHistory(response.data?.data || [])
         } catch (error) {
@@ -373,31 +376,36 @@ const Payment = () => {
                                                             </div>
 
                                                             {/* Desktop Table */}
-                                                            <div className="hidden md:block overflow-hidden rounded-lg border border-gray-200">
+                                                            {(() => {
+                                                                const paged = assignmentHistory.slice(historyPage * HISTORY_PAGE_SIZE, (historyPage + 1) * HISTORY_PAGE_SIZE);
+                                                                const totalPages = Math.ceil(assignmentHistory.length / HISTORY_PAGE_SIZE);
+                                                                return (
+                                                            <div className="hidden md:block">
+                                                                <div className="overflow-hidden rounded-lg border border-gray-200">
                                                                 <table className="w-full text-left">
                                                                     <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold tracking-wider">
                                                                         <tr>
                                                                             <th className="px-6 py-4">Date & Time</th>
-                                                                            <th className="px-6 py-4">Assigned Quantity</th>
-                                                                            <th className="px-6 py-4">Cleaned Qty.</th>
+                                                                            <th className="px-6 py-4">Assign</th>
+                                                                            <th className="px-6 py-4">Return</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
-                                                                        {assignmentHistory.length > 0 ? (
-                                                                            assignmentHistory.map((entry, idx) => (
+                                                                        {paged.length > 0 ? (
+                                                                            paged.map((entry, idx) => (
                                                                                 <tr key={entry._id || idx} className="hover:bg-gray-50/50 transition-colors">
                                                                                     <td className="px-6 py-4 font-medium">
                                                                                         <div>{new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
                                                                                         <div className="text-xs text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</div>
                                                                                     </td>
-                                                                                    <td className="px-6 py-4">{entry.assignedQuantity}</td>
-                                                                                    <td className="px-6 py-4 text-gray-400">—</td>
+                                                                                    <td className="px-6 py-4">{entry.type === "assign" ? entry.quantity : "—"}</td>
+                                                                                    <td className="px-6 py-4">{entry.type === "return" ? entry.quantity : "—"}</td>
                                                                                 </tr>
                                                                             ))
                                                                         ) : (
                                                                             <tr className="hover:bg-gray-50/50 transition-colors">
                                                                                 <td className="px-6 py-4 font-medium text-gray-400" colSpan="3">
-                                                                                    {historyLoading ? "Loading..." : "No assignment records found"}
+                                                                                    {historyLoading ? "Loading..." : "No records found"}
                                                                                 </td>
                                                                             </tr>
                                                                         )}
@@ -408,13 +416,35 @@ const Payment = () => {
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
+                                                                </div>
+                                                                {totalPages > 1 && (
+                                                                    <div className="flex items-center justify-between mt-3">
+                                                                        <button
+                                                                            onClick={() => setHistoryPage(p => Math.max(0, p - 1))}
+                                                                            disabled={historyPage === 0}
+                                                                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                                                        >
+                                                                            <MdKeyboardArrowUp className="text-lg rotate-[-90deg]" /> Prev
+                                                                        </button>
+                                                                        <span className="text-xs text-gray-400 font-semibold">{historyPage + 1} / {totalPages}</span>
+                                                                        <button
+                                                                            onClick={() => setHistoryPage(p => Math.min(totalPages - 1, p + 1))}
+                                                                            disabled={historyPage >= totalPages - 1}
+                                                                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                                                        >
+                                                                            Next <MdKeyboardArrowDown className="text-lg rotate-[-90deg]" />
+                                                                        </button>
+                                                                    </div>
+                                                                )}
                                                             </div>
+                                                                );
+                                                            })()}
 
                                                             {/* Mobile cards */}
                                                             <div className="md:hidden space-y-2">
                                                                 {assignmentHistory.length > 0 ? (
                                                                     assignmentHistory.map((entry, idx) => (
-                                                                        <div key={entry._id || idx} className="bg-gray-50 rounded-xl p-3 border border-gray-100 flex items-center justify-between">
+                                                                        <div key={entry._id || idx} className={`rounded-xl p-3 border flex items-center justify-between ${entry.type === "return" ? "bg-green-50 border-green-100" : "bg-gray-50 border-gray-100"}`}>
                                                                             <div>
                                                                                 <p className="text-sm font-bold text-gray-900">
                                                                                     {new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
@@ -423,14 +453,15 @@ const Payment = () => {
                                                                                     {new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
                                                                                 </p>
                                                                             </div>
-                                                                            <div className="bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
-                                                                                <span className="text-base font-bold text-blue-700">{entry.assignedQuantity} KG</span>
+                                                                            <div className={`px-3 py-1.5 rounded-lg border ${entry.type === "return" ? "bg-green-100 border-green-200" : "bg-blue-50 border-blue-100"}`}>
+                                                                                <p className="text-[10px] font-bold uppercase text-gray-500 mb-0.5">{entry.type === "return" ? "Return" : "Assign"}</p>
+                                                                                <span className={`text-base font-bold ${entry.type === "return" ? "text-green-700" : "text-blue-700"}`}>{entry.quantity} KG</span>
                                                                             </div>
                                                                         </div>
                                                                     ))
                                                                 ) : (
                                                                     <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
-                                                                        <p className="text-sm text-gray-400">{historyLoading ? "Loading..." : "No assignment records"}</p>
+                                                                        <p className="text-sm text-gray-400">{historyLoading ? "Loading..." : "No records"}</p>
                                                                     </div>
                                                                 )}
                                                                 {/* Total Summary */}
@@ -438,11 +469,11 @@ const Payment = () => {
                                                                     <span className="text-sm font-bold text-gray-900">Total</span>
                                                                     <div className="flex gap-4">
                                                                         <div className="text-center">
-                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Assigned</p>
+                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Assign</p>
                                                                             <p className="text-base font-bold text-blue-700">{assignedQty} KG</p>
                                                                         </div>
                                                                         <div className="text-center">
-                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Cleaned</p>
+                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Return</p>
                                                                             <p className="text-base font-bold text-green-700">{cleanedQty} KG</p>
                                                                         </div>
                                                                     </div>
