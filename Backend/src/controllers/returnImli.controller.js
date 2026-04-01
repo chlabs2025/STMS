@@ -17,9 +17,7 @@ export const returnImli = asyncHandler(async (req, res) => {
     LocalID: LocalID,
   });
 
-  //   if (!activeAssign) {
-  //     throw new ApiError(400, "No active imli assignment found for this local");
-  //   }
+  if (!local) throw new ApiError(404, "Local not found");
 
   if (returnedQuantity > local.totalAssignedQuantity) {
     throw new ApiError(

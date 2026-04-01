@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-    cloud_name: 'de66dwuow',
-    api_key: '857358565682715',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'de66dwuow',
+    api_key: process.env.CLOUDINARY_API_KEY || '857358565682715',
     api_secret: process.env.CLOUDINARY_API_SECRET  
 });
 

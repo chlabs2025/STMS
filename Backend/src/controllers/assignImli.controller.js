@@ -28,6 +28,7 @@ export const assignImli = asyncHandler(async (req, res) => {
   );
 
   const local = await localData.findOne({ LocalID });
+  if (!local) throw new ApiError(404, "Local not found");
 
   const assign = await ImliAssign.create({
     localID: local.LocalID,

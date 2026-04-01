@@ -103,12 +103,12 @@ LR/RR No: <%= invoice.transport.lrNo || "" %>
 
 <!-- TAX ROW -->
 <tr>
-<td colspan="5" class="right bold">IGST</td>
+<td colspan="6" class="right bold">IGST</td>
 <td class="right">₹ <%= invoice.igstTotal.toFixed(2) %></td>
 </tr>
 
 <tr>
-<td colspan="5" class="right bold">Total</td>
+<td colspan="6" class="right bold">Total</td>
 <td class="right bold">₹ <%= invoice.grandTotal.toFixed(2) %></td>
 </tr>
 </table>

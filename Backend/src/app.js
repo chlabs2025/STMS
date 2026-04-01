@@ -28,6 +28,20 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+// ─── Request Timeout (60s) — prevents hung requests ──────────────────────────
+app.use((req, res, next) => {
+    req.setTimeout(60000, () => {
+        if (!res.headersSent) {
+            res.status(408).json({
+                statusCode: 408,
+                message: "Request timed out",
+                success: false,
+            });
+        }
+    });
+    next();
+});
+
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get("/", (req, res) => {
     res.send("Backend is running 🚀");
@@ -73,8 +87,12 @@ app.use("/api", settingsRoutes);
 import dashboardRoutes from "./route/dashboard.route.js";
 app.use("/api", dashboardRoutes);
 
+import excelRoutes from "./route/excel.route.js";
+app.use("/api", excelRoutes);
+
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
     const statusCode = err.statusCode || 500;
     const message = err.message || "Something went wrong";
 

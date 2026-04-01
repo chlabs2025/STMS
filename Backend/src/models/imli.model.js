@@ -9,6 +9,6 @@ const imliSchema = new Schema({
         type:Number,
         default: 0
     }
-},{timestamp:true})
+},{timestamps:true})
 
 export const ImliData = mongoose.model("ImliData",imliSchema)

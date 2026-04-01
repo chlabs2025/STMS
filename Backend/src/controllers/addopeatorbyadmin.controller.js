@@ -15,8 +15,11 @@ const addOperatorbyadmin = asyncHandler(async (req, res) => {
         role: "operator"
     });
 
+    const operatorResponse = newOperator.toObject();
+    delete operatorResponse.password;
+
     return res.status(201).json(
-        new ApiResponse(201, newOperator, "Operator created successfully")
+        new ApiResponse(201, operatorResponse, "Operator created successfully")
     );
 });
 
