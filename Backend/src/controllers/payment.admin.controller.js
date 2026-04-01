@@ -7,6 +7,7 @@ import { localData } from "../models/local.model.js"
 import { logs } from "../models/logs.model.js"
 import { ImliData } from "../models/imli.model.js"
 import { ImliAssign } from "../models/imliAssign.model.js"
+import { imliReturn } from "../models/imliReturn.model.js"
 
 export const Imli_price_changer = asyncHandler(async (req, res) => {
 
@@ -261,26 +262,41 @@ export const getAssignmentHistory = asyncHandler(async (req, res) => {
 
     const currentAssignedTotal = local.totalAssignedQuantity || 0;
     
-    if (currentAssignedTotal === 0) {
-        return res.status(200).json(
-            new ApiResponse(200, [], "Assignment history fetched (No active assignments)")
-        );
-    }
-
+    // Fetch assignments (only active ones up to currentAssignedTotal)
     const assignments = await ImliAssign.find({ localID: String(localID) }).sort({ createdAt: -1 });
 
     const activeAssignments = [];
     let sum = 0;
 
     for (const assignment of assignments) {
-        activeAssignments.push(assignment);
+        activeAssignments.push({
+            _id: assignment._id,
+            type: "assign",
+            quantity: assignment.assignedQuantity,
+            createdAt: assignment.createdAt,
+        });
         sum += assignment.assignedQuantity;
         if (sum >= currentAssignedTotal) {
             break;
         }
     }
 
+    // Fetch returns for this local
+    const returns = await imliReturn.find({ localID: String(localID) }).sort({ createdAt: -1 });
+
+    const returnEntries = returns.map(r => ({
+        _id: r._id,
+        type: "return",
+        quantity: r.returnedQuantity,
+        createdAt: r.createdAt,
+    }));
+
+    // Merge and sort by date descending
+    const combined = [...activeAssignments, ...returnEntries].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
     return res.status(200).json(
-        new ApiResponse(200, activeAssignments, "Active assignment history fetched")
+        new ApiResponse(200, combined, "Assignment & return history fetched")
     );
 });
