@@ -2,6 +2,7 @@ import { IoClose, IoTrash } from "react-icons/io5"
 import { MdPerson, MdPhone, MdLocationOn, MdAssignment, MdEdit, MdInventory, MdPayment, MdCheck, MdCancel } from "react-icons/md"
 import { useState, useEffect } from "react"
 import api from "../api/axios"
+import API from "../api/endpoints"
 
 const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false)
@@ -33,7 +34,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await api.post("/delete_local", {
+      await api.post(API.DELETE_LOCAL, {
         localId: local._id
       })
       onDelete(local._id)
@@ -51,7 +52,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   const handleUpdate = async () => {
     try {
       setIsUpdating(true)
-      await api.post("/update_local", {
+      await api.post(API.UPDATE_LOCAL, {
         localId: local._id,
         ...formData
       })

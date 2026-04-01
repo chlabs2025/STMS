@@ -10,6 +10,7 @@ import ReviewSubmit from "../../components/billing/ReviewSubmit"
 import CleanedImliForm from "../../components/billing/CleanedImliForm"
 import CleanedImliPreview from "../../components/billing/CleanedImliPreview"
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 
 // Steps for Tamarind Seeds (existing 5-step flow)
 const TAMARIND_STEPS = [
@@ -145,7 +146,7 @@ function Billing() {
     }
 
     try {
-      const response = await api.post("/generateInvoice", payload, {
+      const response = await api.post(API.GENERATE_INVOICE, payload, {
         responseType: "blob",
       })
 
@@ -214,7 +215,7 @@ function Billing() {
     }
 
     try {
-      const response = await api.post("/generateInvoice", { ...payload, billType: "slip", receiverName: imliData.senderName, driverName: "" }, {
+      const response = await api.post(API.GENERATE_INVOICE, { ...payload, billType: "slip", receiverName: imliData.senderName, driverName: "" }, {
         responseType: "blob",
       })
 

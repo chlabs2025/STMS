@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MdDownload, MdKeyboardArrowDown } from 'react-icons/md';
 import api from "../../api/axios";
+import API from "../../api/endpoints";
 import T from '../../i18n/T';
 
 const ExcelExport = () => {
@@ -50,14 +51,14 @@ const ExcelExport = () => {
             {isOpen && (
                 <div className="absolute top-full left-0 min-w-[200px] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
                     <button
-                        onClick={() => handleDownload("/export/locals", "Locals_Report.xlsx")}
+                        onClick={() => handleDownload(API.EXPORT_LOCALS, "Locals_Report.xlsx")}
                         className="w-full text-left px-4 py-3 hover:bg-green-50 text-gray-700 text-xs md:text-sm border-b border-gray-100 flex items-center gap-3 transition-colors"
                     >
                         <MdDownload className="text-green-500 shrink-0" />
                         <span className="truncate"><T k="Locals Data Excel" /></span>
                     </button>
                     <button
-                        onClick={() => handleDownload("/export/payments", "Payments_Report.xlsx")}
+                        onClick={() => handleDownload(API.EXPORT_PAYMENTS, "Payments_Report.xlsx")}
                         className="w-full text-left px-4 py-3 hover:bg-green-50 text-gray-700 text-xs md:text-sm flex items-center gap-3 transition-colors"
                     >
                         <MdDownload className="text-green-500 shrink-0" />

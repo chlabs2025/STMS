@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MdHistory, MdRefresh, MdError, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment } from 'react-icons/md';
 import api from "../../api/axios";
+import API from "../../api/endpoints";
 import T from '../../i18n/T';
 
 const PaymentLogs = ({ localID }) => {
@@ -13,7 +14,7 @@ const PaymentLogs = ({ localID }) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await api.get("/paymentlogs", { params: { localID } });
+            const response = await api.get(API.PAYMENT_LOGS, { params: { localID } });
             if (response.data && response.data.data) {
                 setLogs(response.data.data);
             }

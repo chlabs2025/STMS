@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { MdPerson, MdLogout, MdArrowDropDown, MdArrowBack } from "react-icons/md"
 import { useLang } from "../../context/LanguageContext"
 import toast from "react-hot-toast"
+import { clearAuth } from "../../api/auth"
 
 const Header = ({ title, onPageChange }) => {
   const { lang, toggleLang } = useLang()
@@ -21,10 +22,7 @@ const Header = ({ title, onPageChange }) => {
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    localStorage.removeItem("isLoggedIn")
-    localStorage.removeItem("role")
+    clearAuth()
     toast.success("Logged out successfully")
     navigate("/")
   }

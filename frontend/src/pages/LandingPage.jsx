@@ -1,6 +1,7 @@
 "use client"
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isLoggedIn, getRole } from '../api/auth'
 import Navbar from '../components/landing/layout/Navbar'
 import HeroSection from '../components/landing/sections/HeroSection'
 import AboutSection from '../components/landing/sections/AboutSection'
@@ -17,9 +18,8 @@ const LandingPage = () => {
   }
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn")
-    const role = localStorage.getItem("role")
-    if (isLoggedIn === "true" && role) {
+    if (isLoggedIn()) {
+      const role = getRole()
       if (role === "admin") {
         navigate("/admin/dashboard", { replace: true })
       } else if (role === "operator") {

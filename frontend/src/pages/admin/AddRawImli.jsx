@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MdEco, MdAdd, MdCancel, MdScale, MdSchedule } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import toast from "react-hot-toast"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
@@ -20,7 +21,7 @@ const AddRawImli = () => {
     }
 
     try {
-      await api.post("/addRawImli", {
+      await api.post(API.ADD_RAW_IMLI, {
         rawImliQuantity,
       })
 

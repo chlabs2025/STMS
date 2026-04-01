@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { MdPersonAdd, MdCancel, MdCheckCircle, MdError, MdPerson, MdHome, MdPhone, MdPayment, MdSchedule } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import { t } from "../../i18n/translations"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
@@ -29,7 +30,7 @@ export default function AddLocals() {
         const fetchLocals = async () => {
             try {
                 // Using the return_local endpoint to get all locals
-                const response = await api.post("/return_local")
+                const response = await api.post(API.GET_LOCALS)
                 if (response.data && response.data.data) {
                     setExistingLocals(response.data.data)
                 }
@@ -74,7 +75,7 @@ export default function AddLocals() {
         setErrorMessage("")
 
         try {
-            const response = await api.post("/addLocal", formData)
+            const response = await api.post(API.ADD_LOCAL, formData)
 
             setSuccessMessage(` ${t("Local added successfully", lang)}`)
             setFormData({
@@ -85,7 +86,7 @@ export default function AddLocals() {
                 upiId: "",
             })
             // Refresh list of locals to include the new one
-            const refreshResponse = await api.post("/return_local")
+            const refreshResponse = await api.post(API.GET_LOCALS)
             if (refreshResponse.data && refreshResponse.data.data) {
                 setExistingLocals(refreshResponse.data.data)
             }

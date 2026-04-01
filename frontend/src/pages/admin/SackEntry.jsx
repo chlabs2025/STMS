@@ -4,6 +4,7 @@ import { MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import toast, { Toaster } from 'react-hot-toast';
 
 import api from "../../api/axios";
+import API from "../../api/endpoints";
 import { t } from '../../i18n/translations';
 import { useLang } from '../../context/LanguageContext';
 import T from '../../i18n/T';
@@ -250,7 +251,7 @@ const SackEntry = () => {
     useEffect(() => {
         const fetchLocals = async () => {
             try {
-                const response = await api.post("/return_local");
+                const response = await api.post(API.GET_LOCALS);
                 if (response.data && response.data.data) {
                     setAllLocals(response.data.data);
                 }

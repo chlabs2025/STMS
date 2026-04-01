@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { MdKeyboardReturn, MdSearch, MdPerson, MdScale, MdCancel, MdCheck, MdSchedule, MdLocationOn, MdInventory } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import toast from "react-hot-toast"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
@@ -28,7 +29,7 @@ const ImliReturned = () => {
   // Fetch all locals on component mount
   const fetchLocals = useCallback(async () => {
     try {
-      const response = await api.post("/return_local")
+      const response = await api.post(API.GET_LOCALS)
       console.log("Locals response:", response.data) // Debug log
       if (response.data && response.data.data) {
         setAllLocals(response.data.data)
@@ -114,7 +115,7 @@ const ImliReturned = () => {
   const fetchAssignmentHistory = useCallback(async (localID) => {
     try {
       setHistoryLoading(true)
-      const response = await api.get("/assignment-history", { params: { localID } })
+      const response = await api.get(API.ASSIGNMENT_HISTORY, { params: { localID } })
       setAssignmentHistory(response.data?.data || [])
     } catch (error) {
       console.error("Error fetching assignment history:", error)
@@ -181,7 +182,7 @@ const ImliReturned = () => {
       const returnedQuantity = parseFloat(formData.returnedQuantity)
 
       // Send data to backend
-      const response = await api.post("/returnimli", {
+      const response = await api.post(API.RETURN_IMLI, {
         LocalID: selectedLocal.LocalID.toString(),
         returnedQuantity: returnedQuantity,
       })

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { MdSettings, MdCheckCircle, MdError, MdEco, MdSave, MdEdit, MdClose } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import { t } from "../../i18n/translations"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
@@ -32,8 +33,8 @@ export default function Settings({ activeTab: initialTab }) {
         const fetchSettings = async () => {
             try {
                 const [priceRes, sellerRes] = await Promise.all([
-                    api.get("/imli-price"),
-                    api.get("/")
+                    api.get(API.IMLI_PRICE),
+                    api.get(API.GET_SETTINGS)
                 ])
 
                 if (priceRes.data?.success) {
@@ -73,7 +74,7 @@ export default function Settings({ activeTab: initialTab }) {
         setErrorMessage("")
 
         try {
-            const response = await api.patch("/imli-price", { price: Number(price) })
+            const response = await api.patch(API.IMLI_PRICE, { price: Number(price) })
             setSuccessMessage(t("Price updated successfully", lang))
             setIsPriceEditing(false)
             console.log("Response:", response.data)
@@ -94,7 +95,7 @@ export default function Settings({ activeTab: initialTab }) {
         setErrorMessage("")
 
         try {
-            const response = await api.post("/saveSetting", { seller })
+            const response = await api.post(API.SAVE_SETTINGS, { seller })
             setSuccessMessage(t("Business details updated successfully", lang))
             setIsSellerEditing(false)
             console.log("Response:", response.data)

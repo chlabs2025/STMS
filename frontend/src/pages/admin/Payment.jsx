@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { MdPayment, MdRefresh, MdSearch, MdError, MdKeyboardArrowDown, MdKeyboardArrowUp, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment, MdHistory } from 'react-icons/md'
 
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import PaymentLogs from "./PaymentLogs"
 
 
@@ -29,7 +30,7 @@ const Payment = () => {
         try {
             if (!silent) setLoading(true)
             setError(null)
-            const response = await api.post("/return_local")
+            const response = await api.post(API.GET_LOCALS)
             if (response.data.data) {
                 setLocals(response.data.data)
                 setFilteredLocals(response.data.data)
@@ -77,7 +78,7 @@ const Payment = () => {
     const fetchAssignmentHistory = useCallback(async (localID) => {
         try {
             setHistoryLoading(true)
-            const response = await api.get("/assignment-history", { params: { localID } })
+            const response = await api.get(API.ASSIGNMENT_HISTORY, { params: { localID } })
             setAssignmentHistory(response.data?.data || [])
         } catch (error) {
             console.error("Error fetching assignment history:", error)
@@ -93,7 +94,7 @@ const Payment = () => {
             setOrderData(null)
             setPaymentResult(null)
             setPaymentError(null)
-            const response = await api.post("/order-reference", { localID: String(localID) })
+            const response = await api.post(API.ORDER_REFERENCE, { localID: String(localID) })
             setOrderData(response.data.data)
         } catch (error) {
             const msg = error.response?.data?.message || "Failed to fetch order details"
@@ -133,7 +134,7 @@ const Payment = () => {
             setPaymentLoading(true)
             setPaymentError(null)
             setPaymentResult(null)
-            const response = await api.post("/confirm-payment", {
+            const response = await api.post(API.CONFIRM_PAYMENT, {
                 localId: localId,
                 method: paymentMethod,
                 // Online Step 1: no status sent → backend creates PENDING
@@ -156,7 +157,7 @@ const Payment = () => {
         try {
             setPaymentLoading(true)
             setPaymentError(null)
-            const response = await api.post("/confirm-payment", {
+            const response = await api.post(API.CONFIRM_PAYMENT, {
                 localId: localId,
                 method: "Online",
                 status: newStatus,

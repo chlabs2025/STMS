@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MdTrendingUp, MdTrendingDown, MdInventory, MdAssignmentInd, MdPersonAdd, MdChevronLeft, MdSearch, MdFilterList, MdFileDownload } from 'react-icons/md';
 import moment from 'moment';
 import api from "../../api/axios";
+import API from "../../api/endpoints";
 import T from '../../i18n/T';
 
 const AuditLogs = ({ onPageChange }) => {
@@ -14,7 +15,7 @@ const AuditLogs = ({ onPageChange }) => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const response = await api.get(`/dashboard/full-activity?limit=100&type=${filterType}&localName=${searchTerm}`);
+            const response = await api.get(`${API.FULL_ACTIVITY}?limit=100&type=${filterType}&localName=${searchTerm}`);
             if (response.data && response.data.data) {
                 setActivities(response.data.data.activities);
                 setTotal(response.data.data.total);

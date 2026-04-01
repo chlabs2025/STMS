@@ -2,16 +2,14 @@ import { useNavigate } from 'react-router-dom'
 import { MdDarkMode, MdLightMode, MdLogout } from 'react-icons/md'
 import { useTheme } from '../../context/ThemeContext'
 import toast from 'react-hot-toast'
+import { clearAuth } from '../../api/auth'
 
 function O_Dashboard() {
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    localStorage.removeItem("isLoggedIn")
-    localStorage.removeItem("role")
+    clearAuth()
     toast.success("Logged out successfully")
     navigate("/")
   }

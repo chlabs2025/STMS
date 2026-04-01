@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { Eye, EyeClosed } from 'lucide-react'
 import { useNavigate } from "react-router-dom"
 import api from "../api/axios"
+import { saveAuth, isLoggedIn, getRole } from "../api/auth"
+import API from "../api/endpoints"
 
 function Login() {
   const [username, setusername] = useState("")
@@ -20,9 +22,8 @@ function Login() {
   }, [])
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn")
-    const role = localStorage.getItem("role")
-    if (isLoggedIn === "true" && role) {
+    if (isLoggedIn()) {
+      const role = getRole()
       if (role === "admin") {
         navigate("/admin/dashboard", { replace: true })
       } else if (role === "operator") {
@@ -41,15 +42,15 @@ function Login() {
 
     setLoading(true)
     try {
-      const res = await api.post("/login", {
+      const res = await api.post(API.LOGIN, {
         username,
         password,
       })
 
-      const role = res.data.data.user.role
+      const { user, accessToken, refreshToken } = res.data.data
+      saveAuth({ accessToken, refreshToken, user })
 
-      localStorage.setItem("isLoggedIn", "true")
-      localStorage.setItem("role", role)
+      const role = user.role
 
       if (role === "admin") {
         navigate("/admin/dashboard", { replace: true })

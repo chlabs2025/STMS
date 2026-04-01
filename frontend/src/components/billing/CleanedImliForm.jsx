@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { MdArrowForward, MdArrowBack, MdAdd, MdDelete, MdPerson, MdWarning } from 'react-icons/md'
 import api from '../../api/axios'
+import API from '../../api/endpoints'
 
 const EMPTY_ROW = { product: "", quantity: "", unit: "", rate: "", weight: "", amount: "" }
 //test
@@ -35,8 +36,8 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
         const fetchStock = async () => {
             try {
                 const [localsRes, rawImliRes] = await Promise.all([
-                    api.get("/return_local"),
-                    api.get("/getRawImli")
+                    api.get(API.GET_LOCALS),
+                    api.get(API.GET_RAW_IMLI)
                 ]);
 
                 let inProgressCleaned = 0;

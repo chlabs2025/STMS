@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { MdAssignment, MdSearch, MdPerson, MdScale, MdCancel, MdCheck, MdSchedule, MdLocationOn } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import toast from "react-hot-toast"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
@@ -26,7 +27,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
   // Fetch all locals on component mount
   const fetchLocals = useCallback(async () => {
     try {
-      const response = await api.post("/return_local")
+      const response = await api.post(API.GET_LOCALS)
       console.log("Locals response:", response.data) // Debug log
       if (response.data && response.data.data) {
         setAllLocals(response.data.data)
@@ -167,7 +168,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
       }
 
       // Send data exactly as backend expects
-      const response = await api.post("/assignImli", {
+      const response = await api.post(API.ASSIGN_IMLI, {
         LocalID: selectedLocal.LocalID.toString(), // Send as String (backend expects String in DB)
         assignedQuantity: parseFloat(formData.assignedQuantity),
       })

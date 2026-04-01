@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { MdPeople, MdRefresh, MdSearch, MdVisibility, MdAssignment, MdError, MdPersonAdd } from 'react-icons/md'
 import api from "../../api/axios"
+import API from "../../api/endpoints"
 import { IoEye, IoPencil, IoAdd } from "react-icons/io5"
 import LocalDetailsModal from "../../components/LocalDetailsModal"
 import { useLang } from "../../context/LanguageContext"
@@ -25,7 +26,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
     try {
       setLoading(true)
       setError(null)
-      const response = await api.post("/return_local")
+      const response = await api.post(API.GET_LOCALS)
       if (response.data.data) {
         setLocals(response.data.data)
         setFilteredLocals(response.data.data)

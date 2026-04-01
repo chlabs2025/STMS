@@ -10,6 +10,7 @@ import {
   MdAutoAwesome
 } from 'react-icons/md';
 import api from "../../api/axios";
+import API from "../../api/endpoints";
 import { useLang } from '../../context/LanguageContext';
 import T from '../../i18n/T';
 import ExcelExport from './ExcelExport';
@@ -33,8 +34,8 @@ const Dashboard = ({ onPageChange }) => {
     if (isInitial) setLoading(true);
     try {
       const [localsRes, rawImliRes] = await Promise.all([
-        api.get("/return_local"),
-        api.get("/getRawImli")
+        api.get(API.GET_LOCALS),
+        api.get(API.GET_RAW_IMLI)
       ]);
 
       let distributed = 0, inProgressCleaned = 0;
@@ -62,7 +63,7 @@ const Dashboard = ({ onPageChange }) => {
 
   const fetchActivities = useCallback(async () => {
     try {
-      const response = await api.get("/dashboard/activity");
+      const response = await api.get(API.RECENT_ACTIVITY);
       if (response.data && response.data.data) {
         setActivities(response.data.data);
       }
