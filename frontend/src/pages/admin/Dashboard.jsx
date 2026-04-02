@@ -4,9 +4,7 @@ import {
   MdSettings,
   MdInventory,
   MdTrendingUp,
-  MdRepeat,
   MdDownload,
-  MdGroup,
   MdAutoAwesome
 } from 'react-icons/md';
 import api from "../../api/axios";
@@ -23,9 +21,7 @@ const Dashboard = ({ onPageChange }) => {
   const { lang } = useLang();
   const [dashboardStats, setDashboardStats] = useState({
     rawImli: 0,
-    distributed: 0,
     cleaned: 0,
-    pending: 0
   });
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,10 +34,9 @@ const Dashboard = ({ onPageChange }) => {
         api.get(API.GET_RAW_IMLI)
       ]);
 
-      let distributed = 0, inProgressCleaned = 0;
+      let inProgressCleaned = 0;
       if (localsRes.data && localsRes.data.data) {
         const locals = localsRes.data.data;
-        distributed = locals.reduce((acc, local) => acc + (local.totalAssignedQuantity || 0), 0);
         inProgressCleaned = locals.reduce((acc, local) => acc + (local.totalReturnedQuantity || 0), 0);
       }
 
@@ -50,9 +45,7 @@ const Dashboard = ({ onPageChange }) => {
 
       setDashboardStats({
         rawImli,
-        distributed,
         cleaned: historicalCleaned + inProgressCleaned,
-        pending: distributed - inProgressCleaned
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -85,8 +78,6 @@ const Dashboard = ({ onPageChange }) => {
   const stats = [
     { id: 1, title: "Raw Imli", value: dashboardStats.rawImli, unit: "KG", icon: MdInventory, color: "orange" },
     { id: 2, title: "Cleaned Imli", value: dashboardStats.cleaned, unit: "KG", icon: MdAutoAwesome, color: "green" },
-    { id: 3, title: "Distributed Imli to Locals", value: dashboardStats.distributed, unit: "KG", icon: MdGroup, color: "purple" },
-    { id: 4, title: "Pending Imli to be returned", value: dashboardStats.pending, unit: "KG", icon: MdRepeat, color: "amber" },
   ];
 
   const colorMap = {
@@ -102,31 +93,23 @@ const Dashboard = ({ onPageChange }) => {
     { key: 'imliReturned', label: "Imli Cleaned", icon: MdInventory, color: "green" },
   ];
 
-  // Inventory summary data
-  const totalStock = dashboardStats.rawImli + dashboardStats.distributed;
-  const summaryItems = [
-    { label: "Raw Stock", value: dashboardStats.rawImli, total: totalStock || 1, color: "#ea580c" },
-    { label: "Cleaned", value: dashboardStats.cleaned, total: totalStock || 1, color: "#16a34a" },
-    { label: "Distributed", value: dashboardStats.distributed, total: totalStock || 1, color: "#7c3aed" },
-    { label: "Pending Return", value: dashboardStats.pending, total: totalStock || 1, color: "#d97706" },
-  ];
+
 
   return (
     <div className="min-h-full bg-gray-50 py-6 px-4 md:p-8 overflow-y-auto">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
         
-        {/* ── Top Row (Stats + Quick Actions) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
-          
-          {/* Stats Section (Left: 2 Columns) */}
-          <div className="lg:col-span-2 flex flex-col">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 h-full">
-              {loading ? (
-                Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={`skeleton-${i}`} />)
-              ) : (
-                stats.map((stat, idx) => {
-                  const c = colorMap[stat.color];
-                  const Icon = stat.icon;
+        {/* ── Top Section (Stats row + Quick Actions row) ── */}
+        <div className="flex flex-col gap-6 md:gap-8">
+
+          {/* Stats Row — 2 cards side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {loading ? (
+              Array.from({ length: 2 }).map((_, i) => <CardSkeleton key={`skeleton-${i}`} />)
+            ) : (
+              stats.map((stat, idx) => {
+                const c = colorMap[stat.color];
+                const Icon = stat.icon;
                 return (
                   <div
                     key={stat.id}
@@ -134,32 +117,32 @@ const Dashboard = ({ onPageChange }) => {
                   >
                     {/* Subtle aesthetic background accent */}
                     <div className={`absolute -right-4 -top-4 w-24 h-24 ${c.bg} opacity-20 rounded-full blur-2xl`} />
-                    
+
                     <div className={`${c.bg} p-2 rounded-lg shrink-0 absolute top-4 md:top-6 ${lang === 'ur' ? 'left-4 md:left-6' : 'right-4 md:right-6'} z-10`}>
                       <Icon className={`${c.text} text-lg md:text-xl`} />
                     </div>
-                    
+
                     <p className={`text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider leading-snug mb-auto z-10 ${lang === 'ur' ? 'urdu-ui text-right pl-10' : 'pr-10'}`}>
                       <T k={stat.title} />
                     </p>
-                    
+
                     <p className={`text-4xl md:text-7xl font-extrabold ${c.text} tracking-tight leading-none mt-4 md:mt-6 z-10 ${lang === 'ur' ? 'text-right' : ''}`}>
                       <span className="text-[110%] inline-block align-middle">{stat.value}</span>
                       <span className={`text-[9px] md:text-base font-sans font-normal text-gray-400 align-baseline ${lang === 'ur' ? 'mr-1' : 'ml-1'}`}>{stat.unit}</span>
                     </p>
                   </div>
                 );
-              }))}
-            </div>
+              })
+            )}
           </div>
 
-          {/* Quick Actions (Right: 1 Column) */}
-          <div className="bg-white border border-gray-150 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col self-stretch">
+          {/* Quick Actions — full width, buttons horizontal on desktop */}
+          <div className="bg-white border border-gray-150 rounded-2xl p-6 md:p-8 shadow-sm">
             <h3 className={`text-xs md:text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 ${lang === 'ur' ? 'urdu-ui text-right' : ''}`}>
               <T k="Quick Actions" />
             </h3>
-            
-            <div className="flex flex-col gap-3 flex-1 justify-start">
+
+            <div className="flex flex-col lg:flex-row gap-3">
               {actions.map((action) => {
                 const c = colorMap[action.color];
                 const Icon = action.icon;
@@ -167,7 +150,7 @@ const Dashboard = ({ onPageChange }) => {
                   <button
                     key={action.key}
                     onClick={() => onPageChange && onPageChange(action.key)}
-                    className={`group flex items-center gap-4 w-full p-3.5 md:p-4 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all outline-none active:scale-[0.98] ${lang === 'ur' ? 'flex-row-reverse text-right' : 'text-left'}`}
+                    className={`group flex items-center gap-4 lg:flex-1 p-3.5 md:p-4 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all outline-none active:scale-[0.98] ${lang === 'ur' ? 'flex-row-reverse text-right' : 'text-left'}`}
                   >
                     <div className={`${c.bg} p-2.5 rounded-lg shrink-0 group-hover:scale-110 transition-transform`}>
                       <Icon className={`${c.text} text-xl`} />
@@ -180,7 +163,7 @@ const Dashboard = ({ onPageChange }) => {
               })}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-gray-100 shrink-0">
+            <div className="mt-6 pt-6 border-t border-gray-100">
               <ExcelExport />
             </div>
           </div>

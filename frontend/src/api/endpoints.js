@@ -20,6 +20,7 @@ const API = {
     // ─── Assign / Return Imli ─────────────────────────────────────────────────
     ASSIGN_IMLI: "/assignImli",
     RETURN_IMLI: "/returnImli",
+    ADD_CLEANED_IMLI: "/addCleanedImli",
     ASSIGNMENT_HISTORY: "/assignment-history",
 
     // ─── Payment ──────────────────────────────────────────────────────────────
@@ -39,6 +40,7 @@ const API = {
     // ─── Dashboard ────────────────────────────────────────────────────────────
     RECENT_ACTIVITY: "/dashboard/activity",
     FULL_ACTIVITY: "/dashboard/full-activity",
+    TREND_DATA: "/dashboard/trend",
 
     // ─── Excel Export ─────────────────────────────────────────────────────────
     EXPORT_PAYMENTS: "/export/payments",

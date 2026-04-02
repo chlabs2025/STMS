@@ -4,6 +4,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router()
 
-router.route("/assignImli").post(verifyJWT,assignImli)
+router.route("/assignImli").post(verifyJWT, assignImli)
 
 export default router;

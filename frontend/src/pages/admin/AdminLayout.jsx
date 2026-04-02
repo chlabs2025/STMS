@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar"
 import Header from "./Header"
 import Dashboard from "./Dashboard"
 import AddRawImli from "./AddRawImli"
+import AddCleanedImli from "./AddCleanedImli"
 import AssignImli from "./AssignImli"
 import ImliReturned from "./ImliReturned"
 import AddLocals from "./AddLocals"
@@ -23,7 +24,7 @@ const AdminLayout = () => {
   const [navigationProps, setNavigationProps] = useState({})
   const [isSidebarCollapsed] = useState(false) // Always expanded
 
-  const activePage = ["dashboard", "addLocals", "addRawImli", "assignImli", "imliReturned", "localsProfile", "payment", "billing", "settings", "auditLogs"].includes(page) ? page : "dashboard"
+  const activePage = ["dashboard", "addLocals", "addRawImli", "addCleanedImli", "assignImli", "imliReturned", "localsProfile", "payment", "billing", "settings", "auditLogs"].includes(page) ? page : "dashboard"
 
   const scrollRef = useRef(null)
 
@@ -54,6 +55,7 @@ const AdminLayout = () => {
     dashboard: { component: Dashboard, title: "Dashboard", props: { navigateToAssignImli, onPageChange: handlePageChange } },
     addLocals: { component: AddLocals, title: "Add Locals", props: {} },
     addRawImli: { component: AddRawImli, title: "Add Raw Imli", props: {} },
+    addCleanedImli: { component: AddCleanedImli, title: "Add Cleaned Imli", props: {} },
     assignImli: { component: AssignImli, title: "Assign Imli", props: navigationProps },
     imliReturned: { component: ImliReturned, title: "Imli Returned", props: {} },
     localsProfile: { component: LocalsProfile, title: "Locals Profile", props: { navigateToAssignImli } },

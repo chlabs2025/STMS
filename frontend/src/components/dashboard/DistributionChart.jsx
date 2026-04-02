@@ -7,14 +7,12 @@ import {
 } from 'recharts';
 import T from '../../i18n/T';
 
-const COLORS = ['#f66713', '#7c3aed', '#16a34a', '#d97706'];
+const COLORS = ['#f66713', '#16a34a'];
 
 const DistributionChart = ({ stats }) => {
   const data = [
     { name: 'Raw Stock', value: stats.rawImli },
-    { name: 'In Process', value: stats.distributed },
     { name: 'Cleaned', value: stats.cleaned },
-    { name: 'Pending Return', value: stats.pending },
   ].filter(d => d.value > 0);
 
   const CustomTooltip = ({ active, payload }) => {

@@ -20,7 +20,7 @@ const generateSlipPdf = async (slip) => {
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         "--disable-gpu",
-        "--single-process",
+        // NOTE: --single-process removed — it is Linux-only and crashes Chromium on Windows
       ],
     });
 

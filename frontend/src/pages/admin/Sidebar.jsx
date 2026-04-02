@@ -11,7 +11,8 @@ import {
   MdSettings,
   MdReceipt,
   MdChevronLeft,
-  MdChevronRight
+  MdChevronRight,
+  MdAutoAwesome
 } from 'react-icons/md';
 
 export default function Sidebar({ activePage, onPageChange }) {
@@ -19,6 +20,7 @@ export default function Sidebar({ activePage, onPageChange }) {
     { id: "dashboard", label: "Dashboard", icon: MdDashboard },
     { id: "addLocals", label: "Add Locals", icon: MdPersonAdd },
     { id: "addRawImli", label: "Add Raw Imli", icon: MdEco },
+    { id: "addCleanedImli", label: "Add Cleaned Imli", icon: MdAutoAwesome },
     { id: "assignImli", label: "Assign Imli", icon: MdAssignment },
     { id: "imliReturned", label: "Imli Returned", icon: MdKeyboardReturn },
     { id: "localsProfile", label: "Locals Profile", icon: MdPerson },

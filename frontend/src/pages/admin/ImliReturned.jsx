@@ -78,7 +78,7 @@ const ImliReturned = () => {
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedIndex((prev) => 
+      setHighlightedIndex((prev) =>
         prev < filteredLocals.length - 1 ? prev + 1 : prev
       );
     } else if (e.key === "ArrowUp") {
@@ -136,7 +136,7 @@ const ImliReturned = () => {
     setFilteredLocals([])
     setHighlightedIndex(-1)
     fetchAssignmentHistory(local.LocalID)
-    
+
     // Auto focus and scroll to quantity input after state updates
     setTimeout(() => {
       if (quantityInputRef.current) {
@@ -264,7 +264,7 @@ const ImliReturned = () => {
 
                   {/* Dropdown List */}
                   {showDropdown && filteredLocals.length > 0 && (
-                    <div 
+                    <div
                       ref={dropdownRef}
                       className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
                     >
@@ -272,9 +272,8 @@ const ImliReturned = () => {
                         <div
                           key={local._id}
                           onClick={() => handleSelectLocal(local)}
-                          className={`px-4 py-3 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors duration-150 ${
-                            highlightedIndex === index ? 'bg-orange-100' : 'hover:bg-orange-50'
-                          }`}
+                          className={`px-4 py-3 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors duration-150 ${highlightedIndex === index ? 'bg-orange-100' : 'hover:bg-orange-50'
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="bg-orange-100 p-1.5 rounded text-orange-600">
@@ -344,7 +343,7 @@ const ImliReturned = () => {
                                       <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</div>
                                     </td>
                                     <td className="px-4 py-3 text-right">
-                                      <span className="inline-block bg-orange-50 text-orange-700 px-2.5 py-1 rounded-md font-bold">{entry.assignedQuantity} <span className="text-[10px] font-medium text-orange-500">KG</span></span>
+                                      <span className="inline-block bg-orange-50 text-orange-700 px-2.5 py-1 rounded-md font-bold">{entry.quantity} <span className="text-[10px] font-medium text-orange-500">KG</span></span>
                                     </td>
                                   </tr>
                                 ))}

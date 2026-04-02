@@ -68,6 +68,9 @@ app.use("/api", loginRoute)
 import addRawImli from "./route/addRawImli.route.js"
 app.use("/api", addRawImli)
 
+import addCleanedImli from "./route/addCleanedImli.route.js"
+app.use("/api", addCleanedImli)
+
 import addLocal from "./route/addlocal.route.js"
 app.use("/api", addLocal)
 

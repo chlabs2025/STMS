@@ -20,7 +20,7 @@ const generatePdf = async (invoice) => {
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",   // prevent /dev/shm out-of-space on Docker/Render
         "--disable-gpu",
-        "--single-process",           // less memory usage on constrained hosts
+        // NOTE: --single-process removed — it is Linux-only and crashes Chromium on Windows
       ],
     });
 
