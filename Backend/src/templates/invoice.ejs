@@ -102,10 +102,21 @@ LR/RR No: <%= invoice.transport.lrNo || "" %>
 <% }) %>
 
 <!-- TAX ROW -->
+<% if(invoice.igstTotal > 0){ %>
 <tr>
 <td colspan="6" class="right bold">IGST</td>
 <td class="right">₹ <%= invoice.igstTotal.toFixed(2) %></td>
 </tr>
+<% } else { %>
+<tr>
+<td colspan="6" class="right bold">CGST</td>
+<td class="right">₹ <%= invoice.cgstTotal.toFixed(2) %></td>
+</tr>
+<tr>
+<td colspan="6" class="right bold">SGST</td>
+<td class="right">₹ <%= invoice.sgstTotal.toFixed(2) %></td>
+</tr>
+<% } %>
 
 <tr>
 <td colspan="6" class="right bold">Total</td>
@@ -131,12 +142,20 @@ Amount Chargeable (in words)<br>
 <br>
 
 <!-- HSN TAX SUMMARY BOX -->
+<% var isInterState = invoice.igstTotal > 0; %>
 <table>
 <tr class="center bold">
   <th>HSN/SAC</th>
   <th>Taxable Value</th>
+  <% if(isInterState){ %>
   <th>IGST Rate</th>
   <th>IGST Amount</th>
+  <% } else { %>
+  <th>CGST Rate</th>
+  <th>CGST Amount</th>
+  <th>SGST Rate</th>
+  <th>SGST Amount</th>
+  <% } %>
   <th>Total Tax Amount</th>
 </tr>
 
@@ -146,25 +165,43 @@ let taxTotal = 0;
 
 invoice.items.forEach(item=>{
   taxableTotal += item.amount;
-  taxTotal += item.igst;
+  taxTotal += isInterState ? item.igst : (item.cgst + item.sgst);
 });
 %>
 
 <% invoice.items.forEach(item=>{ %>
+<%
+  var itemTax = isInterState ? item.igst : (item.cgst + item.sgst);
+  var halfRate = (item.gstPercent / 2);
+%>
 <tr>
   <td class="center"><%= item.hsn %></td>
   <td class="right">₹ <%= item.amount.toFixed(2) %></td>
+  <% if(isInterState){ %>
   <td class="center"><%= item.gstPercent %>%</td>
   <td class="right">₹ <%= item.igst.toFixed(2) %></td>
-  <td class="right">₹ <%= item.igst.toFixed(2) %></td>
+  <% } else { %>
+  <td class="center"><%= halfRate %>%</td>
+  <td class="right">₹ <%= item.cgst.toFixed(2) %></td>
+  <td class="center"><%= halfRate %>%</td>
+  <td class="right">₹ <%= item.sgst.toFixed(2) %></td>
+  <% } %>
+  <td class="right">₹ <%= itemTax.toFixed(2) %></td>
 </tr>
 <% }) %>
 
 <tr class="bold">
   <td class="right">Total</td>
   <td class="right">₹ <%= taxableTotal.toFixed(2) %></td>
+  <% if(isInterState){ %>
   <td></td>
-  <td class="right">₹ <%= taxTotal.toFixed(2) %></td>
+  <td class="right">₹ <%= invoice.igstTotal.toFixed(2) %></td>
+  <% } else { %>
+  <td></td>
+  <td class="right">₹ <%= invoice.cgstTotal.toFixed(2) %></td>
+  <td></td>
+  <td class="right">₹ <%= invoice.sgstTotal.toFixed(2) %></td>
+  <% } %>
   <td class="right">₹ <%= taxTotal.toFixed(2) %></td>
 </tr>
 </table>
