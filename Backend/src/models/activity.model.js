@@ -4,7 +4,7 @@ const activityLogSchema = new mongoose.Schema(
     {
         type: {
             type: String,
-            enum: ["RESTOCK", "ASSIGNMENT", "RETURN", "REGISTRATION", "PAYMENT"],
+            enum: ["RESTOCK", "CLEANED_RESTOCK", "ASSIGNMENT", "RETURN", "REGISTRATION", "PAYMENT"],
             required: true
         },
         description: {
