@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { MdEco, MdAdd, MdCancel, MdScale, MdSchedule, MdAutoAwesome } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
@@ -11,9 +11,13 @@ import T from "../../i18n/T"
 const AddCleanedImli = () => {
   const { lang } = useLang()
   const [cleanedImliQuantity, setCleanedImliQuantity] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = useRef(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (isSubmittingRef.current) return
 
     if (!cleanedImliQuantity) {
       toast.error("Please enter cleaned imli quantity")
@@ -21,6 +25,8 @@ const AddCleanedImli = () => {
     }
 
     try {
+      setIsSubmitting(true)
+      isSubmittingRef.current = true
       await api.post(API.ADD_CLEANED_IMLI, {
         cleanedImliQuantity: Number(cleanedImliQuantity),
       })
@@ -30,6 +36,9 @@ const AddCleanedImli = () => {
     } catch (error) {
       toast.error("❌ Failed to add cleaned imli")
       console.error(error)
+    } finally {
+      setIsSubmitting(false)
+      isSubmittingRef.current = false
     }
   }
 
@@ -78,11 +87,11 @@ const AddCleanedImli = () => {
 
                 <button
                   type="submit"
-                  disabled={!cleanedImliQuantity}
+                  disabled={!cleanedImliQuantity || isSubmitting}
                   className="flex-1 px-4 py-3 md:py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm flex items-center justify-center gap-2 text-sm"
                 >
                   <MdAutoAwesome className="text-lg" />
-                  <span><T k="Add to Stock" /></span>
+                  <span>{isSubmitting ? "Processing..." : <T k="Add to Stock" />}</span>
                 </button>
               </div>
             </form>

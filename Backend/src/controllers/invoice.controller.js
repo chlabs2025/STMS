@@ -12,17 +12,23 @@ import { ImliData } from "../models/imli.model.js";
 
 // CREATE INVOICE
 export const createInvoice = asyncHandler(async (req, res) => {
+  console.log("[BILLING] Starting invoice creation, billType:", req.body.billType);
+  console.log("[BILLING] User:", req.user?.username || "Unknown");
+
   const { billType } = req.body;
 
   // =======================================================
   //                SLIP BILL SECTION
   // =======================================================
   if (billType === "slip") {
+    console.log("[BILLING] Processing slip bill");
     const { receiverName, items,driverName } = req.body;
 
     const settings = await Settings.findOne();
+    console.log("[BILLING] Settings found:", !!settings);
 
     if (!settings || !settings.seller) {
+      console.log("[BILLING] Settings or seller not configured");
       throw new ApiError(400, "Please configure business settings first");
     }
 
@@ -74,7 +80,15 @@ export const createInvoice = asyncHandler(async (req, res) => {
     );
 
     // Generate slip pdf
-    const pdf = await generateSlipPdf(slip);
+    console.log("[BILLING] Generating slip PDF");
+    let pdf;
+    try {
+      pdf = await generateSlipPdf(slip);
+      console.log("[BILLING] Slip PDF generated successfully, size:", pdf.length);
+    } catch (pdfError) {
+      console.error("[BILLING] PDF generation failed:", pdfError.message);
+      throw new ApiError(500, "Failed to generate PDF. Please try again or contact support.");
+    }
 
     res.status(200);
     res.type("application/pdf");
@@ -164,8 +178,15 @@ export const createInvoice = asyncHandler(async (req, res) => {
   });
 
   // generate pdf
-
-  const pdfBuffer = await generatePdf(invoice);
+  console.log("[BILLING] Generating invoice PDF");
+  let pdfBuffer;
+  try {
+    pdfBuffer = await generatePdf(invoice);
+    console.log("[BILLING] Invoice PDF generated successfully, size:", pdfBuffer.length);
+  } catch (pdfError) {
+    console.error("[BILLING] PDF generation failed:", pdfError.message);
+    throw new ApiError(500, "Failed to generate PDF. Please try again or contact support.");
+  }
 
   // 👇 direct download response
   res.setHeader("Content-Type", "application/pdf");
@@ -195,4 +216,42 @@ export const getInvoicePdf = asyncHandler(async (req, res) => {
   );
 
   res.send(pdfBuffer);
+});
+
+// PDF HEALTH CHECK
+export const pdfHealthCheck = asyncHandler(async (req, res) => {
+  console.log("[HEALTH] Testing PDF generation");
+  try {
+    const testSlip = {
+      slipNumber: 1,
+      senderName: 'Test Sender',
+      receiverName: 'Test Receiver',
+      senderAddress: 'Test Address',
+      date: new Date(),
+      items: [{
+        product: 'Test Product',
+        quantity: 1,
+        weight: 1,
+        amount: 100
+      }],
+      totalWeight: 1,
+      totalAmount: 100
+    };
+
+    const pdf = await generateSlipPdf(testSlip);
+    console.log("[HEALTH] PDF test successful, size:", pdf.length);
+
+    return res.status(200).json({
+      status: "ok",
+      message: "PDF generation is working",
+      pdfSize: pdf.length
+    });
+  } catch (error) {
+    console.error("[HEALTH] PDF test failed:", error.message);
+    return res.status(500).json({
+      status: "error",
+      message: "PDF generation failed",
+      error: error.message
+    });
+  }
 });

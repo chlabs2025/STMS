@@ -171,10 +171,10 @@ const ImliReturned = () => {
         return
       }
 
-      const maxReturnable = selectedLocal.totalReturnedQuantity > 0 ? 0 : selectedLocal.totalAssignedQuantity;
+      const maxReturnable = selectedLocal.totalAssignedQuantity - (selectedLocal.totalReturnedQuantity || 0);
 
       if (parseFloat(formData.returnedQuantity) > maxReturnable) {
-        toast.error(`Cannot return more than ${maxReturnable} KG. (Assigned amount is fully cleaned or zeroed out).`)
+        toast.error(`Cannot return more than ${maxReturnable} KG. (Remaining assignable amount is ${maxReturnable} KG).`)
         setLoading(false)
         return
       }

@@ -33,6 +33,13 @@ export const returnImli = asyncHandler(async (req, res) => {
     { returnDocument: 'after' }
   );
 
+  // Update global cleaned imli stock
+  await ImliData.findOneAndUpdate(
+    {},
+    { $inc: { totalCleanedImli: returnedQuantity } },
+    { upsert: true }
+  );
+
   const returned = await imliReturn.create({
     localID: local.LocalID,
     localName: local.LocalName,

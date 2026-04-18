@@ -1,7 +1,8 @@
 import { Router } from "express";
 import {
   createInvoice,
-  getInvoicePdf
+  getInvoicePdf,
+  pdfHealthCheck
 } from "../controllers/invoice.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -9,5 +10,6 @@ const router = Router();
 
 router.post("/generateInvoice", verifyJWT, createInvoice);
 router.get("/invoice/:id/pdf", verifyJWT, getInvoicePdf);
+router.get("/pdf-health", pdfHealthCheck);
 
 export default router;

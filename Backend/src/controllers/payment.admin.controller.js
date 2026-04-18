@@ -98,13 +98,7 @@ export const confirmPayment = asyncHandler(async (req, res) => {
             paymentStatus: "SUCCESS"
         });
 
-        // Accumulate cleaned imli into global tracker before resetting
-        await ImliData.findOneAndUpdate(
-            {},
-            { $inc: { totalCleanedImli: local.totalReturnedQuantity } },
-            { upsert: true }
-        );
-
+        // Reset local quantities after payment (global stock was already updated during returns)
         await localData.findOneAndUpdate(
             { LocalID: localId },
             {
@@ -181,14 +175,7 @@ export const confirmPayment = asyncHandler(async (req, res) => {
                 paymentStatus: "SUCCESS"
             });
 
-
-            // Accumulate cleaned imli into global tracker before resetting
-            await ImliData.findOneAndUpdate(
-                {},
-                { $inc: { totalCleanedImli: local.totalReturnedQuantity } },
-                { upsert: true }
-            );
-
+            // Reset local quantities after payment (global stock was already updated during returns)
             await localData.findOneAndUpdate(
                 { LocalID: localId },
                 {
@@ -299,4 +286,4 @@ export const getAssignmentHistory = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, combined, "Assignment & return history fetched")
     );
-});
+});
