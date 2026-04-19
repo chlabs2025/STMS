@@ -22,7 +22,7 @@
 
 html, body {
     background-color: #f66713; /* For PWA status bar consistency */
-    overscroll-behavior-y: none; /* Prevent rubber-banding on mobile */
+    overscroll-behavior-y: auto; /* Enable native PWA pull-to-refresh */
     min-height: 100%;
 }
 
