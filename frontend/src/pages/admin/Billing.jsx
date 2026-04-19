@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { MdReceipt, MdCheckCircle, MdError } from "react-icons/md"
+import { MdReceipt, MdCheckCircle, MdError, MdVisibility, MdFileDownload } from "react-icons/md"
 import ProductSelect from "../../components/billing/ProductSelect"
 import CustomerDetails from "../../components/billing/CustomerDetails"
 import ItemDetails from "../../components/billing/ItemDetails"
@@ -419,58 +419,54 @@ function Billing() {
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Date</th>
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Document No.</th>
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Type</th>
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Party Name</th>
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell text-right">Amount</th>
-                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 text-center">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {historyData.map((item, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-900 font-medium hidden md:table-cell">
-                          {new Date(item.date).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-600">
+              <div className="grid grid-cols-1 gap-4">
+                {historyData.map((item, idx) => (
+                  <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
+                    {/* Top Row: Doc No, Date, and Type Badge */}
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-gray-900 font-bold text-sm md:text-base">
                           {item.idNumber}
-                        </td>
-                        <td className="py-3 px-2 md:px-4">
-                          <span className={`px-2 py-0.5 md:px-2.5 md:py-1 text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 hidden md:table-cell">
+                        </h3>
+                        <span className="text-gray-400 text-xs font-medium block mt-0.5">
+                          {new Date(item.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+                          {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Bottom Row: Party Name, Amount, and Actions */}
+                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-50">
+                      <div className="flex flex-col max-w-[50%]">
+                        <span className="text-gray-400 text-[10px] uppercase tracking-widest font-bold mb-0.5">Billed To</span>
+                        <span className="text-gray-800 font-bold text-sm truncate">
                           {item.name || "N/A"}
-                        </td>
-                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-900 font-bold text-right hidden md:table-cell">
+                        </span>
+                        <span className="text-gray-900 font-black text-sm md:text-base mt-0.5">
                           ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className="py-3 px-2 md:px-4 text-center">
-                          <div className="flex flex-col md:flex-row gap-1 md:gap-2 justify-center">
-                            <button
-                              onClick={() => handleViewHistory(item)}
-                              className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 md:px-3 rounded-lg font-semibold text-[10px] md:text-xs transition-colors whitespace-nowrap"
-                            >
-                              View
-                            </button>
-                            <button
-                              onClick={() => handleDownloadHistory(item)}
-                              className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-2 py-1.5 md:px-3 rounded-lg font-semibold text-[10px] md:text-xs transition-colors whitespace-nowrap"
-                            >
-                              Download
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewHistory(item)}
+                          className="flex items-center gap-1.5 bg-blue-50 text-blue-600 outline-none hover:bg-blue-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
+                        >
+                          <MdVisibility className="text-[16px]" /> View
+                        </button>
+                        <button
+                          onClick={() => handleDownloadHistory(item)}
+                          className="flex items-center gap-1.5 bg-orange-50 text-orange-600 outline-none hover:bg-orange-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
+                        >
+                          <MdFileDownload className="text-[16px]" /> Download
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
