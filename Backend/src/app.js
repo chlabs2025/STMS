@@ -20,6 +20,7 @@ const corsOptions = {
         process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
+    exposedHeaders: ["Content-Disposition"],
 }
 
 app.use(cors(corsOptions))
