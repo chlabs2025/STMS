@@ -73,11 +73,11 @@ const generatePdf = async (invoice) => {
 
   // 4. Products Table
   const tableStartY = currentY;
-  const colX = [startX, 60, 240, 300, 360, 420, 460, endX];
+  const colX = [startX, 240, 300, 360, 420, 460, endX];
   
   // Header
   doc.rect(startX, currentY, width, 20).stroke();
-  const headers = ["Sl", "Description of Goods", "HSN/SAC", "Quantity", "Rate", "per", "Amount"];
+  const headers = ["Description of Goods", "HSN/SAC", "Quantity", "Rate", "per", "Amount"];
   headers.forEach((text, i) => {
     drawText(text, colX[i] + 2, currentY + 6, { 
       width: colX[i+1] - colX[i] - 4, 
@@ -91,13 +91,12 @@ const generatePdf = async (invoice) => {
   // Items
   let itemY = currentY + 5;
   invoice.items?.forEach((item, index) => {
-    drawText(`${index + 1}`, colX[0], itemY, { width: colX[1]-colX[0], align: "center", font: "Helvetica", size: 8 });
-    drawText(item.description || "Tamarind Seeds", colX[1]+5, itemY, { width: colX[2]-colX[1]-10, align: "left" });
-    drawText(item.hsn || "121190", colX[2], itemY, { width: colX[3]-colX[2], align: "center" });
-    drawText(`${item.quantity || 0} ${item.unit || "kgs"}`, colX[3], itemY, { width: colX[4]-colX[3], align: "center" });
-    drawText(formatCurrency(item.rate || 0), colX[4]-5, itemY, { width: colX[5]-colX[4], align: "right" });
-    drawText(item.unit || "kgs", colX[5], itemY, { width: colX[6]-colX[5], align: "center" });
-    drawText(formatCurrency(item.amount || 0), colX[6]-5, itemY, { width: colX[7]-colX[6], align: "right" });
+    drawText(item.description || "Tamarind Seeds", colX[0]+5, itemY, { width: colX[1]-colX[0]-10, align: "left" });
+    drawText(item.hsn || "121190", colX[1], itemY, { width: colX[2]-colX[1], align: "center" });
+    drawText(`${item.quantity || 0} ${item.unit || "kgs"}`, colX[2], itemY, { width: colX[3]-colX[2], align: "center" });
+    drawText(formatCurrency(item.rate || 0), colX[3]-5, itemY, { width: colX[4]-colX[3], align: "right" });
+    drawText(item.unit || "kgs", colX[4], itemY, { width: colX[5]-colX[4], align: "center" });
+    drawText(formatCurrency(item.amount || 0), colX[5]-5, itemY, { width: colX[6]-colX[5], align: "right" });
     itemY += 15;
   });
 
@@ -111,25 +110,25 @@ const generatePdf = async (invoice) => {
   if (isInterState) {
     currentY += 5;
     drawText("IGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
-    drawText(formatCurrency(invoice.igstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    drawText(formatCurrency(invoice.igstTotal || 0), colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right" });
     currentY += 15;
   } else {
     currentY += 5;
-    drawText("CGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
-    drawText(formatCurrency(invoice.cgstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    drawText("CGST", colX[4]-5, currentY, { width: colX[5]-colX[4], align: "right", font: "Helvetica-Bold", size: 8 });
+    drawText(formatCurrency(invoice.cgstTotal || 0), colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right" });
     currentY += 15;
     
     doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
     currentY += 5;
-    drawText("SGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
-    drawText(formatCurrency(invoice.sgstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    drawText("SGST", colX[4]-5, currentY, { width: colX[5]-colX[4], align: "right", font: "Helvetica-Bold", size: 8 });
+    drawText(formatCurrency(invoice.sgstTotal || 0), colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right" });
     currentY += 15;
   }
 
   doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
   currentY += 5;
-  drawText("Total", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
-  drawText(formatCurrency(invoice.grandTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+  drawText("Total", colX[4]-5, currentY, { width: colX[5]-colX[4], align: "right", font: "Helvetica-Bold", size: 8 });
+  drawText(formatCurrency(invoice.grandTotal || 0), colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right" });
   currentY += 15;
 
   // Draw vertical lines for the entire table
