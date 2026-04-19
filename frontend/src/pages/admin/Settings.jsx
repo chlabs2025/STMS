@@ -120,48 +120,28 @@ export default function Settings({ activeTab: initialTab }) {
     ]
 
     return (
-        <div className="min-h-full bg-[#F8FAFC] p-3 md:p-8">
-            <div className="max-w-5xl mx-auto flex flex-col gap-6">
-                
-                {/* Content Panel with Integrated Tabs */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative flex flex-col min-h-[450px] transition-all duration-300">
-                    
-                    {/* Integrated Toggle Header - More compact */}
-                    <div className="flex justify-center items-center py-6 md:py-8 px-4 border-b border-gray-100 bg-gray-50/10">
-                        <div className="bg-gray-100/80 p-1 rounded-xl flex items-center gap-1 shadow-inner relative min-w-[280px] md:min-w-[400px]">
-                            {/* Sliding Active Pill */}
-                            <div 
-                                className="absolute h-[calc(100%-8px)] top-1 bg-orange-600 rounded-lg shadow-lg shadow-orange-600/20 transition-all duration-300 ease-in-out z-0"
-                                style={{ 
-                                    width: 'calc(50% - 4px)',
-                                    left: activeTab === 'pricing' ? '4px' : 'calc(50% + 0px)'
-                                }}
-                            />
-                            
-                            {tabs.map((tab) => {
-                                const Icon = tab.icon;
-                                const isActive = activeTab === tab.id;
-                                return (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => {
-                                            if (activeTab === tab.id) return;
-                                            setActiveTab(tab.id);
-                                            setSuccessMessage("");
-                                            setErrorMessage("");
-                                        }}
-                                        className={`relative z-10 flex-1 flex items-center justify-center gap-2 md:gap-3 py-2.5 md:py-3 rounded-lg font-bold text-xs md:text-sm transition-all duration-300 ${
-                                            isActive ? 'text-white' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Icon className="text-lg md:text-xl" />
-                                        <T k={tab.label} />
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+        <div className="min-h-full bg-[#F8FAFC] p-3 md:p-6 overflow-x-hidden">
+            <div className="max-w-3xl mx-auto mb-6">
+                <div className="flex bg-gray-100 p-1 rounded-xl">
+                    <button
+                        onClick={() => { setActiveTab("pricing"); setSuccessMessage(""); setErrorMessage(""); }}
+                        className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "pricing" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                    >
+                        <T k="Pricing" />
+                    </button>
+                    <button
+                        onClick={() => { setActiveTab("business"); setSuccessMessage(""); setErrorMessage(""); }}
+                        className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "business" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                    >
+                        <T k="Business Profile" />
+                    </button>
+                </div>
+            </div>
 
+            <div className="max-w-3xl mx-auto flex flex-col gap-6">
+                
+                {/* Content Panel */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative flex flex-col min-h-[450px] transition-all duration-300">
                     <div className="flex-1 relative">
                         {pageLoading && (
                             <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
