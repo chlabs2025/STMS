@@ -258,6 +258,57 @@ export const pdfHealthCheck = asyncHandler(async (req, res) => {
   }
 });
 
+// GET INVOICE AND SLIP HISTORY
+export const getInvoiceHistory = asyncHandler(async (req, res) => {
+  const invoices = await Invoice.find()
+    .select("invoiceNumber invoiceDate customer.name grandTotal")
+    .sort({ invoiceDate: -1 })
+    .lean();
+    
+  const slips = await Slip.find()
+    .select("slipNumber date receiverName totalAmount")
+    .sort({ date: -1 })
+    .lean();
+
+  const formattedInvoices = invoices.map(inv => ({
+    _id: inv._id,
+    idNumber: inv.invoiceNumber,
+    date: inv.invoiceDate,
+    name: inv.customer?.name,
+    amount: inv.grandTotal,
+    type: 'invoice'
+  }));
+
+  const formattedSlips = slips.map(slip => ({
+    _id: slip._id,
+    idNumber: `SLIP-${slip.slipNumber}`,
+    date: slip.date,
+    name: slip.receiverName,
+    amount: slip.totalAmount,
+    type: 'slip'
+  }));
+
+  const combined = [...formattedInvoices, ...formattedSlips].sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  res.status(200).json(new ApiResponse(200, combined, "Billing history fetched successfully"));
+});
+
+// GET SLIP PDF
+export const getSlipPdf = asyncHandler(async (req, res) => {
+  const slip = await Slip.findById(req.params.id);
+  if (!slip) throw new ApiError(404, "Slip not found");
+
+  const pdfBuffer = await generateSlipPdf(slip);
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=CleanedImliBill-${slip.slipNumber}.pdf`,
+  );
+
+  res.send(pdfBuffer);
+});
+
 // CLEAN ALL DATA - Keep only config/settings
 export const cleanAllData = asyncHandler(async (req, res) => {
   console.log("[CLEANUP] Starting data cleanup - removing all transactions while keeping config");

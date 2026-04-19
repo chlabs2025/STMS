@@ -35,6 +35,57 @@ function Billing() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitResult, setSubmitResult] = useState(null) // { success, message }
 
+  const [activeTab, setActiveTab] = useState("generate")
+  const [historyData, setHistoryData] = useState([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+
+  const fetchHistory = async () => {
+    try {
+      setLoadingHistory(true)
+      const res = await api.get(API.GET_INVOICE_HISTORY)
+      setHistoryData(res.data.data || [])
+    } catch (error) {
+      console.error("Failed to fetch history:", error)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === "history") {
+      fetchHistory()
+    }
+  }, [activeTab])
+
+  const handleDownloadHistory = async (item) => {
+    try {
+      const endpoint = item.type === 'invoice' 
+        ? API.GET_INVOICE_PDF(item._id) 
+        : API.GET_SLIP_PDF(item._id);
+        
+      const response = await api.get(endpoint, { responseType: 'blob' });
+      
+      const contentDisposition = response.headers["content-disposition"]
+      let filename = item.type === 'invoice' ? `${item.idNumber}.pdf` : `${item.idNumber}.pdf`
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename=(.+?)($|;)/)
+        if (match) filename = match[1].replace(/"/g, "")
+      }
+
+      const blob = new Blob([response.data], { type: "application/pdf" })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      alert("Failed to download PDF.");
+    }
+  };
+
   // Tamarind Seeds form data (existing)
   const [formData, setFormData] = useState({
     productType: "",
@@ -318,6 +369,81 @@ function Billing() {
 
   return (
     <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
+      <div className="max-w-3xl mx-auto mb-6">
+        <div className="flex bg-gray-100 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab("generate")}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "generate" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            Generate New
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "history" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            Billing History
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "history" ? (
+         <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Generated Bills & Slips</h2>
+            {loadingHistory ? (
+              <div className="py-10 text-center text-gray-500">Loading history...</div>
+            ) : historyData.length === 0 ? (
+              <div className="py-10 text-center text-gray-500">No billing history found.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Date</th>
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Document No.</th>
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Type</th>
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Party Name</th>
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Amount</th>
+                      <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {historyData.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="py-3 px-4 text-sm text-gray-900 font-medium">
+                          {new Date(item.date).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-600">
+                          {item.idNumber}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${item.type === 'invoice' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {item.type === 'invoice' ? 'Tax Invoice' : 'Slip Bill'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-700">
+                          {item.name || "N/A"}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-900 font-bold text-right">
+                          ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => handleDownloadHistory(item)}
+                            className="text-orange-600 hover:text-orange-800 font-semibold text-sm transition-colors"
+                          >
+                            Download PDF
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+         </div>
+      ) : (
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {/* Header */}
@@ -450,6 +576,7 @@ function Billing() {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }

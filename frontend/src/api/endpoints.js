@@ -31,7 +31,9 @@ const API = {
 
     // ─── Invoice / Billing ────────────────────────────────────────────────────
     GENERATE_INVOICE: "/generateInvoice",
+    GET_INVOICE_HISTORY: "/history",
     GET_INVOICE_PDF: (id) => `/invoice/${id}/pdf`,
+    GET_SLIP_PDF: (id) => `/slip/${id}/pdf`,
 
     // ─── Settings ─────────────────────────────────────────────────────────────
     GET_SETTINGS: "/settings",
