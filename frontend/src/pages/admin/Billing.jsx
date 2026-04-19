@@ -86,6 +86,21 @@ function Billing() {
     }
   };
 
+  const handleViewHistory = async (item) => {
+    try {
+      const endpoint = item.type === 'invoice' 
+        ? API.GET_INVOICE_PDF(item._id) 
+        : API.GET_SLIP_PDF(item._id);
+        
+      const response = await api.get(endpoint, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: "application/pdf" })
+      const url = window.URL.createObjectURL(blob)
+      window.open(url, "_blank")
+    } catch (error) {
+      alert("Failed to view PDF.");
+    }
+  };
+
   // Tamarind Seeds form data (existing)
   const [formData, setFormData] = useState({
     productType: "",
@@ -211,7 +226,7 @@ function Billing() {
       })
 
       const contentDisposition = response.headers["content-disposition"]
-      let filename = "invoice.pdf"
+      let filename = `Tamarind-Seed-Bill-${Date.now()}.pdf`
       if (contentDisposition) {
         const match = contentDisposition.match(/filename=(.+?)($|;)/)
         if (match) filename = match[1].replace(/"/g, "")
@@ -280,7 +295,7 @@ function Billing() {
       })
 
       const contentDisposition = response.headers["content-disposition"]
-      let filename = "imli-bill.pdf"
+      let filename = `Cleaned-Imli-Bill-${Date.now()}.pdf`
       if (contentDisposition) {
         const match = contentDisposition.match(/filename=(.+?)($|;)/)
         if (match) filename = match[1].replace(/"/g, "")
@@ -427,7 +442,7 @@ function Billing() {
                         </td>
                         <td className="py-3 px-2 md:px-4">
                           <span className={`px-2 py-0.5 md:px-2.5 md:py-1 text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {item.type === 'invoice' ? 'Tax Invoice' : 'Slip Bill'}
+                            {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
                           </span>
                         </td>
                         <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 hidden md:table-cell">
@@ -437,12 +452,20 @@ function Billing() {
                           ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </td>
                         <td className="py-3 px-2 md:px-4 text-center">
-                          <button
-                            onClick={() => handleDownloadHistory(item)}
-                            className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
-                          >
-                            Download
-                          </button>
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => handleViewHistory(item)}
+                              className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleDownloadHistory(item)}
+                              className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
+                            >
+                              Download
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
