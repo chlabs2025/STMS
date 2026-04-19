@@ -145,6 +145,7 @@ function Billing() {
       if (event.state && event.state.billingStep !== undefined) {
         isStepPopState.current = true
         setCurrentStep(event.state.billingStep)
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" })
       }
     }
     window.addEventListener("popstate", handlePopState)
@@ -155,6 +156,7 @@ function Billing() {
     const nextStep = Math.min(currentStep + 1, maxStep)
     setCurrentStep(nextStep)
     window.history.pushState({ billingStep: nextStep }, "")
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" })
   }
   const goBack = () => {
     if (currentStep > 1) {
@@ -162,6 +164,13 @@ function Billing() {
       window.history.back()
     }
   }
+
+  // Scroll to top when submit result shows up
+  useEffect(() => {
+    if (submitResult) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+    }
+  }, [submitResult])
 
   // Tamarind Seeds submit (existing)
   const handleSubmit = async () => {
