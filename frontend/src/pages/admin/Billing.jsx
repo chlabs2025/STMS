@@ -38,6 +38,7 @@ function Billing() {
   const [activeTab, setActiveTab] = useState("generate")
   const [historyData, setHistoryData] = useState([])
   const [loadingHistory, setLoadingHistory] = useState(false)
+  const [historyFilter, setHistoryFilter] = useState("all")
 
   const fetchHistory = async () => {
     try {
@@ -413,14 +414,39 @@ function Billing() {
       {activeTab === "history" ? (
          <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Generated Bills & Slips</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+              <h2 className="text-xl font-bold text-gray-900">Generated Bills & Slips</h2>
+              <div className="flex bg-gray-50 p-1.5 rounded-lg border border-gray-100 self-start md:self-auto overflow-x-auto w-full md:w-auto">
+                <button 
+                  onClick={() => setHistoryFilter('all')}
+                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'all' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  All History
+                </button>
+                <button 
+                  onClick={() => setHistoryFilter('invoice')}
+                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'invoice' ? 'bg-orange-50 text-orange-700 shadow-sm border border-orange-100' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Tamarind Seed
+                </button>
+                <button 
+                  onClick={() => setHistoryFilter('slip')}
+                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'slip' ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Cleaned Imli
+                </button>
+              </div>
+            </div>
+            
             {loadingHistory ? (
               <div className="py-10 text-center text-gray-500">Loading history...</div>
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
-                {historyData.map((item, idx) => (
+                {historyData
+                  .filter(item => historyFilter === "all" || item.type === historyFilter)
+                  .map((item, idx) => (
                   <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
                     {/* Top Row: Doc No, Date, and Type Badge */}
                     <div className="flex justify-between items-start">
