@@ -446,9 +446,6 @@ function Billing() {
                         <span className="text-gray-800 font-bold text-sm truncate">
                           {item.name || "N/A"}
                         </span>
-                        <span className="text-gray-900 font-black text-sm md:text-base mt-0.5">
-                          ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </span>
                       </div>
                       <div className="flex gap-2">
                         <button
