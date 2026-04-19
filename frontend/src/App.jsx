@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { ThemeProvider } from "./context/ThemeContext"
 import { LanguageProvider } from "./context/LanguageContext"
@@ -17,6 +18,19 @@ import O_AddImli from "./pages/operator/O_Addimli"
 import PWAUpdatePrompt from "./components/PWAUpdatePrompt"
 
 function App() {
+  useEffect(() => {
+    const allowedHost = "superimlitraders-tamarind.vercel.app"
+
+    if (
+      import.meta.env.MODE === "production" &&
+      typeof window !== "undefined" &&
+      window.location.host !== allowedHost
+    ) {
+      const destination = `https://${allowedHost}${window.location.pathname}${window.location.search}`
+      window.location.replace(destination)
+    }
+  }, [])
+
   return (
     <LanguageProvider>
       <ThemeProvider>
