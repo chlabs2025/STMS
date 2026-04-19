@@ -452,16 +452,16 @@ function Billing() {
                           ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </td>
                         <td className="py-3 px-2 md:px-4 text-center">
-                          <div className="flex gap-2 justify-center">
+                          <div className="flex flex-col md:flex-row gap-1 md:gap-2 justify-center">
                             <button
                               onClick={() => handleViewHistory(item)}
-                              className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
+                              className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 md:px-3 rounded-lg font-semibold text-[10px] md:text-xs transition-colors whitespace-nowrap"
                             >
                               View
                             </button>
                             <button
                               onClick={() => handleDownloadHistory(item)}
-                              className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
+                              className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-2 py-1.5 md:px-3 rounded-lg font-semibold text-[10px] md:text-xs transition-colors whitespace-nowrap"
                             >
                               Download
                             </button>
