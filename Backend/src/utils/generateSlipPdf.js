@@ -1,7 +1,7 @@
 
 import PDFDocument from "pdfkit";
 
-const formatCurrency = (value) => `Rs. ${Number(value || 0).toFixed(2)}`;
+const formatCurrency = (value) => `${Number(value || 0).toFixed(2)}`;
 
 const createPdfBuffer = (doc) =>
   new Promise((resolve, reject) => {
