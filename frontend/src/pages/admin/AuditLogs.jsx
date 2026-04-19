@@ -37,16 +37,37 @@ const AuditLogs = ({ onPageChange }) => {
     const getActionConfig = (type) => {
         switch (type) {
             case 'ASSIGNMENT':
-                return { label: 'Imli Assigned', icon: MdAssignmentInd, bg: 'bg-purple-100', text: 'text-purple-700' };
+                return { label: 'Assigned Employee', icon: MdAssignmentInd, bg: 'bg-purple-100', text: 'text-purple-700' };
             case 'RETURN':
-                return { label: 'Imli Returned', icon: MdTrendingUp, bg: 'bg-green-100', text: 'text-green-700' };
+                return { label: 'Imli Cleaned', icon: MdTrendingUp, bg: 'bg-green-100', text: 'text-green-700' };
             case 'RESTOCK':
                 return { label: 'Stock Added', icon: MdInventory, bg: 'bg-orange-100', text: 'text-orange-700' };
             case 'REGISTRATION':
-                return { label: 'New Local', icon: MdPersonAdd, bg: 'bg-blue-100', text: 'text-blue-700' };
+                return { label: 'Local Added', icon: MdPersonAdd, bg: 'bg-blue-100', text: 'text-blue-700' };
             default:
                 return { label: 'System Action', icon: MdFilterList, bg: 'bg-gray-100', text: 'text-gray-700' };
         }
+    };
+
+    const handleExport = () => {
+        if (!activities || activities.length === 0) return;
+        const csvContent = "data:text/csv;charset=utf-8," 
+            + "Timestamp,Activity,Subject,Quantity\n"
+            + activities.map(log => {
+                const config = getActionConfig(log.type);
+                const time = moment(log.createdAt).format('DD MMM YYYY hh:mm A');
+                const subject = log.localName || 'System';
+                const qty = log.quantity > 0 ? `${log.quantity} ${log.unit}` : '-';
+                return `"${time}","${config.label}","${subject}","${qty}"`;
+            }).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `STMS_Audit_Log_${moment().format('YYYY-MM-DD')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -69,7 +90,7 @@ const AuditLogs = ({ onPageChange }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
+                        <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
                             <MdFileDownload className="text-lg" />
                             <span>Export History</span>
                         </button>
@@ -151,13 +172,13 @@ const AuditLogs = ({ onPageChange }) => {
                                                         <div className={`p-1.5 md:p-2 rounded-lg ${config.bg} ${config.text} border border-transparent shrink-0`}>
                                                             <Icon className="text-sm md:text-lg" />
                                                         </div>
-                                                        <span className={`text-[9px] md:text-[11px] font-bold uppercase tracking-tight md:tracking-wide ${config.text} leading-tight`}>
-                                                            {config.label.split(' ')[1] || config.label}
+                                                        <span className={`text-[9px] md:text-[11px] font-bold tracking-tight md:tracking-wide overflow-hidden break-words whitespace-normal ${config.text} leading-tight`}>
+                                                            {config.label}
                                                         </span>
                                                     </div>
                                                 </td>
                                                 <td className="px-2 md:px-6 py-4 md:py-5">
-                                                    <p className="text-[11px] md:text-sm font-bold text-gray-800 tracking-tight truncate">
+                                                    <p className="text-[11px] md:text-sm font-bold text-gray-800 tracking-tight whitespace-normal break-words">
                                                         {log.localName || 'System'}
                                                     </p>
                                                 </td>
