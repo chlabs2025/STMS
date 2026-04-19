@@ -1,3 +1,4 @@
+
 import PDFDocument from "pdfkit";
 
 const formatCurrency = (value) => `₹ ${Number(value || 0).toFixed(2)}`;

@@ -255,3 +255,57 @@ export const pdfHealthCheck = asyncHandler(async (req, res) => {
     });
   }
 });
+
+// CLEAN ALL DATA - Keep only config/settings
+export const cleanAllData = asyncHandler(async (req, res) => {
+  console.log("[CLEANUP] Starting data cleanup - removing all transactions while keeping config");
+
+  try {
+    // Models to clean (transaction data)
+    const { localData } = await import("../models/local.model.js");
+    const { ImliAssign } = await import("../models/imliAssign.model.js");
+    const { imliReturn } = await import("../models/imliReturn.model.js");
+    const { Payment } = await import("../models/payment.model.js");
+    const { ActivityLog } = await import("../models/activity.model.js");
+    const { logs } = await import("../models/logs.model.js");
+
+    // Delete all transactions
+    const results = {
+      invoices: await Invoice.deleteMany({}),
+      slips: await Slip.deleteMany({}),
+      locals: await localData.deleteMany({}),
+      imliAssignments: await ImliAssign.deleteMany({}),
+      imliReturns: await imliReturn.deleteMany({}),
+      payments: await Payment.deleteMany({}),
+      activityLogs: await ActivityLog.deleteMany({}),
+      paymentLogs: await logs.deleteMany({})
+    };
+
+    // Reset ImliData to zero
+    await ImliData.findOneAndUpdate(
+      {},
+      {
+        totalRawImli: 0,
+        totalCleanedImli: 0
+      },
+      { upsert: true }
+    );
+
+    console.log("[CLEANUP] Data cleanup completed:", results);
+
+    res.status(200).json({
+      status: "success",
+      message: "All transaction data has been cleared. Config, settings, login credentials, and imli prices are preserved.",
+      deletedRecords: results,
+      preserved: {
+        users: "✓ Login credentials intact",
+        settings: "✓ Business profile intact",
+        imliPrices: "✓ Imli pricing intact",
+        config: "✓ System configuration intact"
+      }
+    });
+  } catch (error) {
+    console.error("[CLEANUP] Error during cleanup:", error.message);
+    throw new ApiError(500, `Cleanup failed: ${error.message}`);
+  }
+});

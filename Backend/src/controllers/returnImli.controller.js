@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 
 import { localData } from "../models/local.model.js";
 import { imliReturn } from "../models/imliReturn.model.js";
+import { ImliData } from "../models/imli.model.js";
 
 export const returnImli = asyncHandler(async (req, res) => {
   const { LocalID, returnedQuantity } = req.body;
