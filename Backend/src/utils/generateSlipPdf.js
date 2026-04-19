@@ -1,7 +1,7 @@
 
 import PDFDocument from "pdfkit";
 
-const formatCurrency = (value) => `₹ ${Number(value || 0).toFixed(2)}`;
+const formatCurrency = (value) => `Rs. ${Number(value || 0).toFixed(2)}`;
 
 const createPdfBuffer = (doc) =>
   new Promise((resolve, reject) => {
@@ -41,7 +41,7 @@ const generateSlipPdf = async (slip) => {
   doc.text("Product", columnPositions[0] + 2, tableTop + 4, { width: columnPositions[1] - columnPositions[0] - 4, align: "left" });
   doc.text("Quantity", columnPositions[1] + 2, tableTop + 4, { width: columnPositions[2] - columnPositions[1] - 4, align: "center" });
   doc.text("Weight (KG)", columnPositions[2] + 2, tableTop + 4, { width: columnPositions[3] - columnPositions[2] - 4, align: "center" });
-  doc.text("Amount ₹", columnPositions[3] + 2, tableTop + 4, { width: columnPositions[4] - columnPositions[3] - 4, align: "right" });
+  doc.text("Amount (Rs)", columnPositions[3] + 2, tableTop + 4, { width: columnPositions[4] - columnPositions[3] - 4, align: "right" });
   doc.moveTo(columnPositions[0], tableTop).lineTo(columnPositions[4], tableTop).stroke();
 
   let y = tableTop + 20;

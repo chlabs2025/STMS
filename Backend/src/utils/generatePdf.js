@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
 
-const formatCurrency = (value) => `₹ ${(Number(value) || 0).toFixed(2)}`;
+const formatCurrency = (value) => `Rs. ${(Number(value) || 0).toFixed(2)}`;
 
 const generatePdf = async (invoice) => {
   const doc = new PDFDocument({ size: "A4", margin: 30 });
@@ -154,7 +154,7 @@ const generatePdf = async (invoice) => {
   // 6. HSN Tax Summary
   const taxColX = isInterState 
     ? [startX, 120, 240, 340, 450, endX]
-    : [startX, 100, 200, 260, 360, 420, 500, endX];
+    : [startX, 100, 190, 240, 330, 380, 470, endX];
   const taxHeaders = isInterState
     ? ["HSN/SAC", "Taxable Value", "IGST Rate", "IGST Amount", "Total Tax Amount"]
     : ["HSN/SAC", "Taxable Value", "CGST Rate", "CGST Amount", "SGST Rate", "SGST Amount", "Total Tax Amount"];
