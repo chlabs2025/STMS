@@ -29,23 +29,16 @@ const Dashboard = ({ onPageChange }) => {
   const fetchDashboardData = useCallback(async (isInitial = false) => {
     if (isInitial) setLoading(true);
     try {
-      const [localsRes, rawImliRes] = await Promise.all([
-        api.get(API.GET_LOCALS),
+      const [rawImliRes] = await Promise.all([
         api.get(API.GET_RAW_IMLI)
       ]);
 
-      let inProgressCleaned = 0;
-      if (localsRes.data && localsRes.data.data) {
-        const locals = localsRes.data.data;
-        inProgressCleaned = locals.reduce((acc, local) => acc + (local.totalReturnedQuantity || 0), 0);
-      }
-
       const rawImli = rawImliRes.data?.data?.rawImliQuantity || 0;
-      const historicalCleaned = rawImliRes.data?.data?.totalCleanedImli || 0;
+      const totalCleaned = rawImliRes.data?.data?.totalCleanedImli || 0;
 
       setDashboardStats({
         rawImli,
-        cleaned: historicalCleaned + inProgressCleaned,
+        cleaned: totalCleaned,
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

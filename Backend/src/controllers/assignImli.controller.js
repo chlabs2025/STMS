@@ -13,6 +13,10 @@ export const assignImli = asyncHandler(async (req, res) => {
   if (!assignedQuantity)
     throw new ApiError(400, "assignedQuantity is required");
 
+  // Parse LocalID to Number — localData model stores it as Number
+  const numericLocalID = Number(LocalID);
+  if (isNaN(numericLocalID)) throw new ApiError(400, "LocalID must be a valid number");
+
   const stock = await ImliData.findOne();
 
   if (!stock) {
@@ -27,29 +31,38 @@ export const assignImli = asyncHandler(async (req, res) => {
     { $inc: { rawImliQuantity: -assignedQuantity } }
   );
 
-  const local = await localData.findOne({ LocalID });
+  const local = await localData.findOne({ LocalID: numericLocalID });
   if (!local) throw new ApiError(404, "Local not found");
 
   const assign = await ImliAssign.create({
-    localID: local.LocalID,
+    localID: String(local.LocalID),
     localName: local.LocalName,
     assignedQuantity,
 
     assignedBy: req.user.username, // admin or operator
   });
 
-  const totalAssignedQuantity = await localData.findOneAndUpdate(
-    { LocalID },
+  const updatedLocal = await localData.findOneAndUpdate(
+    { LocalID: numericLocalID },
     { $inc: { totalAssignedQuantity: assignedQuantity } },
     { returnDocument: 'after' }
   );
+
+  // Log activity for dashboard/audit trail
+  await logActivity({
+    type: "ASSIGNMENT",
+    description: `Assigned ${assignedQuantity} KG to ${local.LocalName}`,
+    quantity: assignedQuantity,
+    localName: local.LocalName,
+    actor: req.user.username || "Admin",
+  });
 
   return res.json(
     new ApiResponse(
       201,
       {
         assign: assign,
-        totalAssignedQuantity: totalAssignedQuantity.totalAssignedQuantity
+        totalAssignedQuantity: updatedLocal.totalAssignedQuantity
       },
       "Imli assigned successfully"
     )

@@ -1,33 +1,9 @@
 import PDFDocument from "pdfkit";
 
-const formatCurrency = (value) => `₹ ${Number(value || 0).toFixed(2)}`;
-
-const addTableRow = (doc, row, positions, y, rowHeight = 20) => {
-  let x = positions[0];
-  const cellHeight = rowHeight;
-
-  row.forEach((cell, index) => {
-    const width = positions[index + 1] - x;
-    doc.text(cell, x + 4, y + 4, {
-      width: width - 8,
-      align: index === 0 ? "center" : index === row.length - 1 ? "right" : "left",
-    });
-    x += width;
-  });
-
-  doc
-    .lineWidth(0.5)
-    .moveTo(positions[0], y)
-    .lineTo(positions[positions.length - 1], y)
-    .stroke();
-  doc
-    .moveTo(positions[0], y + cellHeight)
-    .lineTo(positions[positions.length - 1], y + cellHeight)
-    .stroke();
-};
+const formatCurrency = (value) => `₹ ${(Number(value) || 0).toFixed(2)}`;
 
 const generatePdf = async (invoice) => {
-  const doc = new PDFDocument({ size: "A4", margin: 36 });
+  const doc = new PDFDocument({ size: "A4", margin: 30 });
   const buffers = [];
 
   const pdfPromise = new Promise((resolve, reject) => {
@@ -36,144 +12,233 @@ const generatePdf = async (invoice) => {
     doc.on("error", reject);
   });
 
-  const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-  const leftWidth = pageWidth * 0.6;
-  const rightWidth = pageWidth - leftWidth;
+  const startX = 30;
+  const endX = 565;
+  const width = endX - startX; // 535
 
-  doc.font("Helvetica-Bold").fontSize(18).text("TAX INVOICE", { align: "center" });
-  doc.moveDown(1);
+  let currentY = 30;
 
-  doc.fontSize(10).font("Helvetica-Bold").text(invoice.seller?.businessName || "", { width: leftWidth });
-  doc.font("Helvetica").text(invoice.seller?.address || "", { width: leftWidth });
-  doc.text(`GSTIN/UIN: ${invoice.seller?.gstin || ""}`);
-  doc.text(`State Name: ${invoice.seller?.state || ""}, Code: ${invoice.seller?.stateCode || ""}`);
+  // Function to draw text with specific formatting
+  const drawText = (text, x, y, options = {}) => {
+    if (options.font) doc.font(options.font);
+    if (options.size) doc.fontSize(options.size);
+    doc.text(text || "", x, y, options);
+  };
 
-  const invoiceDetailsX = doc.page.margins.left + leftWidth + 16;
-  const invoiceDetailsY = doc.page.margins.top + 20;
+  // 1. Tax Invoice Header Box
+  doc.rect(startX, currentY, width, 20).stroke();
+  drawText("TAX INVOICE", startX, currentY + 5, { width, align: "center", font: "Helvetica-Bold", size: 12 });
+  currentY += 20;
 
-  doc.text(`Invoice No.: ${invoice.invoiceNumber || ""}`, invoiceDetailsX, invoiceDetailsY, { width: rightWidth });
-  doc.text(`Dated: ${invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString() : ""}`, invoiceDetailsX, invoiceDetailsY + 14, { width: rightWidth });
+  // 2. Seller and Invoice Details
+  const row2Height = 80;
+  doc.rect(startX, currentY, width, row2Height).stroke();
+  const midX2 = 320; // Move split more to the right to fit long addresses
+  doc.moveTo(midX2, currentY).lineTo(midX2, currentY + row2Height).stroke();
+  
+  // Left: Seller
+  drawText(invoice.seller?.businessName, startX + 5, currentY + 5, { font: "Helvetica-Bold", size: 10 });
+  drawText(invoice.seller?.address, startX + 5, currentY + 18, { font: "Helvetica", size: 8, width: 280 });
+  drawText(`GSTIN/UIN: `, startX + 5, currentY + 50, { font: "Helvetica", size: 8, continued: true });
+  drawText(invoice.seller?.gstin || "", startX + 5, currentY + 50, { font: "Helvetica-Bold", size: 8 });
+  drawText(`State Name: ${invoice.seller?.state || ""}, Code: ${invoice.seller?.stateCode || ""}`, startX + 5, currentY + 62, { font: "Helvetica", size: 8 });
 
-  doc.moveDown(1);
+  // Right: Invoice Details
+  drawText(`Invoice No.: `, midX2 + 5, currentY + 5, { font: "Helvetica", size: 8, continued: true });
+  drawText(invoice.invoiceNumber || "", midX2 + 5, currentY + 5, { font: "Helvetica-Bold", size: 8 });
+  drawText(`Dated: `, midX2 + 5, currentY + 18, { font: "Helvetica", size: 8, continued: true });
+  drawText(invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString() : "", midX2 + 5, currentY + 18, { font: "Helvetica-Bold", size: 8 });
+  currentY += row2Height;
 
-  doc.font("Helvetica-Bold").text("Buyer (Bill to)");
-  doc.font("Helvetica").text(invoice.customer?.name || "");
-  doc.text(invoice.customer?.address || "");
-  doc.text(`GSTIN/UIN: ${invoice.customer?.gstin || ""}`);
-  doc.text(`State Name: ${invoice.customer?.state || ""}, Code: ${invoice.customer?.stateCode || ""}`);
+  // 3. Buyer and Transport Details
+  const row3Height = 75;
+  doc.rect(startX, currentY, width, row3Height).stroke();
+  doc.moveTo(midX2, currentY).lineTo(midX2, currentY + row3Height).stroke();
 
-  doc.moveDown(0.5);
-  doc.text(`Delivery Note: ${invoice.transport?.deliveryNote || ""}`);
-  doc.text(`Dispatch Doc No: ${invoice.transport?.dispatchDocNo || ""}`);
-  doc.text(`Destination: ${invoice.transport?.destination || ""}`);
-  doc.text(`Motor Vehicle No: ${invoice.transport?.vehicleNo || ""}`);
-  doc.text(`LR/RR No: ${invoice.transport?.lrNo || ""}`);
+  // Left: Buyer
+  drawText("Buyer (Bill to)", startX + 5, currentY + 5, { font: "Helvetica-Bold", size: 8 });
+  drawText(invoice.customer?.name, startX + 5, currentY + 16, { font: "Helvetica-Bold", size: 9 });
+  drawText(invoice.customer?.address, startX + 5, currentY + 28, { font: "Helvetica", size: 8, width: 280 });
+  drawText(`GSTIN/UIN: `, startX + 5, currentY + 50, { font: "Helvetica", size: 8, continued: true });
+  drawText(`${invoice.customer?.gstin || ""}`, startX + 5, currentY + 50, { font: "Helvetica-Bold", size: 8 });
+  drawText(`State Name: ${invoice.customer?.state || ""}, Code: ${invoice.customer?.stateCode || ""}`, startX + 5, currentY + 62, { font: "Helvetica", size: 8 });
 
-  doc.moveDown(1);
+  // Right: Transport
+  drawText(`Delivery Note: ${invoice.transport?.deliveryNote || ""}`, midX2 + 5, currentY + 5, { font: "Helvetica", size: 8 });
+  drawText(`Dispatch Doc No: ${invoice.transport?.dispatchDocNo || ""}`, midX2 + 5, currentY + 17, { font: "Helvetica", size: 8 });
+  drawText(`Destination: ${invoice.transport?.destination || ""}`, midX2 + 5, currentY + 29, { font: "Helvetica", size: 8 });
+  drawText(`Motor Vehicle No: ${invoice.transport?.vehicleNo || ""}`, midX2 + 5, currentY + 41, { font: "Helvetica", size: 8 });
+  drawText(`LR/RR No: ${invoice.transport?.lrNo || ""}`, midX2 + 5, currentY + 53, { font: "Helvetica", size: 8 });
+  currentY += row3Height;
 
-  const positions = [
-    doc.page.margins.left,
-    doc.page.margins.left + 30,
-    doc.page.margins.left + 190,
-    doc.page.margins.left + 250,
-    doc.page.margins.left + 310,
-    doc.page.margins.left + 355,
-    doc.page.margins.left + 425,
-    doc.page.margins.left + pageWidth,
-  ];
+  // 4. Products Table
+  const tableStartY = currentY;
+  const colX = [startX, 60, 240, 300, 360, 420, 460, endX];
+  
+  // Header
+  doc.rect(startX, currentY, width, 20).stroke();
+  const headers = ["Sl", "Description of Goods", "HSN/SAC", "Quantity", "Rate", "per", "Amount"];
+  headers.forEach((text, i) => {
+    drawText(text, colX[i] + 2, currentY + 6, { 
+      width: colX[i+1] - colX[i] - 4, 
+      align: "center", 
+      font: "Helvetica-Bold", 
+      size: 8 
+    });
+  });
+  currentY += 20;
 
-  const tableTop = doc.y;
-  doc.font("Helvetica-Bold").fontSize(9);
-  addTableRow(doc, ["Sl", "Description of Goods", "HSN/SAC", "Quantity", "Rate", "per", "Amount"], positions, tableTop, 22);
-
-  let y = tableTop + 22;
-  doc.font("Helvetica").fontSize(9);
+  // Items
+  let itemY = currentY + 5;
   invoice.items?.forEach((item, index) => {
-    addTableRow(
-      doc,
-      [
-        `${index + 1}`,
-        item.description || "",
-        item.hsn || "",
-        `${item.quantity || 0} ${item.unit || ""}`,
-        formatCurrency(item.rate || 0),
-        "kgs",
-        formatCurrency(item.amount || 0),
-      ],
-      positions,
-      y,
-      22,
-    );
-    y += 22;
+    drawText(`${index + 1}`, colX[0], itemY, { width: colX[1]-colX[0], align: "center", font: "Helvetica", size: 8 });
+    drawText(item.description || "Tamarind Seeds", colX[1]+5, itemY, { width: colX[2]-colX[1]-10, align: "left" });
+    drawText(item.hsn || "121190", colX[2], itemY, { width: colX[3]-colX[2], align: "center" });
+    drawText(`${item.quantity || 0} ${item.unit || "kgs"}`, colX[3], itemY, { width: colX[4]-colX[3], align: "center" });
+    drawText(formatCurrency(item.rate || 0), colX[4]-5, itemY, { width: colX[5]-colX[4], align: "right" });
+    drawText(item.unit || "kgs", colX[5], itemY, { width: colX[6]-colX[5], align: "center" });
+    drawText(formatCurrency(item.amount || 0), colX[6]-5, itemY, { width: colX[7]-colX[6], align: "right" });
+    itemY += 15;
   });
 
-  if (invoice.igstTotal > 0) {
-    addTableRow(doc, ["", "", "", "", "", "IGST", formatCurrency(invoice.igstTotal || 0)], positions, y, 22);
-    y += 22;
+  currentY = Math.max(itemY + 30, currentY + 100); // Ensure table has some minimum height
+
+  // Table Totals / Tax Lines
+  const isInterState = invoice.igstTotal > 0;
+  
+  doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
+  
+  if (isInterState) {
+    currentY += 5;
+    drawText("IGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
+    drawText(formatCurrency(invoice.igstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    currentY += 15;
   } else {
-    addTableRow(doc, ["", "", "", "", "", "CGST", formatCurrency(invoice.cgstTotal || 0)], positions, y, 22);
-    y += 22;
-    addTableRow(doc, ["", "", "", "", "", "SGST", formatCurrency(invoice.sgstTotal || 0)], positions, y, 22);
-    y += 22;
+    currentY += 5;
+    drawText("CGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
+    drawText(formatCurrency(invoice.cgstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    currentY += 15;
+    
+    doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
+    currentY += 5;
+    drawText("SGST", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
+    drawText(formatCurrency(invoice.sgstTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+    currentY += 15;
   }
 
-  addTableRow(doc, ["", "", "", "", "", "Total", formatCurrency(invoice.grandTotal || 0)], positions, y, 22);
+  doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
+  currentY += 5;
+  drawText("Total", colX[5]-5, currentY, { width: colX[6]-colX[5], align: "right", font: "Helvetica-Bold", size: 8 });
+  drawText(formatCurrency(invoice.grandTotal || 0), colX[6]-5, currentY, { width: colX[7]-colX[6], align: "right" });
+  currentY += 15;
 
-  doc.moveDown(2);
-  doc.font("Helvetica-Bold").text("Amount Chargeable (in words)");
-  doc.font("Helvetica").text(`INR ${invoice.amountWords || ""}`);
-  doc.moveDown(0.5);
-  doc.text("E. & O.E", { align: "center" });
+  // Draw vertical lines for the entire table
+  doc.rect(startX, tableStartY, width, currentY - tableStartY).stroke();
+  for (let i = 1; i < colX.length - 1; i++) {
+    doc.moveTo(colX[i], tableStartY).lineTo(colX[i], currentY).stroke();
+  }
 
-  doc.moveDown(1);
-  doc.font("Helvetica-Bold").text("HSN Tax Summary");
-  doc.moveDown(0.5);
+  // 5. Amount Words
+  const row5Height = 25;
+  doc.rect(startX, currentY, width, row5Height).stroke();
+  const eoeX = endX - 60;
+  doc.moveTo(eoeX, currentY).lineTo(eoeX, currentY + row5Height).stroke();
+  
+  drawText("Amount Chargeable (in words)", startX + 5, currentY + 3, { font: "Helvetica", size: 8 });
+  drawText(`INR ${invoice.amountWords || ""}`, startX + 5, currentY + 13, { font: "Helvetica-Bold", size: 9 });
+  drawText("E. & O.E", eoeX, currentY + 13, { width: 60, align: "center", font: "Helvetica-Bold", size: 8 });
+  
+  currentY += row5Height;
+  currentY += 5; // small gap
 
-  const summaryPositions = [
-    doc.page.margins.left,
-    doc.page.margins.left + 90,
-    doc.page.margins.left + 160,
-    doc.page.margins.left + 230,
-    doc.page.margins.left + 290,
-    doc.page.margins.left + 360,
-    doc.page.margins.left + 430,
-    doc.page.margins.left + pageWidth,
-  ];
-
-  const isInterState = invoice.igstTotal > 0;
-  const summaryHeaders = isInterState
-    ? ["HSN/SAC", "Taxable Value", "IGST Rate", "IGST Amount", "", "", "Total Tax Amount"]
+  // 6. HSN Tax Summary
+  const taxColX = isInterState 
+    ? [startX, 120, 240, 340, 450, endX]
+    : [startX, 100, 200, 260, 360, 420, 500, endX];
+  const taxHeaders = isInterState
+    ? ["HSN/SAC", "Taxable Value", "IGST Rate", "IGST Amount", "Total Tax Amount"]
     : ["HSN/SAC", "Taxable Value", "CGST Rate", "CGST Amount", "SGST Rate", "SGST Amount", "Total Tax Amount"];
 
-  addTableRow(doc, summaryHeaders, [summaryPositions[0], summaryPositions[1], summaryPositions[2], summaryPositions[3], summaryPositions[4], summaryPositions[5], summaryPositions[7]], doc.y, 22);
-
-  y = doc.y + 22;
-  doc.font("Helvetica").fontSize(9);
-
-  invoice.items?.forEach((item) => {
-    const itemTax = isInterState ? item.igst : (item.cgst || 0) + (item.sgst || 0);
-    const halfRate = item.gstPercent ? item.gstPercent / 2 : 0;
-
-    const row = isInterState
-      ? [item.hsn || "", formatCurrency(item.amount || 0), `${item.gstPercent || 0}%`, formatCurrency(item.igst || 0), "", "", formatCurrency(itemTax || 0)]
-      : [item.hsn || "", formatCurrency(item.amount || 0), `${halfRate}%`, formatCurrency(item.cgst || 0), `${halfRate}%`, formatCurrency(item.sgst || 0), formatCurrency(itemTax || 0)];
-
-    addTableRow(doc, row, [summaryPositions[0], summaryPositions[1], summaryPositions[2], summaryPositions[3], summaryPositions[4], summaryPositions[5], summaryPositions[7]], y, 22);
-    y += 22;
+  const taxBoxStartY = currentY;
+  
+  // Tax Header
+  doc.rect(startX, currentY, width, 15).stroke();
+  taxHeaders.forEach((text, i) => {
+    drawText(text, taxColX[i] + 2, currentY + 4, { 
+      width: taxColX[i+1] - taxColX[i] - 4, align: "center", font: "Helvetica-Bold", size: 8 
+    });
   });
+  currentY += 15;
 
-  doc.moveDown(1);
-  doc.font("Helvetica-Bold").text(`Tax Amount (in words): INR ${invoice.taxAmountWords || ""}`);
-  doc.moveDown(1);
-  doc.font("Helvetica").text(
-    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
-  );
-  doc.moveDown(2);
-  doc.font("Helvetica-Bold").text(`for ${invoice.seller?.businessName || ""}`);
-  doc.moveDown(3);
-  doc.text("Authorised Signatory");
-  doc.moveDown(1);
-  doc.text("This is a Computer Generated Invoice", { align: "center" });
+  // Tax Items
+  let taxItemY = currentY + 4;
+  invoice.items?.forEach((item) => {
+    const halfRate = item.gstPercent ? item.gstPercent / 2 : 0;
+    const itemTax = isInterState ? item.igst : (item.cgst || 0) + (item.sgst || 0);
+
+    drawText(item.hsn || "121190", taxColX[0], taxItemY, { width: taxColX[1]-taxColX[0], align: "center", font: "Helvetica", size: 8 });
+    drawText(formatCurrency(item.amount || 0), taxColX[1]-5, taxItemY, { width: taxColX[2]-taxColX[1], align: "right" });
+    
+    if (isInterState) {
+      drawText(`${item.gstPercent || 0}%`, taxColX[2], taxItemY, { width: taxColX[3]-taxColX[2], align: "center" });
+      drawText(formatCurrency(item.igst || 0), taxColX[3]-5, taxItemY, { width: taxColX[4]-taxColX[3], align: "right" });
+      drawText(formatCurrency(itemTax || 0), taxColX[4]-5, taxItemY, { width: taxColX[5]-taxColX[4], align: "right" });
+    } else {
+      drawText(`${halfRate}%`, taxColX[2], taxItemY, { width: taxColX[3]-taxColX[2], align: "center" });
+      drawText(formatCurrency(item.cgst || 0), taxColX[3]-5, taxItemY, { width: taxColX[4]-taxColX[3], align: "right" });
+      drawText(`${halfRate}%`, taxColX[4], taxItemY, { width: taxColX[5]-taxColX[4], align: "center" });
+      drawText(formatCurrency(item.sgst || 0), taxColX[5]-5, taxItemY, { width: taxColX[6]-taxColX[5], align: "right" });
+      drawText(formatCurrency(itemTax || 0), taxColX[6]-5, taxItemY, { width: taxColX[7]-taxColX[6], align: "right" });
+    }
+    taxItemY += 15;
+  });
+  
+  currentY = taxItemY + 5;
+  doc.moveTo(startX, currentY).lineTo(endX, currentY).stroke();
+  
+  // Tax Total
+  currentY += 4;
+  drawText("Total", taxColX[0]-5, currentY, { width: taxColX[1]-taxColX[0], align: "right", font: "Helvetica-Bold", size: 8 });
+  drawText(formatCurrency(invoice.subtotal || 0), taxColX[1]-5, currentY, { width: taxColX[2]-taxColX[1], align: "right" });
+  if (isInterState) {
+    drawText(formatCurrency(invoice.igstTotal || 0), taxColX[3]-5, currentY, { width: taxColX[4]-taxColX[3], align: "right" });
+    drawText(formatCurrency(invoice.igstTotal || 0), taxColX[4]-5, currentY, { width: taxColX[5]-taxColX[4], align: "right" });
+  } else {
+    drawText(formatCurrency(invoice.cgstTotal || 0), taxColX[3]-5, currentY, { width: taxColX[4]-taxColX[3], align: "right" });
+    drawText(formatCurrency(invoice.sgstTotal || 0), taxColX[5]-5, currentY, { width: taxColX[6]-taxColX[5], align: "right" });
+    drawText(formatCurrency((invoice.cgstTotal||0)+(invoice.sgstTotal||0)), taxColX[6]-5, currentY, { width: taxColX[7]-taxColX[6], align: "right" });
+  }
+  currentY += 15;
+
+  // Draw tax vertical lines & boundary
+  doc.rect(startX, taxBoxStartY, width, currentY - taxBoxStartY).stroke();
+  for (let i = 1; i < taxColX.length - 1; i++) {
+    doc.moveTo(taxColX[i], taxBoxStartY).lineTo(taxColX[i], currentY).stroke();
+  }
+
+  // 7. Tax Word Amount
+  doc.rect(startX, currentY, width, 15).stroke();
+  drawText(`Tax Amount (in words)  :  INR ${invoice.taxAmountWords || ""}`, startX + 5, currentY + 4, { font: "Helvetica-Bold", size: 8 });
+  currentY += 15;
+
+  // 8. Declaration & Signatory
+  const row8Height = 60;
+  doc.rect(startX, currentY, width, row8Height).stroke();
+  const signatureX = 350;
+  doc.moveTo(signatureX, currentY).lineTo(signatureX, currentY + row8Height).stroke();
+  
+  // Declaration
+  drawText("Declaration", startX + 5, currentY + 5, { font: "Helvetica-Bold", size: 8 });
+  drawText("We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.", startX + 5, currentY + 15, { font: "Helvetica", size: 8, width: signatureX - startX - 10 });
+  
+  // Signatory
+  drawText(`for ${invoice.seller?.businessName || ""}`, signatureX, currentY + 5, { width: endX - signatureX, align: "center", font: "Helvetica-Bold", size: 8 });
+  drawText("Authorised Signatory", signatureX, currentY + row8Height - 15, { width: endX - signatureX, align: "center", font: "Helvetica", size: 8 });
+  
+  currentY += row8Height;
+  currentY += 10;
+  
+  drawText("This is a Computer Generated Invoice", startX, currentY, { width, align: "center", font: "Helvetica", size: 8 });
 
   doc.end();
   return pdfPromise;

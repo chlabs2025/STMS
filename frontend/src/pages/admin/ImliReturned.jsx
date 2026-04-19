@@ -282,7 +282,7 @@ const ImliReturned = () => {
                             <div className="flex-1">
                               <div className="font-semibold text-gray-900 text-sm">{local.LocalID} - {local.LocalName}</div>
                               <div className="text-xs text-gray-500 mt-0.5">
-                                Assigned: <span className="font-medium text-gray-700">{local.totalReturnedQuantity > 0 ? 0 : local.totalAssignedQuantity} KG</span>
+                                Assigned: <span className="font-medium text-gray-700">{Math.max(0, (local.totalAssignedQuantity || 0) - (local.totalReturnedQuantity || 0))} KG</span>
                               </div>
                             </div>
                           </div>
@@ -310,13 +310,13 @@ const ImliReturned = () => {
                       <div className="bg-white px-3 py-1.5 rounded border border-orange-200/50 shadow-sm ml-11 sm:ml-0">
                         <span className="text-xs text-gray-500 font-medium uppercase tracking-wider mr-2"><T k="Assigned" /></span>
                         <span className="text-orange-600 font-bold text-base md:text-lg">
-                          {selectedLocal.totalReturnedQuantity > 0 ? 0 : selectedLocal.totalAssignedQuantity} <span className="text-xs text-gray-400 font-normal">KG</span>
+                          {Math.max(0, (selectedLocal.totalAssignedQuantity || 0) - (selectedLocal.totalReturnedQuantity || 0))} <span className="text-xs text-gray-400 font-normal">KG</span>
                         </span>
                       </div>
                     </div>
 
                     {/* Assignment History Table */}
-                    {(selectedLocal.totalReturnedQuantity > 0 ? 0 : selectedLocal.totalAssignedQuantity) > 0 && (
+                    {Math.max(0, (selectedLocal.totalAssignedQuantity || 0) - (selectedLocal.totalReturnedQuantity || 0)) > 0 && (
                       <div className="bg-white border text-sm border-gray-200 rounded-lg overflow-hidden shadow-sm">
                         <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                           <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Assignment History</h4>
@@ -371,12 +371,12 @@ const ImliReturned = () => {
                         type="number"
                         step="0.01"
                         min="0"
-                        max={selectedLocal.totalReturnedQuantity > 0 ? 0 : selectedLocal.totalAssignedQuantity}
+                        max={Math.max(0, (selectedLocal.totalAssignedQuantity || 0) - (selectedLocal.totalReturnedQuantity || 0))}
                         placeholder="0.00"
                         value={formData.returnedQuantity}
                         onChange={handleQuantityChange}
                         onWheel={(e) => e.target.blur()}
-                        disabled={(selectedLocal.totalReturnedQuantity > 0 ? 0 : selectedLocal.totalAssignedQuantity) <= 0}
+                        disabled={Math.max(0, (selectedLocal.totalAssignedQuantity || 0) - (selectedLocal.totalReturnedQuantity || 0)) <= 0}
                         className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
                         style={{ fontSize: '16px' }}
                         required

@@ -14,16 +14,22 @@ export const returnImli = asyncHandler(async (req, res) => {
   if (!returnedQuantity)
     throw new ApiError(400, "returnedQuantity is required");
 
+  // Parse LocalID to Number — localData model stores it as Number
+  const numericLocalID = Number(LocalID);
+  if (isNaN(numericLocalID)) throw new ApiError(400, "LocalID must be a valid number");
+
   const local = await localData.findOne({
-    LocalID: LocalID,
+    LocalID: numericLocalID,
   });
 
   if (!local) throw new ApiError(404, "Local not found");
 
-  if (returnedQuantity > local.totalAssignedQuantity) {
+  // Check against REMAINING balance, not total assigned
+  const remaining = (local.totalAssignedQuantity || 0) - (local.totalReturnedQuantity || 0);
+  if (returnedQuantity > remaining) {
     throw new ApiError(
       400,
-      "Returned quantity cannot exceed assigned quantity"
+      `Cannot return more than remaining ${remaining} KG`
     );
   }
 
