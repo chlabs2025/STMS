@@ -405,43 +405,43 @@ function Billing() {
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[600px]">
+                <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Date</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Document No.</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Type</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Party Name</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-right">Amount</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600 text-center">Action</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Date</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Document No.</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Type</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Party Name</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell text-right">Amount</th>
+                      <th className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {historyData.map((item, idx) => (
                       <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="py-3 px-4 text-sm text-gray-900 font-medium">
+                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-900 font-medium hidden md:table-cell">
                           {new Date(item.date).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-600">
+                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-600">
                           {item.idNumber}
                         </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${item.type === 'invoice' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                        <td className="py-3 px-2 md:px-4">
+                          <span className={`px-2 py-0.5 md:px-2.5 md:py-1 text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
                             {item.type === 'invoice' ? 'Tax Invoice' : 'Slip Bill'}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-700">
+                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 hidden md:table-cell">
                           {item.name || "N/A"}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-900 font-bold text-right">
+                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm text-gray-900 font-bold text-right hidden md:table-cell">
                           ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-3 px-2 md:px-4 text-center">
                           <button
                             onClick={() => handleDownloadHistory(item)}
-                            className="text-orange-600 hover:text-orange-800 font-semibold text-sm transition-colors"
+                            className="bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors whitespace-nowrap"
                           >
-                            Download PDF
+                            Download
                           </button>
                         </td>
                       </tr>
