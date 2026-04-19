@@ -1,103 +1,77 @@
-import fs from "fs";
-import puppeteer from "puppeteer";
-import ejs from "ejs";
-import path from "path";
-import { fileURLToPath } from "url";
+import PDFDocument from "pdfkit";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const formatCurrency = (value) => `₹ ${Number(value || 0).toFixed(2)}`;
 
-const TIMEOUT_MS = 30_000;
-
-const isExecutable = (executablePath) => {
-  try {
-    const stats = fs.statSync(executablePath)
-    fs.accessSync(executablePath, fs.constants.X_OK)
-    return stats.isFile()
-  } catch {
-    return false
-  }
-}
-
-const getExecutablePath = () => {
-  const candidates = [
-    process.env.PUPPETEER_EXECUTABLE_PATH,
-    process.env.CHROME_PATH,
-    process.env.CHROMIUM_PATH,
-    puppeteer.executablePath?.(),
-    "/usr/bin/google-chrome-stable",
-    "/usr/bin/google-chrome",
-    "/usr/bin/chromium-browser",
-    "/usr/bin/chromium",
-  ].filter(Boolean)
-
-  for (const executablePath of candidates) {
-    if (isExecutable(executablePath)) {
-      return executablePath
-    }
-    console.warn(`[PDF] Skipping invalid browser path: ${executablePath}`)
-  }
-  return undefined
-}
+const createPdfBuffer = (doc) =>
+  new Promise((resolve, reject) => {
+    const chunks = [];
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+    doc.end();
+  });
 
 const generateSlipPdf = async (slip) => {
-  console.log("[PDF] Starting slip PDF generation for slip:", slip.slipNumber);
-  const templatePath = path.join(__dirname, "../templates/slip.ejs");
-  console.log("[PDF] Template path:", templatePath);
+  const doc = new PDFDocument({ size: "A5", margin: 20 });
 
-  const html = await ejs.renderFile(templatePath, { slip });
-  console.log("[PDF] HTML rendered, length:", html.length);
+  const pdfPromise = new Promise((resolve, reject) => {
+    const chunks = [];
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+  });
 
-  let browser = null;
-  try {
-    const executablePath = getExecutablePath()
-    console.log("[PDF] Using executable path:", executablePath);
+  doc.font("Helvetica-Bold").fontSize(18).text(slip.senderName || "", { align: "center" });
+  doc.moveDown(0.25);
+  doc.font("Helvetica").fontSize(10).text(slip.senderAddress || "", { align: "center" });
 
-    const launchConfig = {
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor",
-      ],
-    }
-    if (executablePath) {
-      launchConfig.executablePath = executablePath
-    }
+  doc.moveDown(1);
+  doc.font("Helvetica-Bold").fontSize(10).text(`Slip No: ${slip.slipNumber || ""}`);
+  doc.font("Helvetica").fontSize(10).text(`Name: ${slip.receiverName || ""}`);
+  doc.font("Helvetica").fontSize(10).text(`Date: ${slip.date ? new Date(slip.date).toLocaleDateString() : ""}`);
 
-    console.log("[PDF] Launching browser with config:", { executablePath: launchConfig.executablePath, args: launchConfig.args.slice(0, 3) });
-    browser = await puppeteer.launch(launchConfig);
-    console.log("[PDF] Browser launched successfully");
+  doc.moveDown(0.5);
 
-    const page = await browser.newPage();
-    console.log("[PDF] New page created");
+  const tableTop = doc.y;
+  const tableWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const columnPositions = [doc.page.margins.left, doc.page.margins.left + 120, doc.page.margins.left + 180, doc.page.margins.left + 240, doc.page.margins.left + tableWidth];
 
-    await page.setContent(html, {
-      waitUntil: "networkidle0",
-      timeout: TIMEOUT_MS,
-    });
-    console.log("[PDF] HTML content set");
+  doc.font("Helvetica-Bold").fontSize(9);
+  doc.text("Product", columnPositions[0] + 2, tableTop + 4, { width: columnPositions[1] - columnPositions[0] - 4, align: "left" });
+  doc.text("Quantity", columnPositions[1] + 2, tableTop + 4, { width: columnPositions[2] - columnPositions[1] - 4, align: "center" });
+  doc.text("Weight (KG)", columnPositions[2] + 2, tableTop + 4, { width: columnPositions[3] - columnPositions[2] - 4, align: "center" });
+  doc.text("Amount ₹", columnPositions[3] + 2, tableTop + 4, { width: columnPositions[4] - columnPositions[3] - 4, align: "right" });
+  doc.moveTo(columnPositions[0], tableTop).lineTo(columnPositions[4], tableTop).stroke();
 
-    const pdf = await page.pdf({
-      format: "A5",
-      printBackground: true,
-      margin: { top: "10mm", bottom: "10mm", left: "10mm", right: "10mm" },
-      timeout: TIMEOUT_MS,
-    });
-    console.log("[PDF] PDF generated, size:", pdf.length);
+  let y = tableTop + 20;
+  doc.font("Helvetica").fontSize(9);
+  slip.items?.forEach((item) => {
+    doc.text(item.product || "", columnPositions[0] + 2, y + 4, { width: columnPositions[1] - columnPositions[0] - 4, align: "left" });
+    doc.text(`${item.quantity || 0}`, columnPositions[1] + 2, y + 4, { width: columnPositions[2] - columnPositions[1] - 4, align: "center" });
+    doc.text(`${item.weight || 0}`, columnPositions[2] + 2, y + 4, { width: columnPositions[3] - columnPositions[2] - 4, align: "center" });
+    doc.text(formatCurrency(item.amount || 0), columnPositions[3] + 2, y + 4, { width: columnPositions[4] - columnPositions[3] - 4, align: "right" });
+    doc.moveTo(columnPositions[0], y).lineTo(columnPositions[4], y).stroke();
+    y += 20;
+  });
 
-    return pdf;
-  } catch (err) {
-    console.error("[PDF] Failed to generate slip PDF:", err.message);
-    console.error("[PDF] Error stack:", err.stack);
-    throw new Error(`PDF generation failed: ${err.message}`);
-  } finally {
-    if (browser) {
-      await browser.close().catch(() => {});
-    }
-  }
+  doc.moveTo(columnPositions[0], y).lineTo(columnPositions[4], y).stroke();
+
+  doc.font("Helvetica-Bold").text("Total", columnPositions[0] + 2, y + 4, { width: columnPositions[1] - columnPositions[0] - 4, align: "left" });
+  doc.text("", columnPositions[1] + 2, y + 4, { width: columnPositions[2] - columnPositions[1] - 4, align: "center" });
+  doc.text(`${slip.totalWeight || 0} kg`, columnPositions[2] + 2, y + 4, { width: columnPositions[3] - columnPositions[2] - 4, align: "center" });
+  doc.text(formatCurrency(slip.totalAmount || 0), columnPositions[3] + 2, y + 4, { width: columnPositions[4] - columnPositions[3] - 4, align: "right" });
+  doc.moveTo(columnPositions[0], y + 20).lineTo(columnPositions[4], y + 20).stroke();
+
+  doc.y = y + 30;
+  doc.font("Helvetica").fontSize(10).text(`Driver Name: ${slip.driverName || ""}`);
+
+  doc.moveDown(2);
+  doc.font("Helvetica-Bold").text("For SUPER IMLI TRADERS", { align: "right" });
+  doc.moveDown(1.5);
+  doc.text("Authorised Signature", { align: "right" });
+
+  doc.end();
+  return pdfPromise;
 };
 
 export default generateSlipPdf;
