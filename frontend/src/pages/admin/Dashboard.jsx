@@ -34,7 +34,7 @@ const Dashboard = ({ onPageChange }) => {
       ]);
 
       const rawImli = rawImliRes.data?.data?.rawImliQuantity || 0;
-      const totalCleaned = rawImliRes.data?.data?.totalCleanedImli || 0;
+      const totalCleaned = Math.max(0, rawImliRes.data?.data?.totalCleanedImli || 0);
 
       setDashboardStats({
         rawImli,

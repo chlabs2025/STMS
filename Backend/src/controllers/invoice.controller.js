@@ -72,12 +72,14 @@ export const createInvoice = asyncHandler(async (req, res) => {
       totalAmount,
     });
 
+    const currentImliData = await ImliData.findOne({});
+    if (!currentImliData || currentImliData.totalCleanedImli < totalWeight) {
+      throw new ApiError(400, `Not enough cleaned imli stock. Available: ${currentImliData?.totalCleanedImli || 0} kg, Required: ${totalWeight} kg`);
+    }
+
     // Deduct cleaned imli from total stock
-    await ImliData.findOneAndUpdate(
-      {},
-      { $inc: { totalCleanedImli: -totalWeight } },
-      { upsert: true }
-    );
+    currentImliData.totalCleanedImli -= totalWeight;
+    await currentImliData.save();
 
     // Generate slip pdf
     console.log("[BILLING] Generating slip PDF");
