@@ -38,6 +38,7 @@ const API = {
     // ─── Settings ─────────────────────────────────────────────────────────────
     GET_SETTINGS: "/settings",
     SAVE_SETTINGS: "/saveSetting",
+    CLEAR_INVENTORY: "/clear-inventory",
 
     // ─── Dashboard ────────────────────────────────────────────────────────────
     RECENT_ACTIVITY: "/dashboard/activity",

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MdSettings, MdCheckCircle, MdError, MdEco, MdSave, MdEdit, MdClose } from 'react-icons/md'
+import { MdSettings, MdCheckCircle, MdError, MdEco, MdSave, MdEdit, MdClose, MdDeleteForever } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import { t } from "../../i18n/translations"
@@ -27,6 +27,10 @@ export default function Settings({ activeTab: initialTab }) {
     const [isSellerEditing, setIsSellerEditing] = useState(false)
     const [successMessage, setSuccessMessage] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
+
+    // Clean Inventory state
+    const [confirmTarget, setConfirmTarget] = useState(null) // 'raw' | 'cleaned' | null
+    const [clearLoading, setClearLoading] = useState(false)
 
 
     useEffect(() => {
@@ -114,13 +118,72 @@ export default function Settings({ activeTab: initialTab }) {
         setSeller(prev => ({ ...prev, [name]: value }))
     }
 
+    const handleClearInventory = async () => {
+        if (!confirmTarget) return
+
+        setClearLoading(true)
+        setSuccessMessage("")
+        setErrorMessage("")
+
+        try {
+            const response = await api.post(API.CLEAR_INVENTORY, {
+                clearRaw: confirmTarget === 'raw',
+                clearCleaned: confirmTarget === 'cleaned',
+            })
+            setSuccessMessage(response.data?.message || "Inventory cleared successfully")
+        } catch (error) {
+            setErrorMessage(error.response?.data?.message || "Failed to clear inventory. Please try again.")
+        } finally {
+            setClearLoading(false)
+            setConfirmTarget(null)
+        }
+    }
+
     const tabs = [
         { id: 'pricing', label: 'Pricing', icon: MdEco },
         { id: 'business', label: 'Business Profile', icon: MdSettings },
+        { id: 'clean', label: 'Clean Inventory', icon: MdDeleteForever },
     ]
 
     return (
         <div className="min-h-full bg-[#F8FAFC] p-3 md:p-6 overflow-x-hidden">
+
+            {/* Simple Confirm Modal */}
+            {confirmTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+                                <MdDeleteForever className="text-red-600 text-xl" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-900 text-base">Are you sure?</h3>
+                                <p className="text-xs text-gray-400 font-medium">
+                                    This will reset {confirmTarget === 'raw' ? 'Raw Imli' : 'Cleaned Imli'} quantity to 0
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex gap-3 mt-5">
+                            <button
+                                onClick={() => setConfirmTarget(null)}
+                                className="flex-1 py-3 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleClearInventory}
+                                disabled={clearLoading}
+                                className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-600 text-white hover:bg-red-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {clearLoading
+                                    ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    : <>Yes, Clear</>}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-3xl mx-auto mb-6">
                 <div className="flex bg-gray-100 p-1 rounded-xl">
                     <button
@@ -135,11 +198,17 @@ export default function Settings({ activeTab: initialTab }) {
                     >
                         <T k="Business Profile" />
                     </button>
+                    <button
+                        onClick={() => { setActiveTab("clean"); setSuccessMessage(""); setErrorMessage(""); }}
+                        className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "clean" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                    >
+                        Clean Inventory
+                    </button>
                 </div>
             </div>
 
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
-                
+
                 {/* Content Panel */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative flex flex-col min-h-[450px] transition-all duration-300">
                     <div className="flex-1 relative">
@@ -174,7 +243,7 @@ export default function Settings({ activeTab: initialTab }) {
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Imli Price Configuration</h2>
-                                            <p className="text-gray-400 text-xs md:text-sm mt-1 font-semibold uppercase tracking-wider">Set standard price for cleaned imli</p>
+
                                         </div>
                                         <button
                                             onClick={() => setIsPriceEditing(!isPriceEditing)}
@@ -240,7 +309,7 @@ export default function Settings({ activeTab: initialTab }) {
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight"><T k="Business Settings" /></h2>
-                                            <p className="text-gray-400 text-xs md:text-sm mt-1 font-semibold uppercase tracking-wider">Manage seller profile & address</p>
+
                                         </div>
                                         <button
                                             type="button"
@@ -390,6 +459,49 @@ export default function Settings({ activeTab: initialTab }) {
                                     </form>
                                 </div>
                             )}
+                            {activeTab === 'clean' && (
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <div className="mb-8 border-b border-gray-100 pb-6">
+                                        <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Clean Inventory</h2>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {/* Raw Imli */}
+                                        <div className="flex items-center justify-between p-5 border border-gray-100 rounded-2xl bg-gray-50">
+                                            <div>
+                                                <p className="font-bold text-gray-800 text-sm">Raw Imli Quantity</p>
+                                                <p className="text-xs text-gray-400 mt-0.5">Reset raw imli stock to 0 KG</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setConfirmTarget('raw')}
+                                                className="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-red-600/20"
+                                            >
+                                                <MdDeleteForever className="text-lg" />
+                                                Clear
+                                            </button>
+                                        </div>
+
+                                        {/* Cleaned Imli */}
+                                        <div className="flex items-center justify-between p-5 border border-gray-100 rounded-2xl bg-gray-50">
+                                            <div>
+                                                <p className="font-bold text-gray-800 text-sm">Cleaned Imli Quantity</p>
+                                                <p className="text-xs text-gray-400 mt-0.5">Reset cleaned imli stock to 0 KG</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setConfirmTarget('cleaned')}
+                                                className="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-red-600/20"
+                                            >
+                                                <MdDeleteForever className="text-lg" />
+                                                Clear
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+
                         </div>
                     </div>
                 </div>
