@@ -210,7 +210,7 @@ export default function Settings({ activeTab: initialTab }) {
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
 
                 {/* Content Panel */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative flex flex-col min-h-[450px] transition-all duration-300">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative flex flex-col min-h-[450px]">
                     <div className="flex-1 relative">
                         {pageLoading && (
                             <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
@@ -239,7 +239,7 @@ export default function Settings({ activeTab: initialTab }) {
                             </div>
 
                             {activeTab === 'pricing' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="animate-fade-in-up">
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Imli Price Configuration</h2>
@@ -305,7 +305,7 @@ export default function Settings({ activeTab: initialTab }) {
                             )}
 
                             {activeTab === 'business' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="animate-fade-in-up">
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight"><T k="Business Settings" /></h2>
@@ -460,7 +460,7 @@ export default function Settings({ activeTab: initialTab }) {
                                 </div>
                             )}
                             {activeTab === 'clean' && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="animate-fade-in-up">
                                     <div className="mb-8 border-b border-gray-100 pb-6">
                                         <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Clean Inventory</h2>
                                     </div>
