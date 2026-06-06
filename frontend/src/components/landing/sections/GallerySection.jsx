@@ -39,7 +39,7 @@ const GallerySection = () => {
         <section id="gallery" className="py-24 bg-white text-gray-900 overflow-hidden section-reveal">
             <div className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
                 <div>
-                    <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Our Work</h2>
+                    <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider capitalize mb-3">Our Work</h2>
                     <h3 className="text-4xl font-bold text-gray-900">Captured Moments</h3>
                 </div>
 
@@ -86,3 +86,4 @@ const GallerySection = () => {
 };
 
 export default GallerySection;
+

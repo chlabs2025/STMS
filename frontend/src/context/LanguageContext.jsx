@@ -22,6 +22,7 @@ export function LanguageProvider({ children }) {
     )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useLang() {
     return useContext(LanguageContext)
 }

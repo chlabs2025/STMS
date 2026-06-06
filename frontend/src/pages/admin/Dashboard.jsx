@@ -115,7 +115,7 @@ const Dashboard = ({ onPageChange }) => {
                       <Icon className={`${c.text} text-lg md:text-xl`} />
                     </div>
 
-                    <p className={`text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider leading-snug mb-auto z-10 ${lang === 'ur' ? 'urdu-ui text-right pl-10' : 'pr-10'}`}>
+                    <p className={`text-[10px] md:text-xs text-gray-400 font-bold capitalize tracking-wider leading-snug mb-auto z-10 ${lang === 'ur' ? 'urdu-ui text-right pl-10' : 'pr-10'}`}>
                       <T k={stat.title} />
                     </p>
 
@@ -131,7 +131,7 @@ const Dashboard = ({ onPageChange }) => {
 
           {/* Quick Actions — full width, buttons horizontal on desktop */}
           <div className="bg-white border border-gray-150 rounded-2xl p-6 md:p-8 shadow-sm">
-            <h3 className={`text-xs md:text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 ${lang === 'ur' ? 'urdu-ui text-right' : ''}`}>
+            <h3 className={`text-xs md:text-sm font-bold text-gray-800 capitalize tracking-widest mb-6 ${lang === 'ur' ? 'urdu-ui text-right' : ''}`}>
               <T k="Quick Actions" />
             </h3>
 
@@ -179,3 +179,4 @@ const Dashboard = ({ onPageChange }) => {
 };
 
 export default Dashboard;
+

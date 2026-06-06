@@ -459,7 +459,7 @@ function Billing() {
                         </span>
                       </div>
                       <div>
-                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold capitalize tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
                           {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
                         </span>
                       </div>
@@ -468,7 +468,7 @@ function Billing() {
                     {/* Bottom Row: Party Name, Amount, and Actions */}
                     <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-50">
                       <div className="flex flex-col max-w-[50%]">
-                        <span className="text-gray-400 text-[10px] uppercase tracking-widest font-bold mb-0.5">Billed To</span>
+                        <span className="text-gray-400 text-[10px] capitalize tracking-widest font-bold mb-0.5">Billed To</span>
                         <span className="text-gray-800 font-bold text-sm truncate">
                           {item.name || "N/A"}
                         </span>

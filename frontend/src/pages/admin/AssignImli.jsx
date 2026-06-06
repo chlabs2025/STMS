@@ -216,7 +216,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
               <form onSubmit={handleSubmit} className="space-y-5 md:space-y-8">
                 {/* Local Search with Dropdown */}
                 <div className="relative">
-                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                     <MdSearch className="text-orange-500 text-lg" />
                     <span><T k="Select Local" /></span>
                   </label>
@@ -289,7 +289,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
 
                 {/* Quantity Input */}
                 <div className="relative">
-                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                     <MdScale className="text-orange-500 text-lg" />
                     <span><T k="Quantity" /></span>
                   </label>
@@ -352,3 +352,4 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
 }
 
 export default AssignImli
+

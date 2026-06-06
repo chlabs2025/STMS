@@ -13,9 +13,7 @@ import Footer from '../components/landing/sections/Footer'
 const LandingPage = () => {
   const navigate = useNavigate()
 
-  const handleGetStarted = () => {
-    navigate('/login', { replace: true })
-  }
+
 
   useEffect(() => {
     if (isLoggedIn()) {

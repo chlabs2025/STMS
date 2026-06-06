@@ -144,7 +144,7 @@ export default function AddLocals() {
                         <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="relative">
-                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                                         <MdPerson className="text-orange-500" />
                                         <T k="Local ID" />
                                     </label>
@@ -167,7 +167,7 @@ export default function AddLocals() {
                                 </div>
 
                                 <div className="relative">
-                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                                         <MdPerson className="text-orange-500" />
                                         <T k="Local Name" />
                                     </label>
@@ -185,7 +185,7 @@ export default function AddLocals() {
                             </div>
 
                             <div className="relative">
-                                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                                     <MdHome className="text-orange-500" />
                                     <T k="Address" />
                                 </label>
@@ -203,7 +203,7 @@ export default function AddLocals() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                                 <div className="relative">
-                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                                         <MdPhone className="text-orange-500" />
                                         <T k="Phone Number" />
                                     </label>
@@ -220,7 +220,7 @@ export default function AddLocals() {
                                 </div>
 
                                 <div className="relative">
-                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                                         <MdPayment className="text-orange-500" />
                                         <T k="UPI ID (Optional)" />
                                     </label>
@@ -269,3 +269,4 @@ export default function AddLocals() {
         </div>
     )
 }
+

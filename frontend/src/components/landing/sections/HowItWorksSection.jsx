@@ -47,7 +47,7 @@ const HowItWorksSection = () => {
             <div className="container mx-auto px-6 relative z-10">
                 <ScrollReveal>
                     <div className="text-center max-w-2xl mx-auto mb-16">
-                        <p className="text-sm font-bold text-[#ff5a1f] tracking-widest uppercase mb-3">Our Process</p>
+                        <p className="text-sm font-bold text-[#ff5a1f] tracking-widest capitalize mb-3">Our Process</p>
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                             How It <span className="text-[#ff5a1f]">Works</span>
                         </h2>
@@ -92,3 +92,4 @@ const HowItWorksSection = () => {
 }
 
 export default HowItWorksSection
+

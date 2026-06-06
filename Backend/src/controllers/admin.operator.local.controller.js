@@ -1,4 +1,8 @@
 import { localData } from "../models/local.model.js"
+import { ImliAssign } from "../models/imliAssign.model.js";
+import { imliReturn } from "../models/imliReturn.model.js";
+import { Payment } from "../models/payment.model.js";
+import { logs } from "../models/logs.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -22,6 +26,15 @@ const delete_local = asyncHandler(async (req, res) => {
     if (!local) {
         throw new ApiError(404, "Local not found");
     }
+
+    const numericID = local.LocalID;
+    const stringID = String(local.LocalID);
+
+    // Cascading deletes
+    await ImliAssign.deleteMany({ localID: stringID });
+    await imliReturn.deleteMany({ localID: stringID });
+    await Payment.deleteMany({ localID: numericID });
+    await logs.deleteMany({ LocalID: numericID });
 
     await local.deleteOne();
 

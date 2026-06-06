@@ -140,13 +140,11 @@ const translations = {
     "Scan to Pay": "ادائیگی کے لیے اسکین کریں",
     "No pending payment": "کوئی زیر التواء ادائیگی نہیں",
     "No pending returns for this local": "اس مقامی کی کوئی واپسی زیر التواء نہیں",
-    "Assigned Quantity": "تقسیم شدہ مقدار",
     "Cleaned Qty.": "صاف مقدار",
     "Loading order details...": "آرڈر کی تفصیلات لوڈ ہو رہی ہیں...",
     "Payment failed. Please try again.": "ادائیگی ناکام۔ دوبارہ کوشش کریں۔",
 
     // ─── Add Raw Imli ───
-    "Add Raw Imli": "خام املی شامل کریں",
     "Add Imli Stock": "املی اسٹاک شامل کریں",
     "Add raw imli to inventory": "خام املی انوینٹری میں شامل کریں",
     "Imli Quantity": "املی کی مقدار",
@@ -168,7 +166,6 @@ const translations = {
 
     // ─── Assign Imli ───
     "Assign Imli to Local": "مقامی کو املی تقسیم کریں",
-    "Assign Imli": "املی تقسیم کریں",
     "Distribute raw imli to local workers": "مقامی کارکنوں میں خام املی تقسیم کریں",
     "Select Local": "مقامی منتخب کریں",
     "Start typing to search for local workers": "مقامی کارکنوں کو تلاش کرنے کے لیے ٹائپ کریں",
@@ -188,13 +185,11 @@ const translations = {
 
     // ─── Locals Profile ───
     "Local Profile": "مقامی پروفائل",
-    "Locals Profile": "مقامی پروفائل",
     "Manage and view local worker information": "مقامی کارکنوں کی معلومات دیکھیں اور منظم کریں",
     "All Locals": "تمام مقامی",
     "Active": "فعال",
     "Inactive": "غیر فعال",
     "Local": "مقامی",
-    "locals": "مقامی",
     "total locals": "کل مقامی",
     "Add New Local": "نیا مقامی شامل کریں",
     "Loading Locals...": "مقامی لوڈ ہو رہے ہیں...",

@@ -57,13 +57,13 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
     return (
         <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 flex flex-col h-[400px] md:h-[420px]">
             <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-4">
-                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                <h3 className="text-sm font-bold text-gray-800 capitalize tracking-widest flex items-center gap-2">
                     <span className="w-1 h-4 bg-orange-500 rounded-full" />
                     <T k="System Activity" />
                 </h3>
                 <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                    <span className="text-[10px] font-bold text-gray-400 capitalize tracking-tighter">
                         Live
                     </span>
                 </div>
@@ -96,7 +96,7 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
                                         </h4>
                                         <div className="flex items-center gap-2">
                                             {activity.type !== 'RESTOCK' && activity.localName && (
-                                                <span className={`text-[10px] font-bold ${config.text} uppercase tracking-wider`}>
+                                                <span className={`text-[10px] font-bold ${config.text} capitalize tracking-wider`}>
                                                     {config.label}
                                                 </span>
                                             )}
@@ -114,7 +114,7 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
                                             <span className="text-lg md:text-xl font-bold text-gray-900 tracking-tighter">
                                                 {activity.quantity}
                                             </span>
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase">
+                                            <span className="text-[10px] font-bold text-gray-400 capitalize">
                                                 {activity.unit}
                                             </span>
                                         </div>
@@ -128,7 +128,7 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
             
             <button 
                 onClick={() => onPageChange && onPageChange('auditLogs')}
-                className="mt-8 pt-4 border-t border-gray-50 text-[11px] font-bold text-gray-400 uppercase tracking-widest hover:text-orange-500 transition-colors flex items-center justify-center gap-2"
+                className="mt-8 pt-4 border-t border-gray-50 text-[11px] font-bold text-gray-400 capitalize tracking-widest hover:text-orange-500 transition-colors flex items-center justify-center gap-2"
             >
                 <span>View Full Audit Log</span>
                 <MdTrendingUp className="text-sm" />
@@ -138,3 +138,4 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
 };
 
 export default RecentActivity;
+

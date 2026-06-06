@@ -21,7 +21,7 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
                     <MdPerson className="text-orange-600" />
-                    <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">Sender</span>
+                    <span className="text-sm font-bold text-gray-700 capitalize tracking-wide">Sender</span>
                 </div>
                 <div className="p-5">
                     <div className="flex justify-between py-2">
@@ -35,18 +35,18 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
                     <MdReceipt className="text-orange-600" />
-                    <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">Items</span>
+                    <span className="text-sm font-bold text-gray-700 capitalize tracking-wide">Items</span>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-orange-50/60 border-b border-orange-200">
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">#</th>
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Unit</th>
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Qty</th>
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Rate</th>
-                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Weight</th>
-                                <th className="px-3 md:px-5 py-3 text-right font-bold text-orange-700 uppercase tracking-wide text-[10px] md:text-xs">Amount</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">#</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">Unit</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">Qty</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">Rate</th>
+                                <th className="px-3 md:px-5 py-3 text-left font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">Weight</th>
+                                <th className="px-3 md:px-5 py-3 text-right font-bold text-orange-700 capitalize tracking-wide text-[10px] md:text-xs">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,7 +71,7 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
                         </tbody>
                         <tfoot>
                             <tr className="bg-orange-50/80 border-t-2 border-orange-200">
-                                <td className="px-3 md:px-5 py-3 font-bold text-gray-700 uppercase text-xs md:text-sm" colSpan={2}>Total</td>
+                                <td className="px-3 md:px-5 py-3 font-bold text-gray-700 capitalize text-xs md:text-sm" colSpan={2}>Total</td>
                                 <td className="px-3 md:px-5 py-3 font-bold text-orange-700 text-xs md:text-sm">
                                     {totalQuantity}
                                 </td>
@@ -91,7 +91,7 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
             {/* Grand Total Card */}
             <div className="bg-orange-50 rounded-xl border-2 border-orange-200 p-4 md:p-6 flex items-center justify-between">
                 <div>
-                    <p className="text-xs md:text-sm font-bold text-orange-700 uppercase tracking-wide">Grand Total</p>
+                    <p className="text-xs md:text-sm font-bold text-orange-700 capitalize tracking-wide">Grand Total</p>
                     <p className="text-[10px] md:text-xs text-orange-600/70 font-medium mt-0.5">Total weight: {totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg</p>
                 </div>
                 <div className="text-2xl md:text-3xl font-bold text-orange-600">
@@ -132,3 +132,4 @@ export default function CleanedImliPreview({ imliData, onBack, onSubmit, isSubmi
         </div>
     )
 }
+

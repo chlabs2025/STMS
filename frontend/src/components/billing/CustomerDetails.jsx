@@ -34,7 +34,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
             <div className="space-y-4 md:space-y-5">
                 {/* Customer Name */}
                 <div>
-                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                         <MdPerson className="text-orange-500" />
                         Customer Name <span className="text-red-400">*</span>
                     </label>
@@ -51,7 +51,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
 
                 {/* Address */}
                 <div>
-                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                         <MdHome className="text-orange-500" />
                         Address <span className="text-red-400">*</span>
                     </label>
@@ -68,7 +68,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
 
                 {/* GSTIN */}
                 <div>
-                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                         <MdBadge className="text-orange-500" />
                         GSTIN <span className="text-gray-400 text-xs font-normal normal-case">(Optional)</span>
                     </label>
@@ -78,7 +78,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
                         onChange={(e) => handleChange("gstin", e.target.value.toUpperCase())}
                         placeholder="e.g. 24BABPS6131G1ZX"
                         maxLength={15}
-                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium uppercase"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium capitalize"
                         style={{ fontSize: '16px' }}
                     />
                 </div>
@@ -86,7 +86,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
                 {/* State + State Code */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             <MdLocationOn className="text-orange-500" />
                             State <span className="text-red-400">*</span>
                         </label>
@@ -118,7 +118,7 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
                     </div>
 
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             <MdLocationOn className="text-orange-500" />
                             State Code
                         </label>
@@ -156,3 +156,4 @@ export default function CustomerDetails({ formData, updateFormData, onNext, onBa
         </div>
     )
 }
+

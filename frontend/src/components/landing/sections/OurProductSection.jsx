@@ -8,7 +8,7 @@ const OurProductSection = () => {
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Content Side */}
                     <div className="order-2 lg:order-1">
-                        <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Our Product</h2>
+                        <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider capitalize mb-3">Our Product</h2>
                         <h3 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                             Gatagat: The Taste of <span className="text-[#ff5a1f]">Tradition</span>
                         </h3>
@@ -55,7 +55,7 @@ const OurProductSection = () => {
                         <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl animate-bounce-slow hidden md:block border border-orange-100">
                             <div className="text-center">
                                 <span className="block text-3xl font-bold text-[#ff5a1f]">100%</span>
-                                <span className="text-sm text-gray-600 font-medium uppercase tracking-wide">Pure Imli</span>
+                                <span className="text-sm text-gray-600 font-medium capitalize tracking-wide">Pure Imli</span>
                             </div>
                         </div>
 
@@ -70,3 +70,4 @@ const OurProductSection = () => {
 };
 
 export default OurProductSection;
+

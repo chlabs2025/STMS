@@ -17,6 +17,19 @@ const imliAssignSchema = new mongoose.Schema(
     assignedBy: {
       type: String, 
       required: true
+    },
+    returnedQuantity: {
+      type: Number,
+      default: 0
+    },
+    cleanedQuantity: {
+      type: Number,
+      default: 0
+    },
+    returnBatchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "imliReturn",
+      default: null
     }
   },
   { timestamps: true }

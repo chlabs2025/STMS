@@ -20,6 +20,7 @@ const products = [
 ]
 
 export default function ProductSelect({ formData, updateFormData, onNext }) {
+    // eslint-disable-next-line no-unused-vars
     const selected = formData.productType
 
     const handleSelect = (product) => {

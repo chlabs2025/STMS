@@ -11,15 +11,9 @@ function Login() {
   const [password, setpassword] = useState("")
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [scrollY, setScrollY] = useState(0)
+
 
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   useEffect(() => {
     if (isLoggedIn()) {

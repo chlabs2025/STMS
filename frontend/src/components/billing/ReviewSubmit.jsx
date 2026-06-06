@@ -9,11 +9,12 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
 
     const totalWithGst = (item.amount || 0) + (item.igst || 0) + (item.cgst || 0) + (item.sgst || 0)
 
+    // eslint-disable-next-line no-unused-vars
     const SectionCard = ({ icon: Icon, title, children }) => (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-4 md:px-5 py-2.5 md:py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
                 <Icon className="text-orange-600 text-sm" />
-                <span className="text-xs md:text-sm font-semibold text-gray-700 uppercase tracking-wide">{title}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-700 capitalize tracking-wide">{title}</span>
             </div>
             <div className="px-4 py-3 md:p-5">{children}</div>
         </div>
@@ -78,7 +79,7 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
                 {/* Grand Total Card */}
                 <div className="bg-orange-50/70 rounded-xl p-4 md:p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-[11px] md:text-sm font-semibold text-orange-700 uppercase tracking-wide">Grand Total</p>
+                        <p className="text-[11px] md:text-sm font-semibold text-orange-700 capitalize tracking-wide">Grand Total</p>
                         <p className="text-[10px] md:text-xs text-orange-500 font-medium mt-0.5">Including all taxes</p>
                     </div>
                     <div className="text-xl md:text-3xl font-semibold text-orange-600">
@@ -120,3 +121,4 @@ export default function ReviewSubmit({ formData, onBack, onSubmit, isSubmitting 
         </div>
     )
 }
+

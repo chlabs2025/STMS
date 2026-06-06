@@ -19,7 +19,7 @@ const DistributionChart = ({ stats }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white/95 backdrop-blur-md border border-gray-100 p-2 rounded-xl shadow-lg ring-1 ring-black/5">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter mb-1">{payload[0].name}</p>
+          <p className="text-[10px] font-bold text-gray-400 capitalize tracking-tighter mb-1">{payload[0].name}</p>
           <p className="text-xs font-bold text-gray-900">{payload[0].value} KG</p>
         </div>
       );
@@ -29,7 +29,7 @@ const DistributionChart = ({ stats }) => {
 
   return (
     <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 flex flex-col h-[420px]">
-      <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-6">
+      <h3 className="text-xs font-bold text-gray-800 capitalize tracking-widest mb-6">
         <T k="Operational Distribution" />
       </h3>
       
@@ -56,7 +56,7 @@ const DistributionChart = ({ stats }) => {
         
         {/* Center Label */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Total</p>
+            <p className="text-[10px] text-gray-400 font-bold capitalize tracking-tight">Total</p>
             <p className="text-xl font-bold text-gray-800">
                 {data.reduce((acc, curr) => acc + curr.value, 0)}
             </p>
@@ -77,3 +77,4 @@ const DistributionChart = ({ stats }) => {
 };
 
 export default DistributionChart;
+

@@ -14,7 +14,14 @@ const imliReturnSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-   
+    assignmentIds: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ImliAssign"
+    }],
+    isPaid: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

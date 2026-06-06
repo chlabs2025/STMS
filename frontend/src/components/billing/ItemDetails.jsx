@@ -71,7 +71,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                 {/* Quantity + Unit */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             Quantity <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -88,7 +88,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                         />
                     </div>
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             Unit <span className="text-red-400">*</span>
                         </label>
                         <select
@@ -115,7 +115,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                 {/* Rate + GST % */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             Rate (₹ per unit) <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -132,7 +132,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                         />
                     </div>
                     <div>
-                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                             GST % <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -156,7 +156,7 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
                     <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
                         <div className="px-5 py-3 bg-gray-100/80 border-b border-gray-200 flex items-center gap-2">
                             <MdCalculate className="text-orange-600" />
-                            <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">Auto-Calculated</span>
+                            <span className="text-sm font-bold text-gray-700 capitalize tracking-wide">Auto-Calculated</span>
                         </div>
                         <div className="p-5 space-y-3">
                             <div className="flex justify-between items-center">
@@ -212,3 +212,4 @@ export default function ItemDetails({ formData, updateFormData, onNext, onBack }
         </div>
     )
 }
+

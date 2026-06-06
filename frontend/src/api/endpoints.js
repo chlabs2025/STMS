@@ -13,6 +13,13 @@ const API = {
     DELETE_LOCAL: "/delete_local",
     UPDATE_LOCAL: "/update_local",
 
+    // ─── Vendors ──────────────────────────────────────────────────────────────
+    GET_VENDORS: "/vendors",
+    ADD_VENDOR: "/vendors",
+    GET_VENDOR_BY_ID: (id) => `/vendors/${id}`,
+    GET_VENDOR_HISTORY: (id) => `/vendors/${id}/history`,
+    PAY_VENDOR: (id) => `/vendors/${id}/pay`,
+
     // ─── Raw Imli ─────────────────────────────────────────────────────────────
     ADD_RAW_IMLI: "/addRawImli",
     GET_RAW_IMLI: "/getRawImli",

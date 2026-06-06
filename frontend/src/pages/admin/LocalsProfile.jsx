@@ -9,6 +9,7 @@ import T from "../../i18n/T"
 import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
 
 const LocalsProfile = ({ navigateToAssignImli }) => {
+  // eslint-disable-next-line no-unused-vars
   const { lang } = useLang()
   const [locals, setLocals] = useState([])
   const [loading, setLoading] = useState(true)
@@ -53,6 +54,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
     return () => clearTimeout(debounceTimer)
   }, [searchTerm, locals])
 
+  // eslint-disable-next-line no-unused-vars
   const getStatusColor = (status) => {
     const statusLower = status?.toLowerCase()
     switch (statusLower) {
@@ -185,13 +187,13 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
               <table className="min-w-full">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-semibold text-gray-600 capitalize tracking-wider">
                       <T k="Local" />
                     </th>
-                    <th className="px-4 py-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-5 text-left text-xs font-semibold text-gray-600 capitalize tracking-wider whitespace-nowrap">
                       <T k="Status" />
                     </th>
-                    <th className="px-4 py-5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider pr-6 whitespace-nowrap">
+                    <th className="px-4 py-5 text-right text-xs font-semibold text-gray-600 capitalize tracking-wider pr-6 whitespace-nowrap">
                       <T k="Actions" />
                     </th>
                   </tr>
@@ -344,3 +346,4 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
 }
 
 export default LocalsProfile;
+

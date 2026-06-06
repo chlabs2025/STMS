@@ -9,6 +9,7 @@ import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
 
 const AddCleanedImli = () => {
+  // eslint-disable-next-line no-unused-vars
   const { lang } = useLang()
   const [cleanedImliQuantity, setCleanedImliQuantity] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -52,7 +53,7 @@ const AddCleanedImli = () => {
           <div className="px-4 md:px-8 py-5 md:py-8">
             <form onSubmit={handleSubmit} className="space-y-5 md:space-y-8">
               <div className="relative">
-                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                   <MdScale className="text-green-500 text-lg" />
                   <span><T k="Cleaned Imli Quantity" /></span>
                 </label>
@@ -103,3 +104,4 @@ const AddCleanedImli = () => {
 }
 
 export default AddCleanedImli
+

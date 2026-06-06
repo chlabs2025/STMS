@@ -1,12 +1,24 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { MdPayment, MdRefresh, MdSearch, MdError, MdKeyboardArrowDown, MdKeyboardArrowUp, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment, MdHistory } from 'react-icons/md'
+import { 
+    MdPayment, 
+    MdRefresh, 
+    MdSearch, 
+    MdError, 
+    MdKeyboardArrowDown, 
+    MdKeyboardArrowUp, 
+    MdCheckCircle, 
+    MdMoney, 
+    MdPayment as MdOnlinePayment, 
+    MdHistory, 
+    MdFilterList, 
+    MdClose 
+} from 'react-icons/md'
 
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import PaymentLogs from "./PaymentLogs"
-
 
 const Payment = () => {
     const [locals, setLocals] = useState([])
@@ -24,8 +36,8 @@ const Payment = () => {
     const [activeTab, setActiveTab] = useState("payment")
     const [assignmentHistory, setAssignmentHistory] = useState([])
     const [historyLoading, setHistoryLoading] = useState(false)
-    const [historyPage, setHistoryPage] = useState(0)
-    const HISTORY_PAGE_SIZE = 6
+    const [selectedRowId, setSelectedRowId] = useState(null)
+    const [dateFilter, setDateFilter] = useState({ from: "", to: "" })
     const localRefs = useRef({})
 
     const fetchLocals = useCallback(async (silent = false) => {
@@ -49,10 +61,8 @@ const Payment = () => {
         fetchLocals()
     }, [fetchLocals])
 
-    // 👉 Auto-scroll to expanded local
     useEffect(() => {
         if (expandedLocalId && localRefs.current[expandedLocalId]) {
-            // Wait slightly for the animation to start/content to render
             const timer = setTimeout(() => {
                 localRefs.current[expandedLocalId]?.scrollIntoView({
                     behavior: "smooth",
@@ -80,7 +90,6 @@ const Payment = () => {
     const fetchAssignmentHistory = useCallback(async (localID) => {
         try {
             setHistoryLoading(true)
-            setHistoryPage(0)
             const response = await api.get(API.ASSIGNMENT_HISTORY, { params: { localID } })
             setAssignmentHistory(response.data?.data || [])
         } catch (error) {
@@ -91,13 +100,17 @@ const Payment = () => {
         }
     }, [])
 
-    const fetchOrderReference = useCallback(async (localID) => {
+    const fetchOrderReference = useCallback(async (localID, assignmentIds = null) => {
         try {
             setOrderLoading(true)
             setOrderData(null)
             setPaymentResult(null)
             setPaymentError(null)
-            const response = await api.post(API.ORDER_REFERENCE, { localID: String(localID) })
+            const payload = { localID: String(localID) }
+            if (assignmentIds && assignmentIds.length > 0) {
+                payload.assignmentIds = assignmentIds
+            }
+            const response = await api.post(API.ORDER_REFERENCE, payload)
             setOrderData(response.data.data)
         } catch (error) {
             const msg = error.response?.data?.message || "Failed to fetch order details"
@@ -118,6 +131,7 @@ const Payment = () => {
             setOrderData(null)
             setPaymentResult(null)
             setPaymentError(null)
+            setSelectedRowId(null)
         } else {
             setExpandedLocalId(local._id)
             setPaymentMethod("Cash")
@@ -125,11 +139,32 @@ const Payment = () => {
             setPaymentError(null)
             setActiveTab("payment")
             setAssignmentHistory([])
-            fetchOrderReference(local.LocalID)
+            setSelectedRowId(null)
+            setOrderData(null)
             fetchAssignmentHistory(local.LocalID)
         }
     }
 
+    const handleRowClick = useCallback((entry, localID) => {
+        if (entry.isPaid || !entry.isReturned) return
+        
+        if (selectedRowId === entry._id) {
+            setSelectedRowId(null)
+            setOrderData(null)
+            setPaymentError(null)
+            return
+        }
+        
+        const unpaidRows = assignmentHistory.filter(a => a.isReturned && !a.isPaid)
+        const clickedIdx = unpaidRows.findIndex(a => a._id === entry._id)
+        if (clickedIdx === -1) return
+        
+        const selectedRows = unpaidRows.slice(0, clickedIdx + 1)
+        // Collect unique batchIds since multiple rows can belong to the same batch
+        const uniqueBatchIds = [...new Set(selectedRows.map(b => b.batchId || b._id))]
+        setSelectedRowId(entry._id)
+        fetchOrderReference(localID, uniqueBatchIds)
+    }, [selectedRowId, assignmentHistory, fetchOrderReference])
 
     const handleConfirmPayment = useCallback(async (localId) => {
         if (!orderData) return
@@ -137,42 +172,57 @@ const Payment = () => {
             setPaymentLoading(true)
             setPaymentError(null)
             setPaymentResult(null)
-            const response = await api.post(API.CONFIRM_PAYMENT, {
+            const payload = {
                 localId: localId,
-                method: paymentMethod,
-                // Online Step 1: no status sent → backend creates PENDING
-                // Cash: no status needed → backend always SUCCESS
-            })
+                method: paymentMethod
+            }
+            if (orderData.assignmentIds && orderData.assignmentIds.length > 0) {
+                payload.assignmentIds = orderData.assignmentIds
+            } else if (orderData.assignmentId) {
+                payload.assignmentIds = [orderData.assignmentId]
+            }
+            const response = await api.post(API.CONFIRM_PAYMENT, payload)
             setPaymentResult(response.data.data)
-            // Cash ke baad silent refresh + collapse
+            
             if (paymentMethod === "Cash") {
+                setSelectedRowId(null)
                 await fetchLocals(true)
+                await fetchAssignmentHistory(localId)
             }
         } catch (error) {
             setPaymentError(error.response?.data?.message || "Payment failed. Please try again.")
         } finally {
             setPaymentLoading(false)
         }
-    }, [orderData, paymentMethod, fetchLocals])
+    }, [orderData, paymentMethod, fetchLocals, fetchAssignmentHistory])
 
-    // Online Step 2: Admin confirms SUCCESS or REJECTED
     const handleOnlineStatus = useCallback(async (localId, newStatus) => {
         try {
             setPaymentLoading(true)
             setPaymentError(null)
-            const response = await api.post(API.CONFIRM_PAYMENT, {
+            const payload = {
                 localId: localId,
                 method: "Online",
-                status: newStatus,
-            })
+                status: newStatus
+            }
+            if (orderData?.assignmentIds && orderData.assignmentIds.length > 0) {
+                payload.assignmentIds = orderData.assignmentIds
+            } else if (orderData?.assignmentId) {
+                payload.assignmentIds = [orderData.assignmentId]
+            }
+            const response = await api.post(API.CONFIRM_PAYMENT, payload)
             setPaymentResult(response.data.data)
+            if (newStatus === "SUCCESS") {
+                setSelectedRowId(null)
+            }
             await fetchLocals(true)
+            await fetchAssignmentHistory(localId)
         } catch (error) {
             setPaymentError(error.response?.data?.message || "Status update failed.")
         } finally {
             setPaymentLoading(false)
         }
-    }, [fetchLocals])
+    }, [fetchLocals, fetchAssignmentHistory, orderData])
 
     if (loading) {
         return (
@@ -210,14 +260,12 @@ const Payment = () => {
     }
 
     return (
-        <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
+        <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden font-sans">
             <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
                 <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
-                    {/* Icon */}
                     <div className="bg-white p-2 md:p-2.5 rounded-lg shadow-sm border border-orange-500/30 flex-shrink-0">
                         <MdPayment className="text-xl md:text-2xl text-orange-600" />
                     </div>
-                    {/* Search Input */}
                     <div className="flex items-center flex-1 min-w-0 bg-gray-50 rounded-lg px-2.5 md:px-3 py-1.5 md:py-2">
                         <MdSearch className="text-orange-600 text-lg md:text-xl mr-1.5 md:mr-2 flex-shrink-0" />
                         <input
@@ -230,7 +278,6 @@ const Payment = () => {
                             style={{ fontSize: '16px' }}
                         />
                     </div>
-                    {/* Refresh Button */}
                     <button
                         onClick={fetchLocals}
                         className="px-2.5 md:px-5 py-1.5 md:py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 flex items-center gap-1.5 md:gap-2 shadow-sm font-medium border border-orange-600 text-sm flex-shrink-0 outline-none"
@@ -266,8 +313,6 @@ const Payment = () => {
                 <div className="space-y-3 md:space-y-6">
                     {filteredLocals.map((local) => {
                         const isExpanded = expandedLocalId === local._id
-                        const cleanedQty = local.totalReturnedQuantity || 0
-                        const assignedQty = local.totalAssignedQuantity || 0
 
                         return (
                             <div 
@@ -275,7 +320,6 @@ const Payment = () => {
                                 ref={el => localRefs.current[local._id] = el}
                                 className={`bg-white rounded-2xl shadow-sm border transition-all duration-300 overflow-hidden ${isExpanded ? 'border-orange-500 ring-1 ring-orange-500/20 shadow-orange-100 shadow-xl' : 'border-gray-200 hover:border-orange-300'}`}
                             >
-                                {/* Header Row */}
                                 <div className={`p-2.5 md:p-3 flex items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-orange-50/30' : 'bg-white hover:bg-gray-50'}`} onClick={() => toggleExpand(local)}>
                                     <div className="flex items-center space-x-2.5 md:space-x-3">
                                         <div className="flex-shrink-0">
@@ -309,7 +353,6 @@ const Payment = () => {
                                     </button>
                                 </div>
 
-                                {/* Tab Navigation */}
                                 {isExpanded && (
                                     <div className="px-4 md:px-8 pt-4 bg-white border-t border-gray-100 flex gap-4 md:gap-8">
                                         <button
@@ -333,244 +376,466 @@ const Payment = () => {
                                     </div>
                                 )}
 
-                                {/* Expanded Content Area */}
                                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'opacity-100 min-h-[400px]' : 'max-h-0 opacity-0'}`}>
                                     <div className="p-4 md:p-8 bg-white border-t border-gray-50">
                                         <div className="relative">
                                             {/* Payment Tab Content */}
                                             <div className={`transition-all duration-300 ease-in-out ${activeTab === 'payment' ? 'opacity-100 visible translate-y-0 relative' : 'opacity-0 invisible -translate-y-2 absolute inset-0 pointer-events-none'}`}>
-                                                {orderLoading ? (
+                                                {orderLoading && !orderData ? (
                                                     <div className="flex items-center justify-center py-12">
                                                         <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                                                         <span className="ml-3 text-gray-600 font-medium">Loading order details...</span>
                                                     </div>
-                                                ) : paymentError && !orderData && !paymentResult ? (
-                                                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-                                                        <p className="text-yellow-800 font-medium">{paymentError}</p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10">
-                                                        <div className="lg:w-2/3">
-                                                            <div className="mb-4 md:mb-8 p-3 md:p-4 bg-orange-50/50 rounded-xl border border-orange-100 flex items-center gap-3">
-                                                                <div className="bg-orange-500 text-white rounded-lg p-2 flex-shrink-0">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider">Weekly Period</p>
-                                                                    {(() => {
-                                                                        const date = local.updatedAt ? new Date(local.updatedAt) : new Date();
-                                                                        const day = date.getDay();
-                                                                        const diff = date.getDate() - day + (day >= 4 ? 4 : -3);
-                                                                        const start = new Date(date);
-                                                                        start.setDate(diff);
-                                                                        const end = new Date(start);
-                                                                        end.setDate(start.getDate() + 6);
-                                                                        const fmt = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-                                                                        return (
-                                                                            <p className="text-sm md:text-base font-bold text-gray-800 mt-0.5">
-                                                                                {fmt(start)} <span className="text-orange-400 mx-1">→</span> {fmt(end)}
-                                                                            </p>
-                                                                        );
-                                                                    })()}
-                                                                </div>
-                                                            </div>
+                                                ) : (() => {
+                                                    const filtered = assignmentHistory.filter(entry => {
+                                                        if (!dateFilter.from && !dateFilter.to) return true
+                                                        const date = new Date(entry.createdAt)
+                                                        date.setHours(0,0,0,0)
+                                                        if (dateFilter.from) {
+                                                            const fromDate = new Date(dateFilter.from)
+                                                            fromDate.setHours(0,0,0,0)
+                                                            if (date < fromDate) return false
+                                                        }
+                                                        if (dateFilter.to) {
+                                                            const toDate = new Date(dateFilter.to)
+                                                            toDate.setHours(0,0,0,0)
+                                                            if (date > toDate) return false
+                                                        }
+                                                        return true
+                                                    })
 
-                                                            {/* Desktop Table */}
-                                                            {(() => {
-                                                                const paged = assignmentHistory.slice(historyPage * HISTORY_PAGE_SIZE, (historyPage + 1) * HISTORY_PAGE_SIZE);
-                                                                const totalPages = Math.ceil(assignmentHistory.length / HISTORY_PAGE_SIZE);
-                                                                return (
-                                                            <div className="hidden md:block">
-                                                                <div className="overflow-hidden rounded-lg border border-gray-200">
-                                                                <table className="w-full text-left">
-                                                                    <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold tracking-wider">
-                                                                        <tr>
-                                                                            <th className="px-6 py-4">Date & Time</th>
-                                                                            <th className="px-6 py-4">Assign</th>
-                                                                            <th className="px-6 py-4">Return</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
-                                                                        {paged.length > 0 ? (
-                                                                            paged.map((entry, idx) => (
-                                                                                <tr key={entry._id || idx} className="hover:bg-gray-50/50 transition-colors">
-                                                                                    <td className="px-6 py-4 font-medium">
-                                                                                        <div>{new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
-                                                                                        <div className="text-xs text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</div>
-                                                                                    </td>
-                                                                                    <td className="px-6 py-4">{entry.type === "assign" ? entry.quantity : "—"}</td>
-                                                                                    <td className="px-6 py-4">{entry.type === "return" ? entry.quantity : "—"}</td>
-                                                                                </tr>
-                                                                            ))
-                                                                        ) : (
-                                                                            <tr className="hover:bg-gray-50/50 transition-colors">
-                                                                                <td className="px-6 py-4 font-medium text-gray-400" colSpan="3">
-                                                                                    {historyLoading ? "Loading..." : "No records found"}
-                                                                                </td>
-                                                                            </tr>
-                                                                        )}
-                                                                        <tr className="bg-orange-50/50 text-gray-900 font-semibold border-t-2 border-orange-200">
-                                                                            <td className="px-6 py-4">Total</td>
-                                                                            <td className="px-6 py-4">{assignedQty} KG</td>
-                                                                            <td className="px-6 py-4 text-green-700">{cleanedQty} KG</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
+                                                    const totalAssigned = filtered.reduce((s, e) => s + (e.quantity || 0), 0)
+                                                    const totalCleaned = filtered.reduce((s, e) => s + (e.cleanedQuantity || 0), 0)
+
+                                                    const unpaidBatches = filtered.filter(a => a.isReturned && !a.isPaid)
+                                                    const clickedIdx = unpaidBatches.findIndex(a => a._id === selectedRowId)
+                                                    const selectedIds = clickedIdx !== -1 ? unpaidBatches.slice(0, clickedIdx + 1).map(b => b._id) : []
+
+                                                    // Construct rendering list with paid separators
+                                                    const renderItems = []
+                                                    let currentGroupId = null
+                                                    let groupAssigned = 0
+                                                    let groupCleaned = 0
+                                                    let lastMatchingDate = null
+                                                    let groupAmount = 0
+                                                    let groupRate = 0
+
+                                                    filtered.forEach((item) => {
+                                                        if (item.isPaid && item.paymentLogId) {
+                                                            if (currentGroupId !== item.paymentLogId) {
+                                                                if (currentGroupId !== null) {
+                                                                    renderItems.push({
+                                                                        isSeparator: true,
+                                                                        key: `sep-${currentGroupId}`,
+                                                                        assigned: groupAssigned,
+                                                                        cleaned: groupCleaned,
+                                                                        date: lastMatchingDate,
+                                                                        totalAmount: groupAmount || (groupCleaned * groupRate)
+                                                                    })
+                                                                }
+                                                                currentGroupId = item.paymentLogId
+                                                                groupAssigned = 0
+                                                                groupCleaned = 0
+                                                                groupAmount = item.totalAmount || 0
+                                                                groupRate = item.rate || 0
+                                                            }
+                                                            groupAssigned += (item.quantity || 0)
+                                                            groupCleaned += (item.cleanedQuantity || 0)
+                                                            lastMatchingDate = item.paymentDate || item.createdAt
+                                                            renderItems.push(item)
+                                                        } else {
+                                                            if (currentGroupId !== null) {
+                                                                renderItems.push({
+                                                                    isSeparator: true,
+                                                                    key: `sep-${currentGroupId}`,
+                                                                    assigned: groupAssigned,
+                                                                    cleaned: groupCleaned,
+                                                                    date: lastMatchingDate,
+                                                                    totalAmount: groupAmount || (groupCleaned * groupRate)
+                                                                })
+                                                                currentGroupId = null
+                                                            }
+                                                            renderItems.push(item)
+                                                        }
+                                                    })
+
+                                                    if (currentGroupId !== null) {
+                                                        renderItems.push({
+                                                            isSeparator: true,
+                                                            key: `sep-${currentGroupId}`,
+                                                            assigned: groupAssigned,
+                                                            cleaned: groupCleaned,
+                                                            date: lastMatchingDate,
+                                                            totalAmount: groupAmount || (groupCleaned * groupRate)
+                                                        })
+                                                    }
+
+                                                    return (
+                                                        <div className="space-y-4">
+                                                            {/* Date Filter Bar with inline Totals */}
+                                                            <div className="flex flex-wrap items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 capitalize tracking-wider">
+                                                                    <MdFilterList className="text-orange-500 text-sm" />
+                                                                    <span>Filter by Date:</span>
                                                                 </div>
-                                                                {totalPages > 1 && (
-                                                                    <div className="flex items-center justify-between mt-3">
-                                                                        <button
-                                                                            onClick={() => setHistoryPage(p => Math.max(0, p - 1))}
-                                                                            disabled={historyPage === 0}
-                                                                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <input 
+                                                                        type="date" 
+                                                                        value={dateFilter.from} 
+                                                                        onChange={e => setDateFilter(prev => ({ ...prev, from: e.target.value }))}
+                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500"
+                                                                    />
+                                                                    <span className="text-xs text-gray-400 font-bold">to</span>
+                                                                    <input 
+                                                                        type="date" 
+                                                                        value={dateFilter.to} 
+                                                                        onChange={e => setDateFilter(prev => ({ ...prev, to: e.target.value }))}
+                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500"
+                                                                    />
+                                                                    {(dateFilter.from || dateFilter.to) && (
+                                                                        <button 
+                                                                            onClick={() => setDateFilter({ from: "", to: "" })}
+                                                                            className="p-1 rounded-full hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+                                                                            title="Clear Filter"
                                                                         >
-                                                                            <MdKeyboardArrowUp className="text-lg rotate-[-90deg]" /> Prev
+                                                                            <MdClose className="text-xs" />
                                                                         </button>
-                                                                        <span className="text-xs text-gray-400 font-semibold">{historyPage + 1} / {totalPages}</span>
-                                                                        <button
-                                                                            onClick={() => setHistoryPage(p => Math.min(totalPages - 1, p + 1))}
-                                                                            disabled={historyPage >= totalPages - 1}
-                                                                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                                                        >
-                                                                            Next <MdKeyboardArrowDown className="text-lg rotate-[-90deg]" />
-                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                                <div className="ml-auto flex items-center gap-4 text-xs font-semibold">
+                                                                    <div className="text-right">
+                                                                        <span className="text-gray-400 capitalize mr-1">Assigned:</span>
+                                                                        <span className="text-blue-700 font-bold">{totalAssigned} KG</span>
                                                                     </div>
-                                                                )}
-                                                            </div>
-                                                                );
-                                                            })()}
-
-                                                            {/* Mobile cards */}
-                                                            <div className="md:hidden space-y-2">
-                                                                {assignmentHistory.length > 0 ? (
-                                                                    assignmentHistory.map((entry, idx) => (
-                                                                        <div key={entry._id || idx} className={`rounded-xl p-3 border flex items-center justify-between ${entry.type === "return" ? "bg-green-50 border-green-100" : "bg-gray-50 border-gray-100"}`}>
-                                                                            <div>
-                                                                                <p className="text-sm font-bold text-gray-900">
-                                                                                    {new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                                                                                </p>
-                                                                                <p className="text-[11px] text-gray-400 mt-0.5">
-                                                                                    {new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                                                                                </p>
-                                                                            </div>
-                                                                            <div className={`px-3 py-1.5 rounded-lg border ${entry.type === "return" ? "bg-green-100 border-green-200" : "bg-blue-50 border-blue-100"}`}>
-                                                                                <p className="text-[10px] font-bold uppercase text-gray-500 mb-0.5">{entry.type === "return" ? "Return" : "Assign"}</p>
-                                                                                <span className={`text-base font-bold ${entry.type === "return" ? "text-green-700" : "text-blue-700"}`}>{entry.quantity} KG</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    ))
-                                                                ) : (
-                                                                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
-                                                                        <p className="text-sm text-gray-400">{historyLoading ? "Loading..." : "No records"}</p>
-                                                                    </div>
-                                                                )}
-                                                                {/* Total Summary */}
-                                                                <div className="bg-orange-50 rounded-xl p-3 border border-orange-200 flex items-center justify-between mt-1">
-                                                                    <span className="text-sm font-bold text-gray-900">Total</span>
-                                                                    <div className="flex gap-4">
-                                                                        <div className="text-center">
-                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Assign</p>
-                                                                            <p className="text-base font-bold text-blue-700">{assignedQty} KG</p>
-                                                                        </div>
-                                                                        <div className="text-center">
-                                                                            <p className="text-[10px] text-gray-500 font-bold uppercase">Return</p>
-                                                                            <p className="text-base font-bold text-green-700">{cleanedQty} KG</p>
-                                                                        </div>
+                                                                    <div className="text-right">
+                                                                        <span className="text-gray-400 capitalize mr-1">Returned:</span>
+                                                                        <span className="text-green-700 font-bold">{totalCleaned} KG</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <div className="lg:w-1/3 flex flex-col justify-between p-4 md:p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
-                                                            {paymentResult ? (
-                                                                <div className="text-center space-y-4">
-                                                                    {paymentResult.status === "PENDING" ? (
-                                                                        <>
-                                                                            <div className="bg-yellow-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                                                                <MdOnlinePayment className="text-4xl text-yellow-500" />
-                                                                            </div>
-                                                                            <h3 className="text-base md:text-lg font-bold text-gray-900">Scan QR to Pay</h3>
-                                                                            <p className="text-xl md:text-2xl font-bold text-orange-600">₹{paymentResult.total}</p>
-                                                                            {paymentResult.qr && (
-                                                                                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                                                    <img src={paymentResult.qr} alt="UPI QR Code" className="w-44 h-44 mx-auto rounded-lg" />
-                                                                                    <p className="text-xs text-gray-600 mt-2 font-mono">{paymentResult.upiId}</p>
-                                                                                </div>
-                                                                            )}
-                                                                            {paymentError && (
-                                                                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                                                                                    <p className="text-red-700 text-sm font-medium">{paymentError}</p>
-                                                                                </div>
-                                                                            )}
-                                                                            <div className="grid grid-cols-2 gap-3 pt-2">
-                                                                                <button onClick={() => handleOnlineStatus(local.LocalID, "REJECTED")} disabled={paymentLoading} className="py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">✕ Reject</button>
-                                                                                <button onClick={() => handleOnlineStatus(local.LocalID, "SUCCESS")} disabled={paymentLoading} className="py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-1">
-                                                                                    {paymentLoading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><MdCheckCircle className="text-lg" />Confirm</>}
-                                                                                </button>
-                                                                            </div>
-                                                                        </>
-                                                                    ) : paymentResult.status === "SUCCESS" ? (
-                                                                        <>
-                                                                            <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                                                                <MdCheckCircle className="text-4xl text-green-500" />
-                                                                            </div>
-                                                                            <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Successful!</h3>
-                                                                            <div className="space-y-2 text-sm">
-                                                                                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Amount</span><span className="font-bold text-green-600">₹{paymentResult.total}</span></div>
-                                                                                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Method</span><span className="font-semibold">{paymentResult.method}</span></div>
-                                                                                <div className="flex justify-between py-2"><span className="text-gray-500">Total Paid</span><span className="font-bold text-orange-600">₹{paymentResult.localTotalPaid}</span></div>
-                                                                            </div>
-                                                                        </>
+                                                            <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10">
+                                                                {/* Scrollable Table / Card Section */}
+                                                                <div className="lg:w-2/3">
+                                                                    {filtered.length === 0 ? (
+                                                                        <div className="p-8 text-center text-gray-400 font-medium bg-white rounded-xl border border-gray-200">
+                                                                            {historyLoading ? "Loading..." : "No records matching filter"}
+                                                                        </div>
                                                                     ) : (
                                                                         <>
-                                                                            <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                                                                <MdError className="text-4xl text-red-500" />
+                                                                            {/* Desktop Table View */}
+                                                                            <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 bg-white">
+                                                                                <div className="max-h-[360px] overflow-y-auto">
+                                                                                    <table className="w-full text-left border-collapse table-fixed">
+                                                                                        <thead className="bg-gray-50 text-gray-600 capitalize text-xs font-semibold tracking-wider sticky top-0 z-10">
+                                                                                            <tr>
+                                                                                                <th className="px-4 py-3 w-[28%]">Date & Time</th>
+                                                                                                <th className="px-4 py-3 w-[16%]">Assigned</th>
+                                                                                                <th className="px-4 py-3 w-[16%]">Cleaned</th>
+                                                                                                <th className="px-4 py-3 w-[18%]">Status</th>
+                                                                                                <th className="px-4 py-3 w-[22%] text-right pr-4">Action</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
+                                                                                            {renderItems.map((item) => {
+                                                                                                if (item.isSeparator) {
+                                                                                                    return (
+                                                                                                        <tr key={item.key} className="bg-green-50/70 border-y-2 border-green-200">
+                                                                                                            <td className="px-4 py-2.5 font-bold text-green-700">
+                                                                                                                <div>Total Paid</div>
+                                                                                                                <div className="text-[10px] text-green-600 font-semibold">{new Date(item.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
+                                                                                                            </td>
+                                                                                                            <td className="px-4 py-2.5 font-bold text-green-700">{item.assigned} KG</td>
+                                                                                                            <td className="px-4 py-2.5 font-bold text-green-700">{item.cleaned} KG</td>
+                                                                                                            <td className="px-4 py-2.5">
+                                                                                                                <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-gray-100 text-gray-700 border border-gray-200">Payment Done</span>
+                                                                                                            </td>
+                                                                                                            <td className="px-4 py-2.5 text-right flex justify-end items-center pr-4">
+                                                                                                                <span className="text-green-700 font-black text-base md:text-lg">Paid: ₹{item.totalAmount}</span>
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                    )
+                                                                                                }
+
+                                                                                                const entry = item
+                                                                                                const isSelected = selectedIds.includes(entry._id)
+                                                                                                const isPaid = entry.isPaid
+
+                                                                                                let rowBg = "bg-white hover:bg-gray-50/50"
+                                                                                                let textColor = "text-gray-700"
+                                                                                                if (isPaid) {
+                                                                                                    rowBg = "bg-gray-50/60 hover:bg-gray-50"
+                                                                                                    textColor = "text-gray-600"
+                                                                                                } else if (isSelected) {
+                                                                                                    rowBg = "bg-orange-50/50 border-l-4 border-l-orange-500"
+                                                                                                    textColor = "text-gray-900"
+                                                                                                }
+
+                                                                                                // Determine batch grouping
+                                                                                                let isFirstInBatch = true;
+                                                                                                let batchGroup = [entry];
+                                                                                                if (entry.isBatch) {
+                                                                                                    batchGroup = renderItems.filter(x => x.batchId === entry.batchId && !x.isSeparator);
+                                                                                                    isFirstInBatch = batchGroup[0]._id === entry._id;
+                                                                                                }
+                                                                                                
+                                                                                                // Use the max cleaned quantity for the batch
+                                                                                                const displayCleanedQuantity = entry.isBatch 
+                                                                                                    ? Math.max(...batchGroup.map(x => x.cleanedQuantity || 0))
+                                                                                                    : entry.cleanedQuantity;
+
+                                                                                                return (
+                                                                                                    <tr 
+                                                                                                        key={entry._id} 
+                                                                                                        onClick={() => handleRowClick(entry, local.LocalID)}
+                                                                                                        className={`transition-colors border-b border-gray-100 cursor-pointer ${rowBg} ${textColor}`}
+                                                                                                    >
+                                                                                                        <td className="px-4 py-3 font-medium">
+                                                                                                            <div>{new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</div>
+                                                                                                            <div className="text-[11px] text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</div>
+                                                                                                        </td>
+                                                                                                        <td className="px-4 py-3 text-gray-700">
+                                                                                                            {entry.quantity ? `${entry.quantity} KG` : "—"}
+                                                                                                        </td>
+                                                                                                        {isFirstInBatch && (
+                                                                                                            <>
+                                                                                                                <td className="px-4 py-3 font-semibold text-gray-700 relative align-middle" rowSpan={batchGroup.length}>
+                                                                                                                    {batchGroup.length > 1 && (
+                                                                                                                        <div className="absolute left-0 top-3 bottom-3 w-3 border-l-[3px] border-y-[3px] border-gray-300/70 rounded-l-lg pointer-events-none"></div>
+                                                                                                                    )}
+                                                                                                                    <div className={batchGroup.length > 1 ? "pl-5" : ""}>
+                                                                                                                        {displayCleanedQuantity ? `${displayCleanedQuantity} KG` : "—"}
+                                                                                                                    </div>
+                                                                                                                </td>
+                                                                                                                <td className="px-4 py-3 align-middle" rowSpan={batchGroup.length}>
+                                                                                                                    {isPaid ? (
+                                                                                                                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-gray-100 text-gray-700 border border-gray-200">Payment Done</span>
+                                                                                                                    ) : isSelected ? (
+                                                                                                                        batchGroup.some(g => g._id === selectedRowId) ? (
+                                                                                                                            <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-orange-100 text-orange-700 border border-orange-200 animate-pulse">Paying...</span>
+                                                                                                                        ) : (
+                                                                                                                            <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-orange-50 text-orange-600 border border-orange-100">Selected</span>
+                                                                                                                        )
+                                                                                                                    ) : entry.isReturned ? (
+                                                                                                                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-red-50 text-red-700 border border-red-100">Unpaid</span>
+                                                                                                                    ) : (
+                                                                                                                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-gray-50 text-gray-400 border border-gray-100">Pending Return</span>
+                                                                                                                    )}
+                                                                                                                </td>
+                                                                                                                <td className="px-4 py-3 text-right pr-4 align-middle" rowSpan={batchGroup.length}>
+                                                                                                                    {!isPaid && entry.isReturned && (
+                                                                                                                        <div>
+                                                                                                                            {selectedRowId ? (
+                                                                                                                                batchGroup.some(g => g._id === selectedRowId) ? (
+                                                                                                                                    <button className="px-3 py-1 bg-orange-500 text-white rounded-lg text-xs font-bold shadow-sm">Paying</button>
+                                                                                                                                ) : isSelected ? (
+                                                                                                                                    <span className="text-xs text-orange-500 font-semibold">—</span>
+                                                                                                                                ) : (
+                                                                                                                                    <button onClick={(e) => { e.stopPropagation(); handleRowClick(entry, local.LocalID); }} className="px-3 py-1 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 transition-colors">Pay</button>
+                                                                                                                                )
+                                                                                                                            ) : (
+                                                                                                                                <button onClick={(e) => { e.stopPropagation(); handleRowClick(entry, local.LocalID); }} className="px-3 py-1 bg-orange-500 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-orange-600 transition-colors">Pay</button>
+                                                                                                                            )}
+                                                                                                                        </div>
+                                                                                                                    )}
+                                                                                                                </td>
+                                                                                                            </>
+                                                                                                        )}
+                                                                                                    </tr>
+                                                                                                )
+                                                                                            })}
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
                                                                             </div>
-                                                                            <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Rejected</h3>
-                                                                            <div className="space-y-2 text-sm">
-                                                                                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Amount</span><span className="font-bold text-red-600">₹{orderData?.total || "—"}</span></div>
-                                                                                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Method</span><span className="font-semibold">{paymentResult.method}</span></div>
-                                                                                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Status</span><span className="font-bold text-red-600">REJECTED</span></div>
-                                                                                <div className="flex justify-between py-2"><span className="text-gray-500">Deduction</span><span className="font-semibold text-gray-700">No amount deducted</span></div>
+
+                                                                            {/* Mobile Card Layout */}
+                                                                            <div className="md:hidden space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                                                                                {renderItems.map((item) => {
+                                                                                    if (item.isSeparator) {
+                                                                                        return (
+                                                                                            <div key={item.key} className="bg-green-50 border-2 border-green-200 rounded-xl p-3 flex flex-col gap-2">
+                                                                                                <div className="flex justify-between items-center">
+                                                                                                    <div>
+                                                                                                        <p className="text-xs font-bold text-green-800 capitalize">Total Paid</p>
+                                                                                                        <p className="text-[10px] text-green-600 mt-0.5">{new Date(item.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
+                                                                                                    </div>
+                                                                                                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">Payment Done</span>
+                                                                                                </div>
+                                                                                                <div className="flex justify-between items-center pt-2 border-t border-green-100">
+                                                                                                    <div className="flex gap-4">
+                                                                                                        <div>
+                                                                                                            <p className="text-[9px] text-green-600 font-bold capitalize">Assigned</p>
+                                                                                                            <p className="text-sm font-bold text-green-800">{item.assigned} KG</p>
+                                                                                                        </div>
+                                                                                                        <div>
+                                                                                                            <p className="text-[9px] text-green-600 font-bold capitalize">Returned</p>
+                                                                                                            <p className="text-sm font-bold text-green-800">{item.cleaned} KG</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <span className="text-green-700 font-black text-sm pr-1">Paid: ₹{item.totalAmount}</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )
+                                                                                    }
+
+                                                                                    const entry = item
+                                                                                    const isSelected = selectedIds.includes(entry._id)
+                                                                                    const isPaid = entry.isPaid
+
+                                                                                    return (
+                                                                                        <div 
+                                                                                            key={entry._id} 
+                                                                                            onClick={() => handleRowClick(entry, local.LocalID)}
+                                                                                            className={`rounded-xl p-3 border flex flex-col gap-2 transition-all cursor-pointer ${isPaid ? 'bg-gray-50/60 border-gray-100' : isSelected ? 'bg-orange-50/50 border-orange-200 ring-1 ring-orange-500/10' : 'bg-white border-gray-100 hover:border-orange-200'}`}
+                                                                                        >
+                                                                                            <div className="flex justify-between items-center">
+                                                                                                <div>
+                                                                                                    <p className="text-xs font-bold text-gray-900">{new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
+                                                                                                    <p className="text-[10px] text-gray-400 mt-0.5">{new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+                                                                                                </div>
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold capitalize ${entry.type === "assign" ? "bg-blue-50 text-blue-700 border border-blue-100" : "bg-green-50 text-green-700 border border-green-100"}`}>
+                                                                                                        {entry.type === "assign" ? "Assign" : "Return"}
+                                                                                                    </span>
+                                                                                                    {isPaid ? (
+                                                                                                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-100 text-gray-700 border border-gray-200 capitalize">Paid</span>
+                                                                                                    ) : isSelected ? (
+                                                                                                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-orange-100 text-orange-700 border border-orange-200 capitalize animate-pulse">Paying</span>
+                                                                                                    ) : (
+                                                                                                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-red-50 text-red-700 border border-red-100 capitalize">Unpaid</span>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                                                                                                <div>
+                                                                                                    <p className="text-[9px] text-gray-400 font-bold capitalize">{entry.cleanedQuantity ? "Cleaned Quantity" : "Assigned Quantity"}</p>
+                                                                                                    <p className="text-sm font-bold text-gray-900">{entry.cleanedQuantity ? `${entry.cleanedQuantity} KG` : `${entry.quantity} KG`}</p>
+                                                                                                </div>
+                                                                                                {!isPaid && entry.isReturned && (
+                                                                                                    <div>
+                                                                                                        {selectedRowId ? (
+                                                                                                            entry._id === selectedRowId ? (
+                                                                                                                <button className="px-3 py-1 bg-orange-500 text-white rounded-lg text-xs font-bold shadow-sm">Paying...</button>
+                                                                                                            ) : isSelected ? (
+                                                                                                                <span className="text-xs text-orange-500 font-semibold">—</span>
+                                                                                                            ) : (
+                                                                                                                <button onClick={(e) => { e.stopPropagation(); handleRowClick(entry, local.LocalID); }} className="px-3 py-1 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50">Pay</button>
+                                                                                                            )
+                                                                                                        ) : (
+                                                                                                            <button onClick={(e) => { e.stopPropagation(); handleRowClick(entry, local.LocalID); }} className="px-3 py-1 bg-orange-500 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-orange-600">Pay</button>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                )}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )
+                                                                                })}
                                                                             </div>
-                                                                            <button onClick={() => { setPaymentResult(null); setPaymentError(null); fetchOrderReference(local.LocalID); }} className="w-full mt-2 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm">Retry Payment</button>
                                                                         </>
                                                                     )}
                                                                 </div>
-                                                            ) : orderData ? (
-                                                                <>
-                                                                    <div className="flex justify-between items-center mb-8">
-                                                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Order Reference</span>
-                                                                        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-mono font-medium text-gray-600">{orderData.orderReference?.slice(-6) || "—"}</span>
-                                                                    </div>
-                                                                    <div className="text-center mb-5 md:mb-8 pb-5 md:pb-8 border-b border-gray-100">
-                                                                        <div className="text-gray-500 text-xs font-medium mb-2 uppercase tracking-wide">Amount to Pay</div>
-                                                                        <div className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-1.5 md:gap-2 flex-wrap">
-                                                                            <span>{orderData.quantity}</span>
-                                                                            <span className="text-gray-400 text-lg md:text-xl">×</span>
-                                                                            <span>{orderData.price_per_cleaned_imli}</span>
-                                                                            <span className="text-gray-400 text-lg md:text-xl">=</span>
-                                                                            <span className="text-orange-600">₹{orderData.total}</span>
+
+                                                                {/* Payment Confirmation Panel */}
+                                                                <div className="lg:w-1/3 flex flex-col justify-between p-4 md:p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+                                                                    {paymentResult ? (
+                                                                        <div className="text-center space-y-4">
+                                                                            {paymentResult.status === "PENDING" ? (
+                                                                                <>
+                                                                                    <div className="bg-yellow-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                                        <MdOnlinePayment className="text-4xl text-yellow-500" />
+                                                                                    </div>
+                                                                                    <h3 className="text-base md:text-lg font-bold text-gray-900">Scan QR to Pay</h3>
+                                                                                    <p className="text-xl md:text-2xl font-bold text-orange-600">₹{paymentResult.total}</p>
+                                                                                    {paymentResult.qr && (
+                                                                                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                                                                            <img src={paymentResult.qr} alt="UPI QR Code" className="w-44 h-44 mx-auto rounded-lg" />
+                                                                                            <p className="text-xs text-gray-600 mt-2 font-mono">{paymentResult.upiId}</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {paymentError && (
+                                                                                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                                                                            <p className="text-red-700 text-sm font-medium">{paymentError}</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <div className="flex gap-2">
+                                                                                        <button onClick={() => handleOnlineStatus(local.LocalID, "SUCCESS")} disabled={paymentLoading} className="flex-1 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm flex items-center justify-center gap-1 text-sm">
+                                                                                            <MdCheckCircle className="text-lg" /> Received
+                                                                                        </button>
+                                                                                        <button onClick={() => handleOnlineStatus(local.LocalID, "REJECTED")} disabled={paymentLoading} className="flex-1 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-sm flex items-center justify-center gap-1 text-sm">
+                                                                                            <MdClose className="text-lg" /> Reject
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </>
+                                                                            ) : paymentResult.status === "SUCCESS" ? (
+                                                                                <>
+                                                                                    <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                                        <MdCheckCircle className="text-4xl text-green-500" />
+                                                                                    </div>
+                                                                                    <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Successful!</h3>
+                                                                                    <div className="space-y-2 text-sm">
+                                                                                        <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Amount</span><span className="font-bold text-green-600">₹{paymentResult.total}</span></div>
+                                                                                        <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Method</span><span className="font-semibold">{paymentResult.method}</span></div>
+                                                                                        <div className="flex justify-between py-2"><span className="text-gray-500">Total Paid</span><span className="font-bold text-orange-600">₹{paymentResult.localTotalPaid}</span></div>
+                                                                                    </div>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                                                                        <MdError className="text-4xl text-red-500" />
+                                                                                    </div>
+                                                                                    <h3 className="text-lg md:text-xl font-bold text-gray-900">Payment Rejected</h3>
+                                                                                    <div className="space-y-2 text-sm">
+                                                                                        <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Amount</span><span className="font-bold text-red-600">₹{orderData?.total || "—"}</span></div>
+                                                                                        <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Method</span><span className="font-semibold">{paymentResult.method}</span></div>
+                                                                                        <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Status</span><span className="font-bold text-red-600">REJECTED</span></div>
+                                                                                        <div className="flex justify-between py-2"><span className="text-gray-500">Deduction</span><span className="font-semibold text-gray-700">No amount deducted</span></div>
+                                                                                    </div>
+                                                                                    <button onClick={() => { setPaymentResult(null); setPaymentError(null); fetchOrderReference(local.LocalID, selectedRowId ? selectedIds : null); }} className="w-full mt-2 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm">Retry Payment</button>
+                                                                                </>
+                                                                            )}
                                                                         </div>
-                                                                    </div>
-                                                                    <div className="space-y-4">
-                                                                        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 md:mb-3">Payment Method</div>
-                                                                        <div className="grid grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6">
-                                                                            <button onClick={() => setPaymentMethod("Cash")} className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${paymentMethod === "Cash" ? 'bg-orange-50 border-orange-200 text-orange-700 ring-1 ring-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}><MdMoney className={`text-lg ${paymentMethod === "Cash" ? 'text-orange-600' : 'text-gray-400'}`} />Cash</button>
-                                                                            <button onClick={() => setPaymentMethod("Online")} className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${paymentMethod === "Online" ? 'bg-orange-50 border-orange-200 text-orange-700 ring-1 ring-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}><MdOnlinePayment className={`text-lg ${paymentMethod === "Online" ? 'text-orange-600' : 'text-gray-400'}`} />Online</button>
+                                                                    ) : orderData ? (
+                                                                        <>
+                                                                            <div className="flex justify-between items-center mb-8">
+                                                                                <span className="text-xs font-semibold text-gray-500 capitalize tracking-wider">Order Reference</span>
+                                                                                <span className="px-2 py-1 bg-gray-100 rounded text-xs font-mono font-medium text-gray-600">{orderData.orderReference?.slice(-6) || "—"}</span>
+                                                                            </div>
+                                                                            <div className="text-center mb-5 md:mb-8 pb-5 md:pb-8 border-b border-gray-100">
+                                                                                <div className="text-gray-500 text-xs font-medium mb-2 capitalize tracking-wide">Amount to Pay</div>
+                                                                                <div className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-1.5 md:gap-2 flex-wrap">
+                                                                                    <span>{orderData.quantity}</span>
+                                                                                    <span className="text-gray-400 text-lg md:text-xl">×</span>
+                                                                                    <span>{orderData.price_per_cleaned_imli}</span>
+                                                                                    <span className="text-gray-400 text-lg md:text-xl">=</span>
+                                                                                    <span className="text-orange-600">₹{orderData.total}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="space-y-4">
+                                                                                <div className="text-xs font-semibold text-gray-500 capitalize tracking-wider mb-2 md:mb-3">Payment Method</div>
+                                                                                <div className="grid grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6">
+                                                                                    <button onClick={() => setPaymentMethod("Cash")} className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${paymentMethod === "Cash" ? 'bg-orange-50 border-orange-200 text-orange-700 ring-1 ring-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}><MdMoney className={`text-lg ${paymentMethod === "Cash" ? 'text-orange-600' : 'text-gray-400'}`} />Cash</button>
+                                                                                    <button onClick={() => setPaymentMethod("Online")} className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${paymentMethod === "Online" ? 'bg-orange-50 border-orange-200 text-orange-700 ring-1 ring-orange-200' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}><MdOnlinePayment className={`text-lg ${paymentMethod === "Online" ? 'text-orange-600' : 'text-gray-400'}`} />Online</button>
+                                                                                </div>
+                                                                                {paymentError && <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-3"><p className="text-red-700 text-sm font-medium">{paymentError}</p></div>}
+                                                                                <button onClick={() => handleConfirmPayment(local.LocalID)} disabled={paymentLoading || !orderData.total} className="w-full py-3.5 bg-green-600 text-white rounded-lg font-semibold text-base hover:bg-green-700 transition-colors shadow-sm flex items-center justify-center gap-2 active:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                                                                    {paymentLoading ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>Processing...</> : <><MdCheckCircle className="text-xl" />Confirm & Pay ₹{orderData.total}</>}
+                                                                                </button>
+                                                                            </div>
+                                                                        </>
+                                                                    ) : (
+                                                                        <div className="text-center py-8 text-gray-400">
+                                                                            <div className="bg-gray-50 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                                                <MdPayment className="text-2xl text-gray-300" />
+                                                                            </div>
+                                                                            <p className="font-medium text-sm">{paymentError || "Select a row and click Pay to proceed"}</p>
                                                                         </div>
-                                                                        {paymentError && <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-3"><p className="text-red-700 text-sm font-medium">{paymentError}</p></div>}
-                                                                        <button onClick={() => handleConfirmPayment(local.LocalID)} disabled={paymentLoading || !orderData.total} className="w-full py-3.5 bg-green-600 text-white rounded-lg font-semibold text-base hover:bg-green-700 transition-colors shadow-sm flex items-center justify-center gap-2 active:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                                                            {paymentLoading ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>Processing...</> : <><MdCheckCircle className="text-xl" />Confirm & Pay ₹{orderData.total}</>}
-                                                                        </button>
-                                                                    </div>
-                                                                </>
-                                                            ) : (
-                                                                <div className="text-center py-8 text-gray-400"><p className="font-medium">No pending payment</p></div>
-                                                            )}
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )
+                                                })()}
                                             </div>
 
                                             {/* History Tab Content */}

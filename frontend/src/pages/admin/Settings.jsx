@@ -139,7 +139,8 @@ export default function Settings({ activeTab: initialTab }) {
         }
     }
 
-    const tabs = [
+    // eslint-disable-next-line no-unused-vars
+  const tabs = [
         { id: 'pricing', label: 'Pricing', icon: MdEco },
         { id: 'business', label: 'Business Profile', icon: MdSettings },
         { id: 'clean', label: 'Clean Inventory', icon: MdDeleteForever },
@@ -238,14 +239,16 @@ export default function Settings({ activeTab: initialTab }) {
                                 )}
                             </div>
 
-                            {activeTab === 'pricing' && (
-                                <div className="animate-fade-in-up">
+                            <div className="grid grid-cols-1 grid-rows-1 relative">
+                                {/* Pricing Tab */}
+                                <div className={`col-start-1 row-start-1 transition-all duration-300 ${activeTab === 'pricing' ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-2 pointer-events-none z-0'}`}>
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Imli Price Configuration</h2>
 
                                         </div>
                                         <button
+                                            type="button"
                                             onClick={() => setIsPriceEditing(!isPriceEditing)}
                                             className={`px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all duration-300 active:scale-95 ${isPriceEditing
                                                 ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100'
@@ -262,7 +265,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                     <form onSubmit={handleUpdatePrice} className="space-y-8">
                                         <div className="space-y-3">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                            <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                 <T k="Price" /> (Per Cleaned Imli)
                                             </label>
                                             <div className="relative group max-w-xs">
@@ -302,10 +305,9 @@ export default function Settings({ activeTab: initialTab }) {
                                         )}
                                     </form>
                                 </div>
-                            )}
 
-                            {activeTab === 'business' && (
-                                <div className="animate-fade-in-up">
+                                {/* Business Tab */}
+                                <div className={`col-start-1 row-start-1 transition-all duration-300 ${activeTab === 'business' ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-2 pointer-events-none z-0'}`}>
                                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
                                         <div>
                                             <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight"><T k="Business Settings" /></h2>
@@ -331,7 +333,7 @@ export default function Settings({ activeTab: initialTab }) {
                                         <div className="grid md:grid-cols-2 gap-8 md:gap-x-12 md:gap-y-10">
                                             {/* Business Name */}
                                             <div className="space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="Business Name" />
                                                 </label>
                                                 <input
@@ -350,7 +352,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                             {/* Phone */}
                                             <div className="space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="Phone" />
                                                 </label>
                                                 <input
@@ -368,7 +370,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                             {/* GSTIN */}
                                             <div className="space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="GSTIN" />
                                                 </label>
                                                 <input
@@ -387,7 +389,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                             {/* State */}
                                             <div className="space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="State" />
                                                 </label>
                                                 <input
@@ -406,7 +408,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                             {/* State Code */}
                                             <div className="space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="State Code" />
                                                 </label>
                                                 <input
@@ -425,7 +427,7 @@ export default function Settings({ activeTab: initialTab }) {
 
                                             {/* Address */}
                                             <div className="md:col-span-2 space-y-2.5">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                <label className="text-xs font-bold text-gray-400 capitalize tracking-widest ml-1">
                                                     <T k="Address" />
                                                 </label>
                                                 <textarea
@@ -458,9 +460,9 @@ export default function Settings({ activeTab: initialTab }) {
                                         )}
                                     </form>
                                 </div>
-                            )}
-                            {activeTab === 'clean' && (
-                                <div className="animate-fade-in-up">
+
+                                {/* Clean Tab */}
+                                <div className={`col-start-1 row-start-1 transition-all duration-300 ${activeTab === 'clean' ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-2 pointer-events-none z-0'}`}>
                                     <div className="mb-8 border-b border-gray-100 pb-6">
                                         <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Clean Inventory</h2>
                                     </div>
@@ -499,7 +501,7 @@ export default function Settings({ activeTab: initialTab }) {
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
 
                         </div>
@@ -509,3 +511,4 @@ export default function Settings({ activeTab: initialTab }) {
         </div>
     )
 }
+

@@ -128,7 +128,7 @@ export default function MobileNav({ activePage, onPageChange }) {
                     <div className="bg-white rounded-t-2xl shadow-2xl border-t border-gray-200 overflow-hidden w-full">
                         {/* Sheet header */}
                         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-                            <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+                            <span className="text-sm font-bold text-gray-700 capitalize tracking-wide">
                                 {activeSheet.label}
                             </span>
                             <button
@@ -201,3 +201,4 @@ export default function MobileNav({ activePage, onPageChange }) {
         </>
     )
 }
+

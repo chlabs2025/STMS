@@ -20,7 +20,7 @@ const AboutSection = () => {
 
                     {/* Content Side */}
                     <div>
-                        <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Who We Are</h2>
+                        <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider capitalize mb-3">Who We Are</h2>
                         <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                             Empowering Farmers, <br />
                             <span className="text-gray-400">Delivering Excellence.</span>
@@ -53,3 +53,4 @@ const AboutSection = () => {
 };
 
 export default AboutSection;
+

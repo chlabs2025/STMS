@@ -97,6 +97,10 @@ app.use("/api", dashboardRoutes);
 import excelRoutes from "./route/excel.route.js";
 app.use("/api", excelRoutes);
 
+import vendorRoutes from "./route/vendor.route.js";
+app.use("/api", vendorRoutes);
+
+
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
     if (res.headersSent) return next(err);

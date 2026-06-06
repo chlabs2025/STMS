@@ -134,7 +134,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
 
             {/* Sender Name */}
             <div>
-                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                     <MdPerson className="text-orange-500" />
                     Sender Name <span className="text-red-400">*</span>
                 </label>
@@ -164,11 +164,11 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
             <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
                 {/* Table Header */}
                 <div className="grid grid-cols-[1.8fr_1fr_1fr_1fr_1.2fr_auto] bg-orange-50 border-b border-orange-200">
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Unit</div>
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Quantity</div>
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Rate (₹)</div>
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Weight (kg)</div>
-                    <div className="px-4 py-3 text-xs font-bold text-orange-700 uppercase tracking-wide">Amount (₹)</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 capitalize tracking-wide">Unit</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 capitalize tracking-wide">Quantity</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 capitalize tracking-wide">Rate (₹)</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 capitalize tracking-wide">Weight (kg)</div>
+                    <div className="px-4 py-3 text-xs font-bold text-orange-700 capitalize tracking-wide">Amount (₹)</div>
                     <div className="px-2 py-3 w-10"></div>
                 </div>
 
@@ -283,7 +283,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
 
                 {/* Totals Row */}
                 <div className="grid grid-cols-[1.8fr_1fr_1fr_1fr_1.2fr_auto] items-center bg-orange-50/80 border-t-2 border-orange-200">
-                    <div className="px-4 py-3 text-sm font-bold text-gray-700 uppercase">Total</div>
+                    <div className="px-4 py-3 text-sm font-bold text-gray-700 capitalize">Total</div>
                     <div className="px-4 py-3 text-sm font-bold text-orange-700">{totalQuantity}</div>
                     <div className="px-4 py-3 text-sm font-bold text-gray-500">—</div>
                     <div className="px-4 py-3 text-sm font-bold text-orange-700">
@@ -301,7 +301,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 {rows.map((row, index) => (
                     <div key={index} className={`pb-4 space-y-3 ${index > 0 ? 'pt-4 border-t border-gray-100' : ''}`}>
                         <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Item {index + 1}</span>
+                            <span className="text-[11px] font-semibold text-gray-400 capitalize tracking-wider">Item {index + 1}</span>
                             {rows.length > 1 && (
                                 <button
                                     type="button"
@@ -316,7 +316,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
 
                         {/* Unit */}
                         <div>
-                            <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Unit</label>
+                            <label className="text-[11px] text-gray-500 font-semibold capitalize tracking-wide mb-1.5 block">Unit</label>
                             {manualUnitRows[index] ? (
                                 <div className="flex items-center gap-2">
                                     <input
@@ -355,7 +355,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                         {/* Quantity + Rate row */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Quantity</label>
+                                <label className="text-[11px] text-gray-500 font-semibold capitalize tracking-wide mb-1.5 block">Quantity</label>
                                 <input
                                     type="number"
                                     value={row.quantity}
@@ -368,7 +368,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                                 />
                             </div>
                             <div>
-                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Rate (₹)</label>
+                                <label className="text-[11px] text-gray-500 font-semibold capitalize tracking-wide mb-1.5 block">Rate (₹)</label>
                                 <input
                                     type="number"
                                     value={row.rate}
@@ -386,7 +386,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                         {/* Weight + Amount row */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Weight (kg)</label>
+                                <label className="text-[11px] text-gray-500 font-semibold capitalize tracking-wide mb-1.5 block">Weight (kg)</label>
                                 <input
                                     type="number"
                                     value={row.weight}
@@ -400,7 +400,7 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                                 />
                             </div>
                             <div>
-                                <label className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-1.5 block">Amount (₹)</label>
+                                <label className="text-[11px] text-gray-500 font-semibold capitalize tracking-wide mb-1.5 block">Amount (₹)</label>
                                 <div className="w-full px-3 py-2.5 bg-orange-50/60 rounded-lg text-sm font-semibold text-gray-700 border border-orange-100" style={{ fontSize: '16px', minHeight: '42px', display: 'flex', alignItems: 'center' }}>
                                     {row.amount ? `₹ ${parseFloat(row.amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "₹ 0.00"}
                                 </div>
@@ -412,14 +412,14 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
                 {/* Mobile Totals */}
                 <div className="bg-orange-50/70 rounded-xl p-3 flex items-center justify-between mt-2">
                     <div>
-                        <p className="text-[11px] font-semibold text-orange-700 uppercase">Total</p>
+                        <p className="text-[11px] font-semibold text-orange-700 capitalize">Total</p>
                         <div className="flex gap-4 mt-0.5">
                             <div>
-                                <span className="text-[9px] text-orange-600/70 font-semibold uppercase mr-1">Qty</span>
+                                <span className="text-[9px] text-orange-600/70 font-semibold capitalize mr-1">Qty</span>
                                 <span className="text-[10px] text-orange-700 font-bold">{totalQuantity}</span>
                             </div>
                             <div>
-                                <span className="text-[9px] text-orange-600/70 font-semibold uppercase mr-1">Wt</span>
+                                <span className="text-[9px] text-orange-600/70 font-semibold capitalize mr-1">Wt</span>
                                 <span className="text-[10px] text-orange-700 font-bold">{totalWeight.toLocaleString("en-IN", { minimumFractionDigits: 2 })} kg</span>
                             </div>
                         </div>
@@ -461,3 +461,4 @@ export default function CleanedImliForm({ imliData, setImliData, onNext, onBack 
         </div>
     )
 }
+

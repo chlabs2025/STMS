@@ -28,7 +28,7 @@ const FeaturesSection = () => {
         <section id="process" className="py-24 bg-zinc-50 section-reveal">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider uppercase mb-3">Why Choose Us</h2>
+                    <h2 className="text-sm font-bold text-[#ff5a1f] tracking-wider capitalize mb-3">Why Choose Us</h2>
                     <h3 className="text-3xl md:text-4xl font-bold text-gray-900">Excellence in Every Step</h3>
                 </div>
 
@@ -51,3 +51,4 @@ const FeaturesSection = () => {
 };
 
 export default FeaturesSection;
+

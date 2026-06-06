@@ -145,7 +145,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
                   <MdPhone className="text-blue-600 text-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-1">Phone Number</p>
+                  <p className="text-[11px] text-gray-400 font-bold capitalize tracking-widest mb-1">Phone Number</p>
                   {isEditing ? (
                     <input 
                       type="tel"
@@ -166,7 +166,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
                   <MdLocationOn className="text-purple-600 text-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-1">Address</p>
+                  <p className="text-[11px] text-gray-400 font-bold capitalize tracking-widest mb-1">Address</p>
                   {isEditing ? (
                     <textarea 
                       name="LocalAddress"
@@ -187,7 +187,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
                   <MdPayment className="text-green-600 text-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-1">UPI ID</p>
+                  <p className="text-[11px] text-gray-400 font-bold capitalize tracking-widest mb-1">UPI ID</p>
                   {isEditing ? (
                     <input 
                       type="text"
@@ -205,14 +205,14 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
               {/* Payment Info (if available and not editing, keep amounts but remove UPI ID duplicate) */}
               {local.payment && !isEditing && (
                 <div className="bg-gray-50/80 rounded-2xl p-5 border border-gray-100 shadow-inner">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Payment Information</p>
+                  <p className="text-[11px] font-bold text-gray-400 capitalize tracking-widest mb-4">Payment Information</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <p className="text-[10px] text-gray-500 font-bold uppercase">UPI Amount</p>
+                      <p className="text-[10px] text-gray-500 font-bold capitalize">UPI Amount</p>
                       <p className="text-sm font-bold text-blue-600">₹{local.payment.UPIAmount || 0}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[10px] text-gray-500 font-bold uppercase">Cash Amount</p>
+                      <p className="text-[10px] text-gray-500 font-bold capitalize">Cash Amount</p>
                       <p className="text-sm font-bold text-green-600">₹{local.payment.cashAmount || 0}</p>
                     </div>
                   </div>

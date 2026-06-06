@@ -16,7 +16,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/90 backdrop-blur-md border border-gray-100 p-3 rounded-xl shadow-xl">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter mb-2">{label}</p>
+        <p className="text-[10px] font-bold text-gray-400 capitalize tracking-tighter mb-2">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -59,7 +59,7 @@ const TrendChart = () => {
   return (
     <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 flex flex-col h-[400px] md:h-[420px]">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest">
+        <h3 className="text-xs font-bold text-gray-800 capitalize tracking-widest">
           <T k="7-Day Inventory Trends" />
         </h3>
         <div className="flex gap-4">
@@ -143,3 +143,4 @@ const TrendChart = () => {
 };
 
 export default TrendChart;
+

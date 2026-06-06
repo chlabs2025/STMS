@@ -24,6 +24,7 @@ html, body {
     background-color: #f66713; /* For PWA status bar consistency */
     overscroll-behavior-y: auto; /* Enable native PWA pull-to-refresh */
     min-height: 100%;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -149,4 +150,9 @@ input[type=number] {
 .no-x-scroll {
     overflow-x: hidden;
     width: 100%;
+    scrollbar-gutter: stable;
+}
+
+.overflow-y-auto {
+    scrollbar-gutter: stable;
 }

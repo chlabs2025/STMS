@@ -12,12 +12,14 @@ import {
   MdReceipt,
   MdChevronLeft,
   MdChevronRight,
-  MdAutoAwesome
+  MdAutoAwesome,
+  MdStore
 } from 'react-icons/md';
 
 export default function Sidebar({ activePage, onPageChange }) {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: MdDashboard },
+    { id: "vendors", label: "Vendors", icon: MdStore },
     { id: "addLocals", label: "Add Locals", icon: MdPersonAdd },
     { id: "addRawImli", label: "Add Raw Imli", icon: MdEco },
     { id: "addCleanedImli", label: "Add Cleaned Imli", icon: MdAutoAwesome },

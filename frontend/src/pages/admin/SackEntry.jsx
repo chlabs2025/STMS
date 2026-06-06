@@ -83,10 +83,10 @@ const SackEntryColumn = ({
         <div className="bg-white rounded-lg md:rounded-xl border border-gray-200 flex flex-col h-full shadow-sm overflow-hidden">
             {/* Header */}
             <div className="flex items-center px-3 md:px-4 py-2 md:py-3 bg-gray-50 border-b border-gray-200">
-                <div className="flex-1 text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider pl-1"><T k="ID / NAME" /></div>
-                <div className="flex-1 text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider text-right pr-2 md:pr-4"><T k="QUANTITY" /></div>
+                <div className="flex-1 text-[10px] md:text-xs font-bold text-gray-500 capitalize tracking-wider pl-1"><T k="ID / NAME" /></div>
+                <div className="flex-1 text-[10px] md:text-xs font-bold text-gray-500 capitalize tracking-wider text-right pr-2 md:pr-4"><T k="QUANTITY" /></div>
                 <div className="w-[60px] md:w-[100px] flex flex-col items-center justify-center border-l border-gray-200 pl-1 md:pl-2">
-                    <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 hidden md:block"><T k="DELIVERED" /></span>
+                    <span className="text-[8px] md:text-[10px] font-bold text-gray-400 capitalize tracking-wider mb-0.5 md:mb-1 hidden md:block"><T k="DELIVERED" /></span>
                     <input
                         type="checkbox"
                         checked={allDelivered}
@@ -427,3 +427,4 @@ const SackEntry = () => {
 };
 
 export default SackEntry;
+

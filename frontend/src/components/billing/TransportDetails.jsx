@@ -36,7 +36,7 @@ export default function TransportDetails({ formData, updateFormData, onNext, onB
             <div className="space-y-4 md:space-y-5">
                 {/* Destination */}
                 <div>
-                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                         Destination <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -52,7 +52,7 @@ export default function TransportDetails({ formData, updateFormData, onNext, onB
 
                 {/* Vehicle Number */}
                 <div>
-                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
                         Vehicle Number <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -60,7 +60,7 @@ export default function TransportDetails({ formData, updateFormData, onNext, onB
                         value={transport.vehicleNo || ""}
                         onChange={(e) => handleChange("vehicleNo", e.target.value.toUpperCase())}
                         placeholder="e.g. MH41AU6346"
-                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium uppercase"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium capitalize"
                         style={{ fontSize: '16px' }}
                         required
                     />
@@ -90,3 +90,4 @@ export default function TransportDetails({ formData, updateFormData, onNext, onB
         </div>
     )
 }
+
