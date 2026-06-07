@@ -260,7 +260,7 @@ const Payment = () => {
     }
 
     return (
-        <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden font-sans">
+        <div className="p-3 md:p-6 lg:p-8 bg-white h-full min-h-full flex flex-col overflow-hidden font-sans">
             <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
                 <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
                     <div className="bg-white p-2 md:p-2.5 rounded-lg shadow-sm border border-orange-500/30 flex-shrink-0">
@@ -269,6 +269,7 @@ const Payment = () => {
                     <div className="flex items-center flex-1 min-w-0 bg-gray-50 rounded-lg px-2.5 md:px-3 py-1.5 md:py-2">
                         <MdSearch className="text-orange-600 text-lg md:text-xl mr-1.5 md:mr-2 flex-shrink-0" />
                         <input
+                            autoFocus
                             type="text"
                             placeholder="Search name, phone, ID..."
                             value={searchTerm}
@@ -310,8 +311,9 @@ const Payment = () => {
                     )}
                 </div>
             ) : (
-                <div className="space-y-3 md:space-y-6">
-                    {filteredLocals.map((local) => {
+                <div className="flex-1 overflow-y-auto min-h-0 pr-1 md:pr-2">
+                    <div className="space-y-3 md:space-y-6">
+                        {filteredLocals.map((local) => {
                         const isExpanded = expandedLocalId === local._id
 
                         return (
@@ -483,14 +485,16 @@ const Payment = () => {
                                                                         type="date" 
                                                                         value={dateFilter.from} 
                                                                         onChange={e => setDateFilter(prev => ({ ...prev, from: e.target.value }))}
-                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500"
+                                                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500 cursor-pointer"
                                                                     />
                                                                     <span className="text-xs text-gray-400 font-bold">to</span>
                                                                     <input 
                                                                         type="date" 
                                                                         value={dateFilter.to} 
                                                                         onChange={e => setDateFilter(prev => ({ ...prev, to: e.target.value }))}
-                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500"
+                                                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                                                        className="px-2 py-1 text-xs border border-gray-200 rounded-lg outline-none bg-white text-gray-700 focus:border-orange-500 cursor-pointer"
                                                                     />
                                                                     {(dateFilter.from || dateFilter.to) && (
                                                                         <button 
@@ -848,6 +852,7 @@ const Payment = () => {
                             </div>
                         )
                     })}
+                    </div>
                 </div>
             )}
         </div>

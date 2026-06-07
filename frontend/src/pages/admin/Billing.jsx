@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { MdReceipt, MdCheckCircle, MdError, MdVisibility, MdFileDownload } from "react-icons/md"
+import { MdReceipt, MdCheckCircle, MdError, MdVisibility, MdFileDownload, MdSearch } from "react-icons/md"
 import ProductSelect from "../../components/billing/ProductSelect"
 import CustomerDetails from "../../components/billing/CustomerDetails"
 import ItemDetails from "../../components/billing/ItemDetails"
@@ -39,6 +39,7 @@ function Billing() {
   const [historyData, setHistoryData] = useState([])
   const [loadingHistory, setLoadingHistory] = useState(false)
   const [historyFilter, setHistoryFilter] = useState("all")
+  const [historySearchTerm, setHistorySearchTerm] = useState("")
 
   const fetchHistory = async () => {
     try {
@@ -82,7 +83,7 @@ function Billing() {
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
-    } catch (error) {
+    } catch {
       alert("Failed to download PDF.");
     }
   };
@@ -97,7 +98,7 @@ function Billing() {
       const blob = new Blob([response.data], { type: "application/pdf" })
       const url = window.URL.createObjectURL(blob)
       window.open(url, "_blank")
-    } catch (error) {
+    } catch {
       alert("Failed to view PDF.");
     }
   };
@@ -254,7 +255,9 @@ function Billing() {
           const text = await error.response.data.text()
           const json = JSON.parse(text)
           errorMessage = json.message || errorMessage
-        } catch { }
+        } catch { 
+          // empty block
+        }
       } else {
         errorMessage = error.response?.data?.message || errorMessage
       }
@@ -323,7 +326,9 @@ function Billing() {
           const text = await error.response.data.text()
           const json = JSON.parse(text)
           errorMessage = json.message || errorMessage
-        } catch { }
+        } catch {
+          // empty block
+        }
       } else {
         errorMessage = error.response?.data?.message || errorMessage
       }
@@ -356,7 +361,7 @@ function Billing() {
   // Success / Error screen
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
+      <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-x-hidden">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-12 text-center">
             {submitResult.success ? (
@@ -393,48 +398,61 @@ function Billing() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-3 md:p-6 overflow-x-hidden">
-      <div className="max-w-3xl mx-auto mb-6">
-        <div className="flex bg-gray-100 p-1 rounded-xl">
-          <button
-            onClick={() => setActiveTab("generate")}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "generate" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-          >
-            Generate New
-          </button>
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === "history" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-          >
-            Billing History
-          </button>
+    <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-x-hidden">
+      <div className="max-w-3xl mx-auto mb-6 w-full">
+        <div className="flex bg-gray-100 p-1 rounded-xl w-full overflow-hidden">
+            <button
+              onClick={() => setActiveTab("generate")}
+              className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "generate" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Generate New
+            </button>
+            <button
+              onClick={() => setActiveTab("history")}
+              className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "history" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Billing History
+            </button>
+          </div>
         </div>
-      </div>
 
       {activeTab === "history" ? (
          <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-              <h2 className="text-xl font-bold text-gray-900">Generated Bills & Slips</h2>
-              <div className="flex bg-gray-50 p-1.5 rounded-lg border border-gray-100 self-start md:self-auto overflow-x-auto w-full md:w-auto">
-                <button 
-                  onClick={() => setHistoryFilter('all')}
-                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'all' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  All History
-                </button>
-                <button 
-                  onClick={() => setHistoryFilter('invoice')}
-                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'invoice' ? 'bg-orange-50 text-orange-700 shadow-sm border border-orange-100' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  Tamarind Seed
-                </button>
-                <button 
-                  onClick={() => setHistoryFilter('slip')}
-                  className={`flex-1 md:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'slip' ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  Cleaned Imli
-                </button>
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                <div className="relative w-full flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MdSearch className="text-gray-400 text-lg" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search name or ID..."
+                    value={historySearchTerm}
+                    onChange={(e) => setHistorySearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors text-gray-800"
+                  />
+                </div>
+                <div className="flex bg-gray-50 p-1.5 rounded-lg border border-gray-100 self-start sm:self-auto overflow-x-auto w-full sm:w-auto shrink-0">
+                  <button 
+                    onClick={() => setHistoryFilter('all')}
+                    className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'all' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
+                  >
+                    All History
+                  </button>
+                  <button 
+                    onClick={() => setHistoryFilter('invoice')}
+                    className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'invoice' ? 'bg-orange-50 text-orange-700 shadow-sm border border-orange-100' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Tamarind Seed
+                  </button>
+                  <button 
+                    onClick={() => setHistoryFilter('slip')}
+                    className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'slip' ? 'bg-green-50 text-green-700 shadow-sm border border-green-100' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Cleaned Imli
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -443,11 +461,19 @@ function Billing() {
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[calc(100vh-320px)] pr-2" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
                 {historyData
                   .filter(item => historyFilter === "all" || item.type === historyFilter)
+                  .filter(item => {
+                    if (!historySearchTerm) return true;
+                    const term = historySearchTerm.toLowerCase();
+                    return (
+                      (item.idNumber && item.idNumber.toLowerCase().includes(term)) ||
+                      (item.name && item.name.toLowerCase().includes(term))
+                    );
+                  })
                   .map((item, idx) => (
-                  <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
+                  <div key={idx} className="bg-white border border-gray-300 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
                     {/* Top Row: Doc No, Date, and Type Badge */}
                     <div className="flex justify-between items-start">
                       <div>
@@ -459,14 +485,14 @@ function Billing() {
                         </span>
                       </div>
                       <div>
-                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold capitalize tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold capitalize tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
                           {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
                         </span>
                       </div>
                     </div>
                     
                     {/* Bottom Row: Party Name, Amount, and Actions */}
-                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-50">
+                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-200">
                       <div className="flex flex-col max-w-[50%]">
                         <span className="text-gray-400 text-[10px] capitalize tracking-widest font-bold mb-0.5">Billed To</span>
                         <span className="text-gray-800 font-bold text-sm truncate">

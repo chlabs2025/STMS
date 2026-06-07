@@ -1,15 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MdArrowBack, MdPayment, MdHistory, MdReceipt, MdClose } from 'react-icons/md'
+import { MdArrowBack, MdPayment, MdHistory, MdReceipt, MdClose, MdDelete } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import toast from "react-hot-toast"
-import { useLang } from "../../context/LanguageContext"
-import T from "../../i18n/T"
-
 const VendorProfile = ({ vendorId, onBack }) => {
-  const { lang } = useLang()
   const [data, setData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("purchases") // "purchases" or "payments"
@@ -17,6 +13,8 @@ const VendorProfile = ({ vendorId, onBack }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [paymentForm, setPaymentForm] = useState({ amount: "", method: "Cash", notes: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const fetchVendorData = async () => {
     try {
@@ -33,6 +31,7 @@ const VendorProfile = ({ vendorId, onBack }) => {
 
   useEffect(() => {
     fetchVendorData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorId])
 
   const handlePayment = async (e) => {
@@ -58,6 +57,22 @@ const VendorProfile = ({ vendorId, onBack }) => {
       console.error(error)
     } finally {
       setIsSubmitting(false)
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteVendor = async () => {
+    try {
+      setIsDeleting(true)
+      await api.delete(API.DELETE_VENDOR(vendorId))
+      toast.success("Vendor and all related records deleted completely")
+      onBack()
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete vendor")
+      console.error(error)
+    } finally {
+      setIsDeleting(false)
+      setIsDeleteModalOpen(false)
     }
   }
 
@@ -73,23 +88,33 @@ const VendorProfile = ({ vendorId, onBack }) => {
   const balance = vendor.totalDebt - vendor.totalPaid
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="h-full min-h-full bg-gray-50 p-4 md:p-6 lg:p-8 flex flex-col overflow-hidden">
+      <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 space-y-4 md:space-y-6">
         
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={onBack}
-            className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-orange-600 transition-colors shadow-sm"
-          >
-            <MdArrowBack className="text-xl" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{vendor.name}</h1>
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              Vendor ID: #{vendor.VendorID} {vendor.phone && `• ${vendor.phone}`}
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={onBack}
+              className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-orange-600 transition-colors shadow-sm"
+            >
+              <MdArrowBack className="text-xl" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{vendor.name}</h1>
+              <p className="text-sm text-gray-500 flex items-center gap-2">
+                Vendor ID: #{vendor.VendorID} {vendor.phone && `• ${vendor.phone}`}
+              </p>
+            </div>
           </div>
+          
+          <button
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="p-2.5 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-colors shadow-sm"
+            title="Delete Vendor completely"
+          >
+            <MdDelete className="text-xl" />
+          </button>
         </div>
 
         {/* Stats Grid */}
@@ -118,8 +143,8 @@ const VendorProfile = ({ vendorId, onBack }) => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="flex border-b border-gray-100">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex border-b border-gray-100 flex-shrink-0">
             <button
               onClick={() => setActiveTab("purchases")}
               className={`flex-1 py-4 px-6 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === "purchases" ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50/30' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
@@ -136,7 +161,7 @@ const VendorProfile = ({ vendorId, onBack }) => {
             </button>
           </div>
 
-          <div className="p-0">
+          <div className="flex-1 overflow-y-auto p-0" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
             {activeTab === "purchases" && (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -271,6 +296,39 @@ const VendorProfile = ({ vendorId, onBack }) => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+              <div className="p-6 text-center">
+                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MdDelete className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Vendor?</h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  Are you sure you want to delete <span className="font-bold text-gray-800">{vendor.name}</span> completely? This action cannot be undone and will delete all purchase and payment history.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsDeleteModalOpen(false)}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteVendor}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

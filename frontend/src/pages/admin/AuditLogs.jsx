@@ -32,6 +32,7 @@ const AuditLogs = ({ onPageChange }) => {
             fetchLogs();
         }, 500); // Debounce search
         return () => clearTimeout(timeoutId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm, filterType]);
 
     const getActionConfig = (type) => {
@@ -71,8 +72,8 @@ const AuditLogs = ({ onPageChange }) => {
     };
 
     return (
-        <div className="min-h-full bg-gray-50 flex flex-col p-4 md:p-8">
-            <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">
+        <div className="h-full min-h-full bg-gray-50 flex flex-col overflow-hidden p-4 md:p-8">
+            <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0 gap-4 md:gap-6">
                 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -102,6 +103,7 @@ const AuditLogs = ({ onPageChange }) => {
                     <div className="relative group flex-1">
                         <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl transition-colors group-focus-within:text-orange-500" />
                         <input
+                            autoFocus
                             type="text"
                             placeholder="Search by worker name..."
                             className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl text-sm focus:bg-white focus:border-orange-200 focus:ring-4 focus:ring-orange-50 outline-none transition-all placeholder:text-gray-400"
@@ -128,11 +130,11 @@ const AuditLogs = ({ onPageChange }) => {
                 </div>
 
                 {/* Table Layout */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-                    <div className="w-full">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div className="w-full flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
                         <table className="w-full text-left border-collapse table-fixed md:table-auto">
-                            <thead>
-                                <tr className="bg-gray-50 border-b border-gray-100">
+                            <thead className="sticky top-0 z-10 bg-gray-50 before:absolute before:inset-x-0 before:bottom-0 before:border-b before:border-gray-100">
+                                <tr>
                                     <th className="px-3 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 capitalize tracking-widest w-[85px] md:w-1/4">Timestamp</th>
                                     <th className="px-2 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 capitalize tracking-widest">Activity</th>
                                     <th className="px-2 md:px-6 py-4 text-[9px] md:text-[11px] font-bold text-gray-400 capitalize tracking-widest w-[80px] md:w-1/4">Subject</th>

@@ -4,10 +4,7 @@ import { useState, useEffect } from "react"
 import api from "../api/axios"
 import API from "../api/endpoints"
 
-const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-  
+const LocalDetailsModal = ({ isOpen, onClose, local }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [formData, setFormData] = useState({
@@ -30,24 +27,6 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
   }, [local, isOpen])
 
   if (!isOpen || !local) return null
-
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true)
-      await api.post(API.DELETE_LOCAL, {
-        localId: local._id
-      })
-      onDelete(local._id)
-      setShowConfirmDelete(false)
-      onClose()
-      alert("Local deleted successfully!")
-    } catch (error) {
-      console.error("Error deleting local:", error)
-      alert("Failed to delete local. Please try again.")
-    } finally {
-      setIsDeleting(false)
-    }
-  }
 
   const handleUpdate = async () => {
     try {
@@ -243,59 +222,17 @@ const LocalDetailsModal = ({ isOpen, onClose, local, onDelete }) => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex">
                 <button
                   onClick={() => setIsEditing(true)}
-                  disabled={isDeleting}
-                  className="flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white rounded-2xl text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white rounded-2xl text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
                 >
                   <MdEdit className="text-xl" />
                   Edit Profile
                 </button>
-                <button
-                  onClick={() => setShowConfirmDelete(true)}
-                  disabled={isDeleting}
-                  className="flex items-center justify-center gap-2 px-6 py-4 bg-red-50 text-red-600 rounded-2xl text-base font-bold border border-red-100 active:scale-[0.98] transition-all disabled:opacity-50"
-                >
-                  <IoTrash className="text-xl" />
-                  Delete
-                </button>
               </div>
             )}
           </div>
-
-          {/* ─── Delete Confirmation ─── */}
-          {showConfirmDelete && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl z-20">
-              <div className="bg-white rounded-2xl p-5 max-w-xs mx-4 shadow-2xl">
-                <div className="text-center mb-4">
-                  <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <IoTrash className="w-6 h-6 text-red-600" />
-                  </div>
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Delete Local?</h3>
-                  <p className="text-sm text-gray-500">
-                    <strong>{local.LocalName}</strong> will be permanently removed. This cannot be undone.
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2.5">
-                  <button
-                    onClick={() => setShowConfirmDelete(false)}
-                    disabled={isDeleting}
-                    className="px-4 py-2.5 bg-gray-100 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="px-4 py-2.5 bg-red-600 rounded-xl text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
-                  >
-                    {isDeleting ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

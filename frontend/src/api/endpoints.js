@@ -19,6 +19,7 @@ const API = {
     GET_VENDOR_BY_ID: (id) => `/vendors/${id}`,
     GET_VENDOR_HISTORY: (id) => `/vendors/${id}/history`,
     PAY_VENDOR: (id) => `/vendors/${id}/pay`,
+    DELETE_VENDOR: (id) => `/vendors/${id}`,
 
     // ─── Raw Imli ─────────────────────────────────────────────────────────────
     ADD_RAW_IMLI: "/addRawImli",

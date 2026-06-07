@@ -16,6 +16,7 @@ import {
     MdPayment,
     MdClose,
     MdAutoAwesome,
+    MdStore,
 } from "react-icons/md"
 
 const NAV_GROUPS = [
@@ -30,6 +31,7 @@ const NAV_GROUPS = [
         label: "Inventory",
         icon: MdInventory2,
         children: [
+            { id: "vendors", label: "Vendors", icon: MdStore },
             { id: "addRawImli", label: "Add Raw Imli", icon: MdEco },
             { id: "addCleanedImli", label: "Add Cleaned Imli", icon: MdAutoAwesome },
             { id: "assignImli", label: "Assign Imli", icon: MdAssignment },

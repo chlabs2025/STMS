@@ -83,8 +83,8 @@ const RecentActivity = ({ activities = [], onPageChange }) => {
                         const Icon = config.icon;
                         
                         return (
-                            <div key={activity._id} className="flex items-center gap-4 group hover:bg-gray-50/50 p-2 -m-2 rounded-xl transition-colors">
-                                <div className={`${config.bg} ${config.text} p-3 rounded-xl shrink-0 group-hover:scale-110 transition-all duration-300 shadow-sm border ${config.border}`}>
+                            <div key={activity._id} className="flex items-center gap-4 p-2 -m-2 rounded-xl transition-colors">
+                                <div className={`${config.bg} ${config.text} p-3 rounded-xl shrink-0 transition-all duration-300 shadow-sm border ${config.border}`}>
                                     <Icon className="text-xl" />
                                 </div>
                                 

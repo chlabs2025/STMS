@@ -7,7 +7,7 @@ import { logActivity } from "./activity.controller.js";
 import { localData } from "../models/local.model.js";
 
 export const assignImli = asyncHandler(async (req, res) => {
-  const { LocalID, assignedQuantity } = req.body;
+  const { LocalID, assignedQuantity, date } = req.body;
 
   if (!LocalID) throw new ApiError(400, "LocalID is required");
   if (!assignedQuantity)
@@ -34,13 +34,18 @@ export const assignImli = asyncHandler(async (req, res) => {
   const local = await localData.findOne({ LocalID: numericLocalID });
   if (!local) throw new ApiError(404, "Local not found");
 
-  const assign = await ImliAssign.create({
+  const assignData = {
     localID: String(local.LocalID),
     localName: local.LocalName,
     assignedQuantity,
-
     assignedBy: req.user.username, // admin or operator
-  });
+  };
+
+  if (date) {
+    assignData.createdAt = new Date(date);
+  }
+
+  const assign = await ImliAssign.create(assignData);
 
   const updatedLocal = await localData.findOneAndUpdate(
     { LocalID: numericLocalID },

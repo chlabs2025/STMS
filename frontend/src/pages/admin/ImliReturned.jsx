@@ -14,6 +14,7 @@ const ImliReturned = () => {
   const [formData, setFormData] = useState({
     LocalID: "",
     returnedQuantity: "",
+    date: "",
   })
   const [allLocals, setAllLocals] = useState([])
   const [filteredLocals, setFilteredLocals] = useState([])
@@ -200,12 +201,18 @@ const ImliReturned = () => {
 
       const returnedQuantity = parseFloat(formData.returnedQuantity)
 
-      // Send data to backend with assignmentIds
-      const response = await api.post(API.RETURN_IMLI, {
+      const payload = {
         LocalID: selectedLocal.LocalID.toString(),
         returnedQuantity: returnedQuantity,
         assignmentIds: selectedAssignmentIds,
-      })
+      };
+
+      if (formData.date) {
+        payload.date = formData.date;
+      }
+
+      // Send data to backend with assignmentIds
+      const response = await api.post(API.RETURN_IMLI, payload)
 
       const updatedAssignedQty = response.data?.data?.totalAssignedQuantity ?? 
         ((selectedLocal.totalAssignedQuantity || 0) - maxReturnable);
@@ -231,7 +238,7 @@ const ImliReturned = () => {
 
       toast.success(`${returnedQuantity} KG of Cleaned Imli successfully returned from ${selectedLocal.LocalName}.`)
 
-      setFormData({ LocalID: "", returnedQuantity: "" })
+      setFormData({ LocalID: "", returnedQuantity: "", date: "" })
       setSelectedLocal(null)
       setShowDropdown(false)
       setAssignmentHistory([])
@@ -246,7 +253,7 @@ const ImliReturned = () => {
   }
 
   const handleCancel = () => {
-    setFormData({ LocalID: "", returnedQuantity: "" })
+    setFormData({ LocalID: "", returnedQuantity: "", date: "" })
     setSelectedLocal(null)
     setShowDropdown(false)
     setAssignmentHistory([])
@@ -288,6 +295,7 @@ const ImliReturned = () => {
                   </label>
                   <div className="relative">
                     <input
+                      autoFocus
                       type="text"
                       placeholder="Search by Local ID or Name (e.g., 202 or Faraaz)"
                       value={formData.LocalID}
@@ -480,6 +488,25 @@ const ImliReturned = () => {
                     </p>
                   </div>
                 )}
+
+                {/* Date Input */}
+                <div className="relative z-0">
+                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
+                    <MdSchedule className="text-orange-500 text-lg" />
+                    <span><T k="Date (Optional)" /></span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.date || ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                    onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium cursor-pointer"
+                    style={{ fontSize: '16px' }}
+                  />
+                  <p className="text-xs text-gray-400 mt-1.5 ml-1">
+                    Leave blank to use current date and time
+                  </p>
+                </div>
 
                 {/* Buttons */}
                 <div className="flex gap-3 pt-4 border-t border-gray-100 mt-6">

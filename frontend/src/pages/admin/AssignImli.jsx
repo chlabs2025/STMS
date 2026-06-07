@@ -5,14 +5,11 @@ import { MdAssignment, MdSearch, MdPerson, MdScale, MdCancel, MdCheck, MdSchedul
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import toast from "react-hot-toast"
-import { useLang } from "../../context/LanguageContext"
-import T from "../../i18n/T"
-
 const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
-  const { lang } = useLang()
   const [formData, setFormData] = useState({
     LocalID: "",
     assignedQuantity: "",
+    date: "",
   })
   const [allLocals, setAllLocals] = useState([])
   const [filteredLocals, setFilteredLocals] = useState([])
@@ -52,6 +49,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
       setFormData({
         LocalID: `${prefilledLocal.LocalID} - ${prefilledLocal.LocalName}`,
         assignedQuantity: "",
+        date: "",
       })
       setShowDropdown(false)
       setFilteredLocals([])
@@ -168,15 +166,20 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
       }
 
       // Send data exactly as backend expects
-      const response = await api.post(API.ASSIGN_IMLI, {
+      const payload = {
         LocalID: selectedLocal.LocalID.toString(), // Send as String (backend expects String in DB)
         assignedQuantity: parseFloat(formData.assignedQuantity),
-      })
+      };
+      if (formData.date) {
+        payload.date = formData.date;
+      }
+
+      await api.post(API.ASSIGN_IMLI, payload)
 
       toast.success(`${formData.assignedQuantity} KG of Raw Imli has been successfully assigned to ${selectedLocal.LocalName}.`)
 
       // Reset form but keep modal open
-      setFormData({ LocalID: "", assignedQuantity: "" })
+      setFormData({ LocalID: "", assignedQuantity: "", date: "" })
       setSelectedLocal(null)
       setShowDropdown(false)
     } catch (error) {
@@ -192,7 +195,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
   }
 
   const handleCancel = () => {
-    setFormData({ LocalID: "", assignedQuantity: "" })
+    setFormData({ LocalID: "", assignedQuantity: "", date: "" })
     setSelectedLocal(null)
     setShowDropdown(false)
   }
@@ -222,6 +225,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
                   </label>
                   <div className="relative">
                     <input
+                      autoFocus
                       type="text"
                       placeholder="Search by Local ID or Name (e.g., 202 or Faraaz)"
                       value={formData.LocalID}
@@ -312,6 +316,25 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
                     </div>
                   </div>
                   <p className="text-gray-400 text-xs mt-1.5 ml-1"><T k="Enter the amount of raw imli to assign" /></p>
+                </div>
+
+                {/* Date Input */}
+                <div className="relative">
+                  <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">
+                    <MdSchedule className="text-orange-500 text-lg" />
+                    <span><T k="Date (Optional)" /></span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                      onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 text-base font-medium cursor-pointer"
+                      style={{ fontSize: '16px' }}
+                    />
+                  </div>
+                  <p className="text-gray-400 text-xs mt-1.5 ml-1"><T k="Leave blank to use current date and time" /></p>
                 </div>
 
                 {/* Buttons */}

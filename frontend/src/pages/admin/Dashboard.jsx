@@ -5,7 +5,8 @@ import {
   MdInventory,
   MdTrendingUp,
   MdDownload,
-  MdAutoAwesome
+  MdAutoAwesome,
+  MdAccountBalanceWallet
 } from 'react-icons/md';
 import api from "../../api/axios";
 import API from "../../api/endpoints";
@@ -22,6 +23,7 @@ const Dashboard = ({ onPageChange }) => {
   const [dashboardStats, setDashboardStats] = useState({
     rawImli: 0,
     cleaned: 0,
+    paymentDue: 0,
   });
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,16 +31,24 @@ const Dashboard = ({ onPageChange }) => {
   const fetchDashboardData = useCallback(async (isInitial = false) => {
     if (isInitial) setLoading(true);
     try {
-      const [rawImliRes] = await Promise.all([
-        api.get(API.GET_RAW_IMLI)
+      const [rawImliRes, vendorsRes] = await Promise.all([
+        api.get(API.GET_RAW_IMLI),
+        api.get(API.GET_VENDORS)
       ]);
 
       const rawImli = rawImliRes.data?.data?.rawImliQuantity || 0;
       const totalCleaned = Math.max(0, rawImliRes.data?.data?.totalCleanedImli || 0);
 
+      const vendors = vendorsRes.data?.data || [];
+      const paymentDue = vendors.reduce((acc, vendor) => {
+          const balance = (vendor.totalDebt || 0) - (vendor.totalPaid || 0);
+          return acc + (balance > 0 ? balance : 0);
+      }, 0);
+
       setDashboardStats({
         rawImli,
         cleaned: totalCleaned,
+        paymentDue,
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -69,8 +79,9 @@ const Dashboard = ({ onPageChange }) => {
   }, [fetchDashboardData, fetchActivities]);
 
   const stats = [
-    { id: 1, title: "Raw Imli", value: dashboardStats.rawImli, unit: "KG", icon: MdInventory, color: "orange" },
-    { id: 2, title: "Cleaned Imli", value: dashboardStats.cleaned, unit: "KG", icon: MdAutoAwesome, color: "green" },
+    { id: 1, title: "Raw Imli", value: dashboardStats.rawImli, unit: "KG", icon: MdInventory, color: "orange", page: "addRawImli" },
+    { id: 2, title: "Cleaned Imli", value: dashboardStats.cleaned, unit: "KG", icon: MdAutoAwesome, color: "green", page: "addCleanedImli" },
+    { id: 3, title: "Vendor Payment Due", value: dashboardStats.paymentDue ? dashboardStats.paymentDue.toLocaleString() : 0, unit: "₹", icon: MdAccountBalanceWallet, color: "red", page: "vendors" },
   ];
 
   const colorMap = {
@@ -78,6 +89,7 @@ const Dashboard = ({ onPageChange }) => {
     green:  { bg: "bg-green-50",  text: "text-green-500",  border: "border-green-100" },
     purple: { bg: "bg-purple-50", text: "text-purple-500", border: "border-purple-100" },
     amber:  { bg: "bg-amber-50",  text: "text-amber-500",  border: "border-amber-100" },
+    red:    { bg: "bg-red-50",    text: "text-red-500",    border: "border-red-100" },
   };
 
   const actions = [
@@ -95,10 +107,10 @@ const Dashboard = ({ onPageChange }) => {
         {/* ── Top Section (Stats row + Quick Actions row) ── */}
         <div className="flex flex-col gap-6 md:gap-8">
 
-          {/* Stats Row — 2 cards side by side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {/* Stats Row — 3 cards side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {loading ? (
-              Array.from({ length: 2 }).map((_, i) => <CardSkeleton key={`skeleton-${i}`} />)
+              Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={`skeleton-${i}`} />)
             ) : (
               stats.map((stat, idx) => {
                 const c = colorMap[stat.color];
@@ -106,7 +118,8 @@ const Dashboard = ({ onPageChange }) => {
                 return (
                   <div
                     key={stat.id}
-                    className={`bg-white rounded-2xl py-6 px-5 md:py-10 md:px-8 border ${c.border} flex flex-col justify-between transition-all duration-200 hover:shadow-md relative overflow-hidden animate-card-enter animate-delay-${idx + 1}`}
+                    onClick={() => onPageChange && stat.page && onPageChange(stat.page)}
+                    className={`cursor-pointer bg-white rounded-2xl py-6 px-5 md:py-10 md:px-8 border ${c.border} flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden animate-card-enter animate-delay-${idx + 1}`}
                   >
                     {/* Subtle aesthetic background accent */}
                     <div className={`absolute -right-4 -top-4 w-24 h-24 ${c.bg} opacity-20 rounded-full blur-2xl`} />

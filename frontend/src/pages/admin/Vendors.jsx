@@ -5,12 +5,10 @@ import { MdStore, MdAdd, MdClose, MdSearch, MdChevronRight, MdAccountBalanceWall
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import toast from "react-hot-toast"
-import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
 import VendorProfile from "./VendorProfile"
 
 const Vendors = () => {
-  const { lang } = useLang()
   const [vendors, setVendors] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -85,6 +83,7 @@ const Vendors = () => {
           <div className="relative flex-1 w-full max-w-md">
             <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
             <input
+              autoFocus
               type="text"
               placeholder="Search vendors..."
               value={searchTerm}

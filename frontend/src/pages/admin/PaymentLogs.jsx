@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { MdHistory, MdRefresh, MdError, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment } from 'react-icons/md';
+import React, { useState, useEffect, useMemo } from 'react';
+import { MdHistory, MdRefresh, MdError, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment, MdFilterList, MdClose } from 'react-icons/md';
 import api from "../../api/axios";
 import API from "../../api/endpoints";
 import T from '../../i18n/T';
@@ -8,6 +8,7 @@ const PaymentLogs = ({ localID }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
 
     const fetchLogs = async () => {
         if (!localID) return;
@@ -32,7 +33,31 @@ const PaymentLogs = ({ localID }) => {
 
     useEffect(() => {
         fetchLogs();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localID]);
+
+    const filteredLogs = useMemo(() => {
+        if (!dateFilter.from && !dateFilter.to) return logs;
+        
+        return logs.filter(log => {
+            const itemDate = new Date(log.createdAt);
+            itemDate.setHours(0, 0, 0, 0);
+            
+            if (dateFilter.from) {
+                const fromDate = new Date(dateFilter.from);
+                fromDate.setHours(0, 0, 0, 0);
+                if (itemDate < fromDate) return false;
+            }
+            
+            if (dateFilter.to) {
+                const toDate = new Date(dateFilter.to);
+                toDate.setHours(0, 0, 0, 0);
+                if (itemDate > toDate) return false;
+            }
+            
+            return true;
+        });
+    }, [logs, dateFilter]);
 
     if (loading) {
         return (
@@ -67,7 +92,44 @@ const PaymentLogs = ({ localID }) => {
 
     return (
         <div className="space-y-6">
-            {logs.map((log) => (
+            {/* Filter Section */}
+            <div className="bg-gray-50/50 rounded-xl border border-gray-200 p-3 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-2 overflow-x-auto w-full">
+                    <MdFilterList className="text-gray-400 text-lg shrink-0" />
+                    <span className="text-xs font-semibold text-gray-500 capitalize shrink-0">Filter By Date:</span>
+                    <div className="flex items-center gap-2 ml-1 sm:ml-2">
+                        <input 
+                            type="date" 
+                            value={dateFilter.from}
+                            onChange={(e) => setDateFilter({...dateFilter, from: e.target.value})}
+                            className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-orange-300 text-gray-600 w-[110px] sm:w-auto"
+                        />
+                        <span className="text-xs text-gray-400 shrink-0">to</span>
+                        <input 
+                            type="date" 
+                            value={dateFilter.to}
+                            onChange={(e) => setDateFilter({...dateFilter, to: e.target.value})}
+                            className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-orange-300 text-gray-600 w-[110px] sm:w-auto"
+                        />
+                        {(dateFilter.from || dateFilter.to) && (
+                            <button 
+                                onClick={() => setDateFilter({ from: "", to: "" })}
+                                className="p-1 rounded-full hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                                title="Clear Filter"
+                            >
+                                <MdClose className="text-xs" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {filteredLogs.length === 0 ? (
+                <div className="text-center py-10 text-gray-400 bg-white border border-gray-100 rounded-xl">
+                    <p className="font-medium italic">No payment records match this date filter.</p>
+                </div>
+            ) : (
+                filteredLogs.map((log) => (
                 <div key={log._id} className="flex flex-col lg:flex-row justify-between gap-5 md:gap-10 p-4 md:p-6 bg-white border border-gray-200 rounded-2xl shadow-sm mb-6">
                     <div className="lg:w-2/3">
                         <div className="mb-4 md:mb-6 p-3 md:p-4 bg-green-50 border border-green-100 rounded-xl flex items-center gap-3">
@@ -157,7 +219,7 @@ const PaymentLogs = ({ localID }) => {
                         </div>
                     </div>
                 </div>
-            ))}
+            )))}
         </div>
     );
 };

@@ -91,3 +91,23 @@ export const addVendorPayment = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, { payment, vendor }, "Vendor payment recorded successfully"));
 });
+
+export const deleteVendor = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const vendor = await VendorData.findById(id);
+
+  if (!vendor) throw new ApiError(404, "Vendor not found");
+
+  // Cascading delete
+  await VendorPurchase.deleteMany({ vendor: id });
+  await VendorPayment.deleteMany({ vendor: id });
+  await VendorData.findByIdAndDelete(id);
+
+  await logActivity({
+    type: "DELETE_VENDOR",
+    description: `Deleted vendor completely: ${vendor.name} (ID: ${vendor.VendorID})`,
+    actor: "Admin",
+  });
+
+  return res.status(200).json(new ApiResponse(200, {}, "Vendor deleted completely from the system"));
+});

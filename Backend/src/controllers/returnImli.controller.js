@@ -9,7 +9,7 @@ import { ImliData } from "../models/imli.model.js";
 import { ImliAssign } from "../models/imliAssign.model.js";
 
 export const returnImli = asyncHandler(async (req, res) => {
-  const { LocalID, returnedQuantity, assignmentIds } = req.body;
+  const { LocalID, returnedQuantity, assignmentIds, date } = req.body;
 
   if (!LocalID) throw new ApiError(400, "LocalID is required");
   if (!returnedQuantity || returnedQuantity <= 0)
@@ -41,13 +41,19 @@ export const returnImli = asyncHandler(async (req, res) => {
   const totalRawAssigned = assignments.reduce((s, a) => s + (a.assignedQuantity || 0), 0);
 
   // Create the return batch record first to get its ID
-  const returned = await imliReturn.create({
+  const returnData = {
     localID: local.LocalID,
     localName: local.LocalName,
     returnedQuantity,
     assignmentIds: assignmentIds,
     isPaid: false
-  });
+  };
+
+  if (date) {
+    returnData.createdAt = new Date(date);
+  }
+
+  const returned = await imliReturn.create(returnData);
 
   // Mark ALL selected assignments as fully consumed and link them to the return batch
   for (const assignment of assignments) {

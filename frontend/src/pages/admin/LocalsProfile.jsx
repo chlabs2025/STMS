@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react"
-import { MdPeople, MdRefresh, MdSearch, MdVisibility, MdAssignment, MdError, MdPersonAdd } from 'react-icons/md'
+import { MdPeople, MdRefresh, MdSearch, MdVisibility, MdAssignment, MdError, MdPersonAdd, MdDelete, MdWarning } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import { IoEye, IoPencil, IoAdd } from "react-icons/io5"
 import LocalDetailsModal from "../../components/LocalDetailsModal"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
+import toast from "react-hot-toast"
 import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
 
 const LocalsProfile = ({ navigateToAssignImli }) => {
@@ -18,6 +19,9 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
   const [filteredLocals, setFilteredLocals] = useState([])
   const [selectedLocal, setSelectedLocal] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [localToDelete, setLocalToDelete] = useState(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchLocals()
@@ -86,6 +90,32 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
     setFilteredLocals(updatedLocals)
   }
 
+  const openDeleteModal = (local, e) => {
+    e.stopPropagation()
+    setLocalToDelete(local)
+    setIsDeleteModalOpen(true)
+  }
+
+  const closeDeleteModal = () => {
+    setLocalToDelete(null)
+    setIsDeleteModalOpen(false)
+  }
+
+  const confirmDeleteLocal = async () => {
+    if (!localToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.post(API.DELETE_LOCAL, { LocalID: localToDelete.LocalID });
+      toast.success("Local deleted successfully");
+      handleDeleteLocal(localToDelete._id);
+      closeDeleteModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete local");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
@@ -120,7 +150,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
   }
 
   return (
-    <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
+    <div className="p-3 md:p-6 lg:p-8 bg-white h-full min-h-full flex flex-col overflow-hidden">
       {/* Search Bar with Icon & Refresh */}
       <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
         <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
@@ -132,6 +162,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
           <div className="flex items-center flex-1 min-w-0 bg-gray-50 rounded-lg px-2.5 md:px-3 py-1.5 md:py-2">
             <MdSearch className="text-orange-600 text-lg md:text-xl mr-1.5 md:mr-2 flex-shrink-0" />
             <input
+              autoFocus
               type="text"
               placeholder="Search..."
               value={searchTerm}
@@ -180,7 +211,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
           )}
         </div>
       ) : (
-        <>
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1 md:pr-2">
           {/* ─── Desktop Table (hidden on mobile) ─── */}
           <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
@@ -199,8 +230,8 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {filteredLocals.map((local, index) => (
-                    <tr key={local._id} className="hover:bg-orange-50/30 transition-all duration-200 group">
+                  {filteredLocals.map((local) => (
+                    <tr key={local._id} onClick={() => openModal(local)} className="hover:bg-orange-50/30 transition-all duration-200 group cursor-pointer">
                       <td className="px-6 py-5">
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0">
@@ -230,7 +261,7 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                       <td className="px-4 py-5 text-right pr-6">
                         <div className="flex items-center justify-end space-x-3">
                           <button
-                            onClick={() => openModal(local)}
+                            onClick={(e) => { e.stopPropagation(); openModal(local); }}
                             className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 hover:border-gray-400 focus:outline-none transition-all duration-200 shadow-sm"
                             title="View Details"
                           >
@@ -238,12 +269,19 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                             <T k="View" />
                           </button>
                           <button
-                            onClick={() => navigateToAssignImli && navigateToAssignImli(local)}
+                            onClick={(e) => { e.stopPropagation(); navigateToAssignImli && navigateToAssignImli(local); }}
                             className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none transition-all duration-200 shadow-sm"
                             title="Assign Imli"
                           >
                             <MdAssignment className="w-4 h-4 mr-2" />
                             <T k="Assign" />
+                          </button>
+                          <button
+                            onClick={(e) => openDeleteModal(local, e)}
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none transition-all duration-200 shadow-sm"
+                            title="Delete Local"
+                          >
+                            <MdDelete className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -259,7 +297,8 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
             {filteredLocals.map((local) => (
               <div
                 key={local._id}
-                className="bg-white rounded-xl border border-gray-100 p-4 active:bg-gray-50 transition-colors"
+                onClick={() => openModal(local)}
+                className="bg-white rounded-xl border border-gray-100 p-4 active:bg-gray-50 transition-colors cursor-pointer"
               >
                 {/* Top row: Avatar + Name + Status */}
                 <div className="flex items-center gap-3 mb-3">
@@ -286,50 +325,67 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
                 {/* Bottom row: Action buttons */}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => openModal(local)}
+                    onClick={(e) => { e.stopPropagation(); openModal(local); }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg active:bg-gray-100 transition-colors"
                   >
                     <MdVisibility className="text-sm" />
                     <T k="View" />
                   </button>
                   <button
-                    onClick={() => navigateToAssignImli && navigateToAssignImli(local)}
+                    onClick={(e) => { e.stopPropagation(); navigateToAssignImli && navigateToAssignImli(local); }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium text-white bg-blue-600 rounded-lg active:bg-blue-700 transition-colors"
                   >
                     <MdAssignment className="text-sm" />
                     <T k="Assign" />
                   </button>
+                  <button
+                    onClick={(e) => openDeleteModal(local, e)}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium text-white bg-red-600 rounded-lg active:bg-red-700 transition-colors"
+                  >
+                    <MdDelete className="text-lg" />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
-      {filteredLocals.length > 0 && (
-        <div className="mt-4 md:mt-8 bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="bg-orange-50 p-1.5 md:p-2 rounded-lg">
-                <MdPeople className="text-orange-600 text-base md:text-lg" />
+
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl overflow-hidden transform transition-all">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <MdWarning className="text-3xl text-red-500" />
               </div>
-              <p className="text-gray-600 font-medium text-xs md:text-sm">
-                Showing{" "}
-                <span className="font-bold text-gray-900 bg-gray-100 px-1.5 md:px-2 py-0.5 rounded">
-                  {filteredLocals.length}
-                </span>{" "}
-                of <span className="font-bold text-gray-900 bg-gray-100 px-1.5 md:px-2 py-0.5 rounded">{locals.length}</span>{" "}
-                <T k="total locals" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Local?</h3>
+              <p className="text-gray-500 text-sm mb-6">
+                Are you sure you want to delete <span className="font-bold text-gray-800">{localToDelete?.LocalName}</span>? This action cannot be undone.
               </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteLocal}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                >
+                  {isDeleting ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+              </div>
             </div>
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="text-xs md:text-sm text-gray-600 hover:text-gray-900 font-medium bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-all duration-200"
-              >
-                <T k="Clear Search" />
-              </button>
-            )}
           </div>
         </div>
       )}
@@ -346,4 +402,3 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
 }
 
 export default LocalsProfile;
-
