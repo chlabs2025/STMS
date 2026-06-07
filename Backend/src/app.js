@@ -16,7 +16,7 @@ const corsOptions = {
         "https://superimlitraders.vercel.app",
         "https://superimlitraders-plum.vercel.app",
         "https://superimlitraders-tamarind.vercel.app",
-        "https://stms-backend-i44c.onrender.com",
+        "https://stms-vd7d.onrender.com",
         process.env.FRONTEND_URL,
     ].filter(Boolean),
     credentials: true,
