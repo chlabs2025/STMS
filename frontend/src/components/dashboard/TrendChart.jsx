@@ -11,6 +11,7 @@ import {
 import T from '../../i18n/T';
 import api from '../../api/axios';
 import API from '../../api/endpoints';
+import { ChartSkeleton } from '../Skeletons';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -76,12 +77,7 @@ const TrendChart = () => {
 
       <div className="flex-1 w-full">
         {loading ? (
-          <div className="h-full flex items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
-              <p className="text-xs text-gray-400 font-medium">Loading trend data…</p>
-            </div>
-          </div>
+          <ChartSkeleton />
         ) : !hasData ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">

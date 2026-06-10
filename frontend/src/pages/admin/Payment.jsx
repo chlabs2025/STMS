@@ -13,14 +13,16 @@ import {
     MdPayment as MdOnlinePayment, 
     MdHistory, 
     MdFilterList, 
-    MdClose 
+    MdClose,
+    MdPersonAdd
 } from 'react-icons/md'
 
 import api from "../../api/axios"
 import API from "../../api/endpoints"
 import PaymentLogs from "./PaymentLogs"
+import { PaymentCardSkeleton } from "../../components/Skeletons"
 
-const Payment = () => {
+const Payment = ({ onPageChange }) => {
     const [locals, setLocals] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -226,13 +228,14 @@ const Payment = () => {
 
     if (loading) {
         return (
-            <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen flex items-center justify-center overflow-x-hidden">
-                <div className="text-center">
-                    <div className="bg-orange-50 w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-sm border border-orange-200">
-                        <div className="w-8 h-8 md:w-12 md:h-12 border-3 md:border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                    <div className="text-xl md:text-2xl font-bold text-gray-800 mb-1 md:mb-2">Loading Payments...</div>
-                    <div className="text-gray-600 text-sm md:text-base">Please wait while we fetch the data</div>
+            <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 md:p-4 mb-4 md:mb-6 animate-pulse">
+                    <div className="h-10 md:h-12 bg-gray-200 rounded-lg w-full"></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <PaymentCardSkeleton key={i} />
+                    ))}
                 </div>
             </div>
         )
@@ -301,12 +304,20 @@ const Payment = () => {
                     <p className="text-gray-500 text-sm md:text-lg mb-4 md:mb-6">
                         {searchTerm ? "Try adjusting your search criteria" : "Start by adding some locals to the system"}
                     </p>
-                    {searchTerm && (
+                    {searchTerm ? (
                         <button
                             onClick={() => setSearchTerm("")}
                             className="px-6 py-3 bg-white text-orange-600 border-2 border-orange-500 rounded-xl hover:bg-orange-50 transition-all duration-200 font-semibold shadow-sm"
                         >
                             Clear Search
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => onPageChange && onPageChange('addLocals')}
+                            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium shadow-sm flex items-center gap-2 mx-auto text-sm"
+                        >
+                            <MdPersonAdd className="text-lg" />
+                            <span>Add New Local</span>
                         </button>
                     )}
                 </div>

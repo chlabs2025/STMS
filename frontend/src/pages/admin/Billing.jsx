@@ -11,6 +11,8 @@ import CleanedImliForm from "../../components/billing/CleanedImliForm"
 import CleanedImliPreview from "../../components/billing/CleanedImliPreview"
 import api from "../../api/axios"
 import API from "../../api/endpoints"
+import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
+import toast from "react-hot-toast"
 
 // Steps for Tamarind Seeds (existing 5-step flow)
 const TAMARIND_STEPS = [
@@ -83,8 +85,9 @@ function Billing() {
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
-    } catch {
-      alert("Failed to download PDF.");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download PDF.");
     }
   };
 
@@ -98,8 +101,9 @@ function Billing() {
       const blob = new Blob([response.data], { type: "application/pdf" })
       const url = window.URL.createObjectURL(blob)
       window.open(url, "_blank")
-    } catch {
-      alert("Failed to view PDF.");
+    } catch (error) {
+      console.error("Error viewing PDF:", error);
+      toast.error("Failed to view PDF.");
     }
   };
 
@@ -457,7 +461,10 @@ function Billing() {
             </div>
             
             {loadingHistory ? (
-              <div className="py-10 text-center text-gray-500">Loading history...</div>
+              <div className="space-y-4">
+                  <TableSkeleton rows={5} columns={4} />
+                  <ListItemSkeleton count={5} />
+              </div>
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
             ) : (

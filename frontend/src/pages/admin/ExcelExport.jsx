@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MdDownload, MdKeyboardArrowDown } from 'react-icons/md';
+import toast from "react-hot-toast";
 import api from "../../api/axios";
 import API from "../../api/endpoints";
 import T from '../../i18n/T';
@@ -22,7 +23,7 @@ const ExcelExport = () => {
             setIsOpen(false);
         } catch (error) {
             console.error(`Download failed for ${endpoint}:`, error);
-            alert(`Failed to download ${filename}. Please try again.`);
+            toast.error(`Failed to download ${filename}. Please try again.`);
         }
     };
 

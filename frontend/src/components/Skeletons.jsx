@@ -129,6 +129,23 @@ export const SingleInputSkeleton = () => (
   <div className="space-y-4 w-full">
     <SkeletonBlock className="h-5 w-32" />
     <SkeletonBlock className="h-12 w-full rounded-lg" />
-    <SkeletonBlock className="h-3 w-48" />
+  </div>
+)
+
+export const ChartSkeleton = () => (
+  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 w-full">
+    <div className="flex justify-between items-center mb-6">
+      <SkeletonBlock className="h-6 w-1/3 md:w-1/4" />
+      <SkeletonBlock className="h-8 w-24 rounded-lg" />
+    </div>
+    <div className="flex items-end gap-2 h-64 md:h-80 w-full pt-4">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <SkeletonBlock 
+          key={i} 
+          className="w-full rounded-t-sm" 
+          style={{ height: `${Math.max(20, Math.random() * 100)}%` }} 
+        />
+      ))}
+    </div>
   </div>
 )

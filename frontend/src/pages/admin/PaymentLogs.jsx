@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MdHistory, MdRefresh, MdError, MdCheckCircle, MdMoney, MdPayment as MdOnlinePayment, MdFilterList, MdClose } from 'react-icons/md';
+import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons";
 import api from "../../api/axios";
 import API from "../../api/endpoints";
 import T from '../../i18n/T';
@@ -61,9 +62,9 @@ const PaymentLogs = ({ localID }) => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="ml-3 text-gray-600 font-medium">Loading history...</span>
+            <div className="p-3 md:p-6 w-full max-w-7xl mx-auto space-y-4">
+                <TableSkeleton rows={5} columns={5} />
+                <ListItemSkeleton count={5} />
             </div>
         );
     }

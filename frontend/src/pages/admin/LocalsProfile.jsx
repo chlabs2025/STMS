@@ -9,7 +9,7 @@ import T from "../../i18n/T"
 import toast from "react-hot-toast"
 import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
 
-const LocalsProfile = ({ navigateToAssignImli }) => {
+const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
   // eslint-disable-next-line no-unused-vars
   const { lang } = useLang()
   const [locals, setLocals] = useState([])
@@ -204,7 +204,9 @@ const LocalsProfile = ({ navigateToAssignImli }) => {
               <T k="Clear Search" />
             </button>
           ) : (
-            <button className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium shadow-sm flex items-center gap-2 mx-auto text-sm">
+            <button 
+              onClick={() => onPageChange && onPageChange('addLocals')}
+              className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium shadow-sm flex items-center gap-2 mx-auto text-sm">
               <MdPersonAdd className="text-lg" />
               <T k="Add New Local" />
             </button>

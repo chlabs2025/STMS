@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import api from "../api/axios"
 import { saveAuth, isLoggedIn, getRole } from "../api/auth"
 import API from "../api/endpoints"
+import toast from "react-hot-toast"
 
 function Login() {
   const [username, setusername] = useState("")
@@ -30,7 +31,7 @@ function Login() {
     e.preventDefault()
 
     if (!username || !password) {
-      alert("Please fill in all fields")
+      toast.error("Please fill in all fields")
       return
     }
 
@@ -51,11 +52,11 @@ function Login() {
       } else if (role === "operator") {
         navigate("/operator/dashboard", { replace: true })
       } else {
-        alert("Invalid role")
+        toast.error("Invalid role")
       }
 
     } catch (error) {
-      alert(
+      toast.error(
         error.response?.data?.message || "Login failed"
       )
     } finally {

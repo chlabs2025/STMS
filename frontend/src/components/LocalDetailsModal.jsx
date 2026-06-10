@@ -3,8 +3,9 @@ import { MdPerson, MdPhone, MdLocationOn, MdAssignment, MdEdit, MdInventory, MdP
 import { useState, useEffect } from "react"
 import api from "../api/axios"
 import API from "../api/endpoints"
+import toast from "react-hot-toast"
 
-const LocalDetailsModal = ({ isOpen, onClose, local }) => {
+const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ const LocalDetailsModal = ({ isOpen, onClose, local }) => {
   const handleUpdate = async () => {
     try {
       setIsUpdating(true)
-      await api.post(API.UPDATE_LOCAL, {
+      const res = await api.post(API.UPDATE_LOCAL, {
         localId: local._id,
         ...formData
       })
@@ -46,10 +47,12 @@ const LocalDetailsModal = ({ isOpen, onClose, local }) => {
       }
 
       setIsEditing(false)
-      alert("Profile updated successfully!")
+      toast.success("Profile updated successfully!")
+      if (onUpdate) onUpdate(res.data.data)
+      setIsEditing(false)
     } catch (error) {
       console.error("Error updating local:", error)
-      alert("Failed to update profile. Please try again.")
+      toast.error("Failed to update profile. Please try again.")
     } finally {
       setIsUpdating(false)
     }
