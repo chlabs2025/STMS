@@ -120,7 +120,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
     return (
       <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 md:p-4 mb-4 md:mb-6 animate-pulse">
-            <div className="h-10 md:h-12 bg-gray-200 rounded-lg w-full"></div>
+          <div className="h-10 md:h-12 bg-gray-200 rounded-lg w-full"></div>
         </div>
         <TableSkeleton rows={6} columns={3} />
         <ListItemSkeleton count={6} />
@@ -204,7 +204,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
               <T k="Clear Search" />
             </button>
           ) : (
-            <button 
+            <button
               onClick={() => onPageChange && onPageChange('addLocals')}
               className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium shadow-sm flex items-center gap-2 mx-auto text-sm">
               <MdPersonAdd className="text-lg" />

@@ -140,7 +140,7 @@ export default function Settings({ activeTab: initialTab }) {
     }
 
     // eslint-disable-next-line no-unused-vars
-  const tabs = [
+    const tabs = [
         { id: 'pricing', label: 'Pricing', icon: MdEco },
         { id: 'business', label: 'Business Profile', icon: MdSettings },
         { id: 'clean', label: 'Clean Inventory', icon: MdDeleteForever },

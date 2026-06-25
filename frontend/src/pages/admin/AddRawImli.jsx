@@ -12,7 +12,7 @@ const AddRawImli = () => {
   const [vendorId, setVendorId] = useState("")
   const [pricePerKg, setPricePerKg] = useState("")
   const [vendors, setVendors] = useState([])
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isSubmittingRef = useRef(false)
 
@@ -70,7 +70,7 @@ const AddRawImli = () => {
           {/* Content */}
           <div className="px-4 md:px-8 py-5 md:py-8">
             <form onSubmit={handleSubmit} className="space-y-5 md:space-y-8">
-              
+
               {/* Quantity */}
               <div className="relative">
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2 text-sm capitalize tracking-wide">

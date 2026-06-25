@@ -214,10 +214,10 @@ const ImliReturned = () => {
       // Send data to backend with assignmentIds
       const response = await api.post(API.RETURN_IMLI, payload)
 
-      const updatedAssignedQty = response.data?.data?.totalAssignedQuantity ?? 
+      const updatedAssignedQty = response.data?.data?.totalAssignedQuantity ??
         ((selectedLocal.totalAssignedQuantity || 0) - maxReturnable);
-        
-      const updatedReturnedQty = response.data?.data?.totalReturnedQuantity ?? 
+
+      const updatedReturnedQty = response.data?.data?.totalReturnedQuantity ??
         ((selectedLocal.totalReturnedQuantity || 0) + returnedQuantity);
 
       // Update the selectedLocal state dynamically
@@ -394,19 +394,17 @@ const ImliReturned = () => {
                                 <div
                                   key={entry._id || idx}
                                   onClick={() => toggleAssignmentSelection(entry._id)}
-                                  className={`px-4 py-3.5 flex items-center justify-between transition-all duration-150 ${
-                                    isSelected 
-                                      ? 'bg-orange-50 cursor-pointer border-l-4 border-l-orange-500' 
+                                  className={`px-4 py-3.5 flex items-center justify-between transition-all duration-150 ${isSelected
+                                      ? 'bg-orange-50 cursor-pointer border-l-4 border-l-orange-500'
                                       : 'hover:bg-gray-50 cursor-pointer border-l-4 border-l-transparent'
-                                  }`}
+                                    }`}
                                 >
                                   <div className="flex items-center gap-3">
                                     {/* Checkbox */}
-                                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                                      isSelected 
-                                        ? 'border-orange-500 bg-orange-500' 
+                                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isSelected
+                                        ? 'border-orange-500 bg-orange-500'
                                         : 'border-gray-300 hover:border-orange-400'
-                                    }`}>
+                                      }`}>
                                       {isSelected && <MdCheck className="text-white text-sm" />}
                                     </div>
                                     <div>

@@ -52,7 +52,7 @@ const AuditLogs = ({ onPageChange }) => {
 
     const handleExport = () => {
         if (!activities || activities.length === 0) return;
-        const csvContent = "data:text/csv;charset=utf-8," 
+        const csvContent = "data:text/csv;charset=utf-8,"
             + "Timestamp,Activity,Subject,Quantity\n"
             + activities.map(log => {
                 const config = getActionConfig(log.type);
@@ -61,7 +61,7 @@ const AuditLogs = ({ onPageChange }) => {
                 const qty = log.quantity > 0 ? `${log.quantity} ${log.unit}` : '-';
                 return `"${time}","${config.label}","${subject}","${qty}"`;
             }).join("\n");
-            
+
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -74,11 +74,11 @@ const AuditLogs = ({ onPageChange }) => {
     return (
         <div className="h-full min-h-full bg-gray-50 flex flex-col overflow-hidden p-4 md:p-8">
             <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0 gap-4 md:gap-6">
-                
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <button 
+                        <button
                             onClick={() => onPageChange('dashboard')}
                             className="bg-white p-2.5 rounded-xl border border-gray-200 text-gray-400 hover:text-orange-500 hover:border-orange-100 transition-all active:scale-95 shadow-sm"
                         >
@@ -111,8 +111,8 @@ const AuditLogs = ({ onPageChange }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    
-                    <select 
+
+                    <select
                         className="bg-gray-50 border border-transparent rounded-xl px-4 py-3 text-sm font-semibold text-gray-600 outline-none focus:bg-white focus:border-orange-200 transition-all"
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}

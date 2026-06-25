@@ -89,7 +89,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedIndex((prev) => 
+      setHighlightedIndex((prev) =>
         prev < filteredLocals.length - 1 ? prev + 1 : prev
       );
     } else if (e.key === "ArrowUp") {
@@ -132,7 +132,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
     setShowDropdown(false)
     setFilteredLocals([])
     setHighlightedIndex(-1)
-    
+
     // Auto focus and scroll to quantity input after state updates
     setTimeout(() => {
       if (quantityInputRef.current) {
@@ -243,7 +243,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
 
                   {/* Dropdown List */}
                   {showDropdown && filteredLocals.length > 0 && (
-                    <div 
+                    <div
                       ref={dropdownRef}
                       className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
                     >
@@ -251,9 +251,8 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
                         <div
                           key={local._id}
                           onClick={() => handleSelectLocal(local)}
-                          className={`px-4 py-3 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors duration-150 ${
-                            highlightedIndex === index ? 'bg-orange-100' : 'hover:bg-orange-50'
-                          }`}
+                          className={`px-4 py-3 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors duration-150 ${highlightedIndex === index ? 'bg-orange-100' : 'hover:bg-orange-50'
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="bg-orange-100 p-1.5 rounded text-orange-600">

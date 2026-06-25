@@ -41,8 +41,8 @@ const Dashboard = ({ onPageChange }) => {
 
       const vendors = vendorsRes.data?.data || [];
       const paymentDue = vendors.reduce((acc, vendor) => {
-          const balance = (vendor.totalDebt || 0) - (vendor.totalPaid || 0);
-          return acc + (balance > 0 ? balance : 0);
+        const balance = (vendor.totalDebt || 0) - (vendor.totalPaid || 0);
+        return acc + (balance > 0 ? balance : 0);
       }, 0);
 
       setDashboardStats({
@@ -86,10 +86,10 @@ const Dashboard = ({ onPageChange }) => {
 
   const colorMap = {
     orange: { bg: "bg-orange-50", text: "text-orange-500", border: "border-orange-100" },
-    green:  { bg: "bg-green-50",  text: "text-green-500",  border: "border-green-100" },
+    green: { bg: "bg-green-50", text: "text-green-500", border: "border-green-100" },
     purple: { bg: "bg-purple-50", text: "text-purple-500", border: "border-purple-100" },
-    amber:  { bg: "bg-amber-50",  text: "text-amber-500",  border: "border-amber-100" },
-    red:    { bg: "bg-red-50",    text: "text-red-500",    border: "border-red-100" },
+    amber: { bg: "bg-amber-50", text: "text-amber-500", border: "border-amber-100" },
+    red: { bg: "bg-red-50", text: "text-red-500", border: "border-red-100" },
   };
 
   const actions = [
@@ -103,7 +103,7 @@ const Dashboard = ({ onPageChange }) => {
   return (
     <div className="min-h-full bg-gray-50 py-6 px-4 md:p-8 overflow-y-auto">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
-        
+
         {/* ── Top Section (Stats row + Quick Actions row) ── */}
         <div className="flex flex-col gap-6 md:gap-8">
 

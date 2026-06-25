@@ -12,11 +12,11 @@ const Vendors = () => {
   const [vendors, setVendors] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [newVendor, setNewVendor] = useState({ name: "", phone: "", address: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   const [selectedVendorId, setSelectedVendorId] = useState(null)
 
   const fetchVendors = async () => {
@@ -57,19 +57,19 @@ const Vendors = () => {
     }
   }
 
-  const filteredVendors = vendors.filter(v => 
-    v.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredVendors = vendors.filter(v =>
+    v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (v.phone && v.phone.includes(searchTerm))
   )
 
   if (selectedVendorId) {
     return (
-      <VendorProfile 
-        vendorId={selectedVendorId} 
+      <VendorProfile
+        vendorId={selectedVendorId}
         onBack={() => {
           setSelectedVendorId(null)
           fetchVendors()
-        }} 
+        }}
       />
     )
   }
@@ -77,7 +77,7 @@ const Vendors = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <div className="relative flex-1 w-full max-w-md">
@@ -118,8 +118,8 @@ const Vendors = () => {
             {filteredVendors.map(vendor => {
               const balance = vendor.totalDebt - vendor.totalPaid;
               return (
-                <div 
-                  key={vendor._id} 
+                <div
+                  key={vendor._id}
                   onClick={() => setSelectedVendorId(vendor._id)}
                   className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-orange-200 transition-all cursor-pointer group"
                 >
@@ -136,7 +136,7 @@ const Vendors = () => {
                       </div>
                       <MdChevronRight className="text-gray-400 text-xl group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-gray-50">
                       <div>
                         <p className="text-xs text-gray-500 font-medium capitalize tracking-wider mb-1">Purchases</p>
@@ -171,21 +171,21 @@ const Vendors = () => {
                   <MdStore className="text-orange-600" />
                   Add New Vendor
                 </h3>
-                <button 
+                <button
                   onClick={() => setIsAddModalOpen(false)}
                   className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
                 >
                   <MdClose className="text-xl" />
                 </button>
               </div>
-              
+
               <form onSubmit={handleAddVendor} className="p-5 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Vendor Name *</label>
                   <input
                     type="text"
                     value={newVendor.name}
-                    onChange={e => setNewVendor({...newVendor, name: e.target.value})}
+                    onChange={e => setNewVendor({ ...newVendor, name: e.target.value })}
                     className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
                     placeholder="Enter vendor name"
                     required
@@ -196,7 +196,7 @@ const Vendors = () => {
                   <input
                     type="text"
                     value={newVendor.phone}
-                    onChange={e => setNewVendor({...newVendor, phone: e.target.value})}
+                    onChange={e => setNewVendor({ ...newVendor, phone: e.target.value })}
                     className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
                     placeholder="Enter phone number"
                   />
@@ -205,7 +205,7 @@ const Vendors = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                   <textarea
                     value={newVendor.address}
-                    onChange={e => setNewVendor({...newVendor, address: e.target.value})}
+                    onChange={e => setNewVendor({ ...newVendor, address: e.target.value })}
                     className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 resize-none h-24"
                     placeholder="Enter address"
                   ></textarea>

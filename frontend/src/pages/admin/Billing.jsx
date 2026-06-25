@@ -63,12 +63,12 @@ function Billing() {
 
   const handleDownloadHistory = async (item) => {
     try {
-      const endpoint = item.type === 'invoice' 
-        ? API.GET_INVOICE_PDF(item._id) 
+      const endpoint = item.type === 'invoice'
+        ? API.GET_INVOICE_PDF(item._id)
         : API.GET_SLIP_PDF(item._id);
-        
+
       const response = await api.get(endpoint, { responseType: 'blob' });
-      
+
       const contentDisposition = response.headers["content-disposition"]
       let filename = item.type === 'invoice' ? `${item.idNumber}.pdf` : `${item.idNumber}.pdf`
       if (contentDisposition) {
@@ -93,10 +93,10 @@ function Billing() {
 
   const handleViewHistory = async (item) => {
     try {
-      const endpoint = item.type === 'invoice' 
-        ? API.GET_INVOICE_PDF(item._id) 
+      const endpoint = item.type === 'invoice'
+        ? API.GET_INVOICE_PDF(item._id)
         : API.GET_SLIP_PDF(item._id);
-        
+
       const response = await api.get(endpoint, { responseType: 'blob' });
       const blob = new Blob([response.data], { type: "application/pdf" })
       const url = window.URL.createObjectURL(blob)
@@ -259,7 +259,7 @@ function Billing() {
           const text = await error.response.data.text()
           const json = JSON.parse(text)
           errorMessage = json.message || errorMessage
-        } catch { 
+        } catch {
           // empty block
         }
       } else {
@@ -405,23 +405,23 @@ function Billing() {
     <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-x-hidden">
       <div className="max-w-3xl mx-auto mb-6 w-full">
         <div className="flex bg-gray-100 p-1 rounded-xl w-full overflow-hidden">
-            <button
-              onClick={() => setActiveTab("generate")}
-              className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "generate" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              Generate New
-            </button>
-            <button
-              onClick={() => setActiveTab("history")}
-              className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "history" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              Billing History
-            </button>
-          </div>
+          <button
+            onClick={() => setActiveTab("generate")}
+            className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "generate" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            Generate New
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`flex-1 py-2.5 px-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 truncate ${activeTab === "history" ? "bg-white text-orange-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            Billing History
+          </button>
         </div>
+      </div>
 
       {activeTab === "history" ? (
-         <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
@@ -438,19 +438,19 @@ function Billing() {
                   />
                 </div>
                 <div className="flex bg-gray-50 p-1.5 rounded-lg border border-gray-100 self-start sm:self-auto overflow-x-auto w-full sm:w-auto shrink-0">
-                  <button 
+                  <button
                     onClick={() => setHistoryFilter('all')}
                     className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'all' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
                   >
                     All History
                   </button>
-                  <button 
+                  <button
                     onClick={() => setHistoryFilter('invoice')}
                     className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'invoice' ? 'bg-orange-50 text-orange-700 shadow-sm border border-orange-100' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
                   >
                     Tamarind Seed
                   </button>
-                  <button 
+                  <button
                     onClick={() => setHistoryFilter('slip')}
                     className={`flex-1 sm:flex-none whitespace-nowrap px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all outline-none ${historyFilter === 'slip' ? 'bg-green-50 text-green-700 shadow-sm border border-green-100' : 'border border-transparent text-gray-500 hover:text-gray-700'}`}
                   >
@@ -459,11 +459,11 @@ function Billing() {
                 </div>
               </div>
             </div>
-            
+
             {loadingHistory ? (
               <div className="space-y-4">
-                  <TableSkeleton rows={5} columns={4} />
-                  <ListItemSkeleton count={5} />
+                <TableSkeleton rows={5} columns={4} />
+                <ListItemSkeleton count={5} />
               </div>
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
@@ -480,186 +480,186 @@ function Billing() {
                     );
                   })
                   .map((item, idx) => (
-                  <div key={idx} className="bg-white border border-gray-300 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
-                    {/* Top Row: Doc No, Date, and Type Badge */}
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-gray-900 font-bold text-sm md:text-base">
-                          {item.idNumber}
-                        </h3>
-                        <span className="text-gray-400 text-xs font-medium block mt-0.5">
-                          {new Date(item.date).toLocaleDateString()}
-                        </span>
+                    <div key={idx} className="bg-white border border-gray-300 shadow-sm rounded-xl p-4 md:p-5 hover:shadow-md transition-shadow flex flex-col gap-3">
+                      {/* Top Row: Doc No, Date, and Type Badge */}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-gray-900 font-bold text-sm md:text-base">
+                            {item.idNumber}
+                          </h3>
+                          <span className="text-gray-400 text-xs font-medium block mt-0.5">
+                            {new Date(item.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div>
+                          <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold capitalize tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                            {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <span className={`px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold capitalize tracking-wider rounded-full whitespace-nowrap ${item.type === 'invoice' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
-                          {item.type === 'invoice' ? 'Tamarind Seed Bill' : 'Cleaned Imli Bill'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Bottom Row: Party Name, Amount, and Actions */}
-                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-200">
-                      <div className="flex flex-col max-w-[50%]">
-                        <span className="text-gray-400 text-[10px] capitalize tracking-widest font-bold mb-0.5">Billed To</span>
-                        <span className="text-gray-800 font-bold text-sm truncate">
-                          {item.name || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewHistory(item)}
-                          className="flex items-center gap-1.5 bg-blue-50 text-blue-600 outline-none hover:bg-blue-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
-                        >
-                          <MdVisibility className="text-[16px]" /> View
-                        </button>
-                        <button
-                          onClick={() => handleDownloadHistory(item)}
-                          className="flex items-center gap-1.5 bg-orange-50 text-orange-600 outline-none hover:bg-orange-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
-                        >
-                          <MdFileDownload className="text-[16px]" /> Download
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-         </div>
-      ) : (
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Header */}
-          <div className="bg-white px-4 py-4 md:px-8 md:py-6 border-b border-gray-100">
-            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-              <div className="bg-orange-50 p-2.5 md:p-3 rounded-lg border border-orange-100">
-                <MdReceipt className="text-xl md:text-2xl text-orange-600" />
-              </div>
-              <div>
-                <h1 className="text-lg md:text-2xl font-bold text-gray-900">
-                  {isImli ? "Generate Bill" : "Generate Invoice"}
-                </h1>
-                <p className="text-gray-500 text-xs md:text-sm font-medium">
-                  {isImli ? "Create a new cleaned imli bill" : "Create a new tax invoice"}
-                </p>
-              </div>
-            </div>
 
-            {/* Stepper Progress Bar - Only visible after step 1 */}
-            {currentStep > 1 && (
-              <div className="relative mt-4">
-                {/* Connector lines — behind circles */}
-                <div className="absolute top-3.5 md:top-[18px] left-0 right-0 flex items-center px-[10%] md:px-[10%] pointer-events-none" style={{ paddingLeft: `${100 / STEPS.length / 2}%`, paddingRight: `${100 / STEPS.length / 2}%` }}>
-                  {STEPS.slice(0, -1).map((step, index) => (
-                    <div key={index} className="flex-1">
-                      <div className={`h-0.5 transition-all duration-300 ${currentStep > step.id ? "bg-orange-500" : "bg-gray-200"}`}></div>
+                      {/* Bottom Row: Party Name, Amount, and Actions */}
+                      <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-200">
+                        <div className="flex flex-col max-w-[50%]">
+                          <span className="text-gray-400 text-[10px] capitalize tracking-widest font-bold mb-0.5">Billed To</span>
+                          <span className="text-gray-800 font-bold text-sm truncate">
+                            {item.name || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewHistory(item)}
+                            className="flex items-center gap-1.5 bg-blue-50 text-blue-600 outline-none hover:bg-blue-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
+                          >
+                            <MdVisibility className="text-[16px]" /> View
+                          </button>
+                          <button
+                            onClick={() => handleDownloadHistory(item)}
+                            className="flex items-center gap-1.5 bg-orange-50 text-orange-600 outline-none hover:bg-orange-100 px-3 py-2 md:px-4 rounded-lg font-bold text-xs transition-colors shrink-0"
+                          >
+                            <MdFileDownload className="text-[16px]" /> Download
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                </div>
-
-                {/* Step circles + labels — on top */}
-                <div className="relative z-10 flex items-start">
-                  {STEPS.map((step) => {
-                    const isActive = currentStep === step.id
-                    const isCompleted = currentStep > step.id
-                    return (
-                      <div key={step.id} className="flex flex-col items-center" style={{ width: `${100 / STEPS.length}%` }}>
-                        <div
-                          className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 ${isCompleted
-                            ? "bg-orange-500 text-white shadow-sm"
-                            : isActive
-                              ? "bg-orange-500 text-white ring-4 ring-orange-500/20 shadow-md"
-                              : "bg-gray-100 text-gray-400 border-2 border-gray-200"
-                            }`}
-                        >
-                          {isCompleted ? (
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          ) : (
-                            step.id
-                          )}
-                        </div>
-                        <span
-                          className={`mt-1 md:mt-2 text-[10px] md:text-xs font-medium whitespace-nowrap ${isActive || isCompleted ? "text-orange-600" : "text-gray-400"
-                            }`}
-                        >
-                          {step.label}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
               </div>
-            )}
-          </div>
-
-          {/* Step Content */}
-          <div className="p-4 md:p-8">
-            {/* Step 1 is always Product Select */}
-            {currentStep === 1 && (
-              <ProductSelect
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={goNext}
-              />
-            )}
-
-            {/* ---- TAMARIND SEEDS FLOW (steps 2-5) ---- */}
-            {!isImli && currentStep === 2 && (
-              <CustomerDetails
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {!isImli && currentStep === 3 && (
-              <ItemDetails
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {!isImli && currentStep === 4 && (
-              <TransportDetails
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {!isImli && currentStep === 5 && (
-              <ReviewSubmit
-                formData={formData}
-                onBack={goBack}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-              />
-            )}
-
-            {/* ---- CLEANED IMLI FLOW (steps 2-3) ---- */}
-            {isImli && currentStep === 2 && (
-              <CleanedImliForm
-                imliData={imliData}
-                setImliData={setImliData}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {isImli && currentStep === 3 && (
-              <CleanedImliPreview
-                imliData={imliData}
-                onBack={goBack}
-                onSubmit={handleImliSubmit}
-                isSubmitting={isSubmitting}
-              />
             )}
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Header */}
+            <div className="bg-white px-4 py-4 md:px-8 md:py-6 border-b border-gray-100">
+              <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                <div className="bg-orange-50 p-2.5 md:p-3 rounded-lg border border-orange-100">
+                  <MdReceipt className="text-xl md:text-2xl text-orange-600" />
+                </div>
+                <div>
+                  <h1 className="text-lg md:text-2xl font-bold text-gray-900">
+                    {isImli ? "Generate Bill" : "Generate Invoice"}
+                  </h1>
+                  <p className="text-gray-500 text-xs md:text-sm font-medium">
+                    {isImli ? "Create a new cleaned imli bill" : "Create a new tax invoice"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Stepper Progress Bar - Only visible after step 1 */}
+              {currentStep > 1 && (
+                <div className="relative mt-4">
+                  {/* Connector lines — behind circles */}
+                  <div className="absolute top-3.5 md:top-[18px] left-0 right-0 flex items-center px-[10%] md:px-[10%] pointer-events-none" style={{ paddingLeft: `${100 / STEPS.length / 2}%`, paddingRight: `${100 / STEPS.length / 2}%` }}>
+                    {STEPS.slice(0, -1).map((step, index) => (
+                      <div key={index} className="flex-1">
+                        <div className={`h-0.5 transition-all duration-300 ${currentStep > step.id ? "bg-orange-500" : "bg-gray-200"}`}></div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Step circles + labels — on top */}
+                  <div className="relative z-10 flex items-start">
+                    {STEPS.map((step) => {
+                      const isActive = currentStep === step.id
+                      const isCompleted = currentStep > step.id
+                      return (
+                        <div key={step.id} className="flex flex-col items-center" style={{ width: `${100 / STEPS.length}%` }}>
+                          <div
+                            className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 ${isCompleted
+                              ? "bg-orange-500 text-white shadow-sm"
+                              : isActive
+                                ? "bg-orange-500 text-white ring-4 ring-orange-500/20 shadow-md"
+                                : "bg-gray-100 text-gray-400 border-2 border-gray-200"
+                              }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              step.id
+                            )}
+                          </div>
+                          <span
+                            className={`mt-1 md:mt-2 text-[10px] md:text-xs font-medium whitespace-nowrap ${isActive || isCompleted ? "text-orange-600" : "text-gray-400"
+                              }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Step Content */}
+            <div className="p-4 md:p-8">
+              {/* Step 1 is always Product Select */}
+              {currentStep === 1 && (
+                <ProductSelect
+                  formData={formData}
+                  updateFormData={updateFormData}
+                  onNext={goNext}
+                />
+              )}
+
+              {/* ---- TAMARIND SEEDS FLOW (steps 2-5) ---- */}
+              {!isImli && currentStep === 2 && (
+                <CustomerDetails
+                  formData={formData}
+                  updateFormData={updateFormData}
+                  onNext={goNext}
+                  onBack={goBack}
+                />
+              )}
+              {!isImli && currentStep === 3 && (
+                <ItemDetails
+                  formData={formData}
+                  updateFormData={updateFormData}
+                  onNext={goNext}
+                  onBack={goBack}
+                />
+              )}
+              {!isImli && currentStep === 4 && (
+                <TransportDetails
+                  formData={formData}
+                  updateFormData={updateFormData}
+                  onNext={goNext}
+                  onBack={goBack}
+                />
+              )}
+              {!isImli && currentStep === 5 && (
+                <ReviewSubmit
+                  formData={formData}
+                  onBack={goBack}
+                  onSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                />
+              )}
+
+              {/* ---- CLEANED IMLI FLOW (steps 2-3) ---- */}
+              {isImli && currentStep === 2 && (
+                <CleanedImliForm
+                  imliData={imliData}
+                  setImliData={setImliData}
+                  onNext={goNext}
+                  onBack={goBack}
+                />
+              )}
+              {isImli && currentStep === 3 && (
+                <CleanedImliPreview
+                  imliData={imliData}
+                  onBack={goBack}
+                  onSubmit={handleImliSubmit}
+                  isSubmitting={isSubmitting}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
