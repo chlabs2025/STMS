@@ -224,39 +224,39 @@ const Dashboard = ({ onPageChange }) => {
             <div className="flex flex-row items-center justify-between p-4 md:p-5 bg-white border border-gray-100 rounded-xl hover:border-purple-300 transition-all h-full w-full">
               {/* Left Side: Title */}
               <div className="flex flex-col flex-shrink-0 mr-2 md:mr-6">
-                 <h4 className="font-semibold text-gray-800 text-sm md:text-base mb-0.5 whitespace-nowrap"><T k="Recent Activity" /></h4>
-                 <p className="text-[10px] md:text-xs text-gray-500 whitespace-nowrap"><T k="Active locals" /></p>
+                <h4 className="font-semibold text-gray-800 text-sm md:text-base mb-0.5 whitespace-nowrap"><T k="Recent Activity" /></h4>
+                <p className="text-[10px] md:text-xs text-gray-500 whitespace-nowrap"><T k="Active locals" /></p>
               </div>
 
               {/* Middle: Circles (Scrollable) */}
               <div className="flex flex-row items-center gap-3 md:gap-4 overflow-x-auto flex-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-2">
-                 {recentLocals.map(local => (
-                    <button
-                      key={local._id}
-                      onClick={() => onPageChange && onPageChange('localsProfile', { prefilledLocalId: local.LocalID })}
-                      className="group flex flex-col items-center gap-1 outline-none flex-shrink-0"
-                    >
-                      <div className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-purple-100 bg-purple-50 flex items-center justify-center text-purple-600 font-semibold text-sm md:text-base group-hover:border-purple-300 group-hover:bg-purple-100 transition-all shadow-sm">
-                         {(local.LocalName || "U").charAt(0).toUpperCase()}
+                {recentLocals.map(local => (
+                  <button
+                    key={local._id}
+                    onClick={() => onPageChange && onPageChange('localsProfile', { prefilledLocalId: local.LocalID })}
+                    className="group flex flex-col items-center gap-1 outline-none flex-shrink-0"
+                  >
+                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-purple-100 bg-purple-50 flex items-center justify-center text-purple-600 font-semibold text-sm md:text-base group-hover:border-purple-300 group-hover:bg-purple-100 transition-all shadow-sm">
+                      {(local.LocalName || "U").charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-medium text-gray-500 max-w-[48px] truncate text-center">
+                      {local.LocalName.split(' ')[0]}
+                    </span>
+                  </button>
+                ))}
+                {recentLocals.length === 0 && !loading && (
+                  <p className="text-[10px] md:text-xs text-gray-400 italic">No recent activity</p>
+                )}
+                {loading && recentLocals.length === 0 && (
+                  <div className="flex flex-row gap-3 md:gap-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gray-200 animate-pulse"></div>
+                        <div className="h-1.5 w-8 bg-gray-200 rounded animate-pulse"></div>
                       </div>
-                      <span className="text-[9px] md:text-[10px] font-medium text-gray-500 max-w-[48px] truncate text-center">
-                         {local.LocalName.split(' ')[0]}
-                      </span>
-                    </button>
-                 ))}
-                 {recentLocals.length === 0 && !loading && (
-                   <p className="text-[10px] md:text-xs text-gray-400 italic">No recent activity</p>
-                 )}
-                 {loading && recentLocals.length === 0 && (
-                   <div className="flex flex-row gap-3 md:gap-4">
-                      {[1, 2, 3].map(i => (
-                         <div key={i} className="flex flex-col items-center gap-1">
-                            <div className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gray-200 animate-pulse"></div>
-                            <div className="h-1.5 w-8 bg-gray-200 rounded animate-pulse"></div>
-                         </div>
-                      ))}
-                   </div>
-                 )}
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Right: View All Button */}

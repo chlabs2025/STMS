@@ -99,7 +99,7 @@ const AddRawImli = () => {
   const totalCost = rawImliQuantity && pricePerKg ? (Number(rawImliQuantity) * Number(pricePerKg)).toLocaleString() : "0"
 
   return (
-    <div className="h-full min-h-full bg-gray-50 p-3 md:p-6 flex flex-col overflow-hidden">
+    <div className="bg-gray-50 p-3 md:p-6 flex flex-col">
       <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col min-h-0 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
         {/* Form Section */}
         <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 mb-6">

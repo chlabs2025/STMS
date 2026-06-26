@@ -209,7 +209,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange, prefilledLocalId })
       </div>
 
       {loading ? (
-        <div className="flex-1 pr-1 md:pr-2">
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1 md:pr-2">
           <TableSkeleton rows={6} columns={3} headers={['Local', 'Status', 'Actions']} />
           <ListItemSkeleton count={6} />
         </div>
@@ -241,7 +241,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange, prefilledLocalId })
           )}
         </div>
       ) : (
-        <div className="flex-1 pr-1 md:pr-2">
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1 md:pr-2">
           {/* ─── Desktop Table (hidden on mobile) ─── */}
           <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">

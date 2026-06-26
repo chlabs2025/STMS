@@ -203,7 +203,7 @@ const AssignImli = ({ prefilledLocalId, prefilledLocal }) => {
   }
 
   return (
-    <div className="h-full min-h-full bg-gray-50 p-3 md:p-6 flex flex-col overflow-hidden">
+    <div className="bg-gray-50 p-3 md:p-6 flex flex-col">
       <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col min-h-0">
         <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>          {/* Content */}
           <div className="px-4 md:px-8 py-5 md:py-8">

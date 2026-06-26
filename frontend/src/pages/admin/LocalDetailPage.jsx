@@ -132,7 +132,7 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
   const pendingCount = assignmentHistory.filter(item => !item.isReturned && !(item.cleanedQuantity > 0)).length
 
   return (
-    <div className="min-h-full bg-white p-4 md:p-6 lg:p-8">
+    <div className="min-h-full bg-white p-4 md:p-6 lg:p-8 pb-20">
       <div className="max-w-4xl mx-auto w-full space-y-5 md:space-y-6">
 
         {/* ─── Header ─── */}
@@ -174,7 +174,7 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {!isEditing ? (
               <button
@@ -218,7 +218,7 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
         {/* ─── Profile Details Card ─── */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-shrink-0">
           <div className="p-4 md:p-6">
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
 
               {/* Phone */}
@@ -328,38 +328,34 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab("activity")}
-              className={`flex-1 py-3 px-2 md:px-4 text-[11px] sm:text-xs md:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap ${
-                activeTab === "activity"
+              className={`flex-1 py-3 px-2 md:px-4 text-[11px] sm:text-xs md:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap ${activeTab === "activity"
                   ? "text-orange-600 border-b-2 border-orange-600 bg-orange-50/30"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <MdInventory className="text-sm sm:text-base md:text-lg hidden sm:block" />
               Activity Log
               {assignmentHistory.length > 0 && (
-                <span className={`text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-full ${
-                  activeTab === "activity" ? "bg-orange-100 text-orange-600" : "bg-gray-100 text-gray-500"
-                }`}>{assignmentHistory.length}</span>
+                <span className={`text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-full ${activeTab === "activity" ? "bg-orange-100 text-orange-600" : "bg-gray-100 text-gray-500"
+                  }`}>{assignmentHistory.length}</span>
               )}
             </button>
             <button
               onClick={() => setActiveTab("payments")}
-              className={`flex-1 py-3 px-2 md:px-4 text-[11px] sm:text-xs md:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap ${
-                activeTab === "payments"
+              className={`flex-1 py-3 px-2 md:px-4 text-[11px] sm:text-xs md:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap ${activeTab === "payments"
                   ? "text-orange-600 border-b-2 border-orange-600 bg-orange-50/30"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <MdHistory className="text-sm sm:text-base md:text-lg hidden sm:block" />
               Payment History
             </button>
             <button
               onClick={() => setShowDateFilter(!showDateFilter)}
-              className={`px-3 sm:px-4 flex items-center justify-center border-l border-gray-200 transition-colors ${
-                showDateFilter || dateFilter.from || dateFilter.to
+              className={`px-3 sm:px-4 flex items-center justify-center border-l border-gray-200 transition-colors ${showDateFilter || dateFilter.from || dateFilter.to
                   ? "text-orange-600 bg-orange-50"
                   : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
-              }`}
+                }`}
               title="Filter by date"
             >
               <MdFilterList className="text-base sm:text-lg" />
@@ -368,7 +364,7 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
 
           {/* Date Filter Row */}
           {showDateFilter && (
-            <div className="px-4 md:px-6 py-2.5 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center gap-2 flex-shrink-0 overflow-hidden">
+            <div className="px-4 md:px-6 py-2.5 bg-gray-50 border-b border-gray-100 flex flex-nowrap items-center gap-2 flex-shrink-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <span className="text-xs font-medium text-gray-500 flex-shrink-0">From</span>
               <input
                 type="date"
@@ -446,11 +442,10 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
                                 </span>
                               </td>
                               <td className="px-2 sm:px-4 md:px-6 py-3 md:py-4 text-right whitespace-nowrap">
-                                <span className={`inline-flex items-center px-1.5 sm:px-2 md:px-2.5 py-0.5 md:py-1 rounded-full text-[9px] sm:text-[10px] md:text-[11px] font-semibold ${
-                                  isReturned 
-                                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                                <span className={`inline-flex items-center px-1.5 sm:px-2 md:px-2.5 py-0.5 md:py-1 rounded-full text-[9px] sm:text-[10px] md:text-[11px] font-semibold ${isReturned
+                                    ? 'bg-green-50 text-green-700 border border-green-200'
                                     : 'bg-amber-50 text-amber-700 border border-amber-200'
-                                }`}>
+                                  }`}>
                                   <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full mr-1 sm:mr-1.5 ${isReturned ? 'bg-green-500' : 'bg-amber-500'}`}></span>
                                   {isReturned ? "Returned" : "Pending"}
                                 </span>
@@ -506,9 +501,8 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
                             <td className="px-2 sm:px-4 md:px-6 py-3 md:py-3.5 text-[11px] sm:text-xs md:text-sm text-gray-500 whitespace-nowrap">₹{log.rate}/kg</td>
                             <td className="px-2 sm:px-4 md:px-6 py-3 md:py-3.5 text-[11px] sm:text-xs md:text-sm font-bold text-green-600 whitespace-nowrap">₹{log.totalAmount?.toLocaleString()}</td>
                             <td className="px-2 sm:px-4 md:px-6 py-3 md:py-3.5 text-right whitespace-nowrap">
-                              <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] md:text-[11px] font-semibold ${
-                                log.paymentMethod === 'Cash' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
-                              }`}>
+                              <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] md:text-[11px] font-semibold ${log.paymentMethod === 'Cash' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                }`}>
                                 {log.paymentMethod}
                               </span>
                             </td>

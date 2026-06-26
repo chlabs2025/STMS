@@ -250,7 +250,7 @@ const Payment = ({ onPageChange }) => {
     }
 
     return (
-        <div className="p-3 md:p-6 lg:p-8 bg-white h-full min-h-full flex flex-col overflow-hidden font-sans">
+        <div className="p-3 md:p-6 lg:p-8 bg-white flex flex-col font-sans">
             <div className="bg-white rounded-xl border border-orange-500/20 shadow-sm p-3 md:p-4 mb-4 md:mb-6">
                 <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
                     <div className="bg-white p-2 md:p-2.5 rounded-lg shadow-sm border border-orange-500/30 flex-shrink-0">
@@ -515,7 +515,7 @@ const Payment = ({ onPageChange }) => {
                                                                         <MdFilterList className="text-orange-500 text-sm" />
                                                                         <span>Filter by Date:</span>
                                                                     </div>
-                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                    <div className="flex items-center gap-2 flex-nowrap overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                                                         <input
                                                                             type="date"
                                                                             value={dateFilter.from}

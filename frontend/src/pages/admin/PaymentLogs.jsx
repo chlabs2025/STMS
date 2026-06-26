@@ -98,7 +98,7 @@ const PaymentLogs = ({ localID }) => {
                 <div className="flex items-center gap-2 overflow-x-auto w-full">
                     <MdFilterList className="text-gray-400 text-lg shrink-0" />
                     <span className="text-xs font-semibold text-gray-500 capitalize shrink-0">Filter By Date:</span>
-                    <div className="flex items-center gap-2 ml-1 sm:ml-2">
+                    <div className="flex flex-nowrap items-center gap-2 ml-1 sm:ml-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         <input 
                             type="date" 
                             value={dateFilter.from}
