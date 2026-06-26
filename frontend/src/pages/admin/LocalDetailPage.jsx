@@ -132,7 +132,7 @@ const LocalDetailPage = ({ local, onBack, navigateToAssignImli }) => {
   const pendingCount = assignmentHistory.filter(item => !item.isReturned && !(item.cleanedQuantity > 0)).length
 
   return (
-    <div className="min-h-full bg-white p-4 md:p-6 lg:p-8 pb-20">
+    <div className="min-h-full bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto w-full space-y-5 md:space-y-6">
 
         {/* ─── Header ─── */}
