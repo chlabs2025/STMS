@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useSearchParams } from "react-router-dom"
 import { MdPeople, MdRefresh, MdSearch, MdVisibility, MdAssignment, MdError, MdPersonAdd, MdDelete, MdWarning } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
-import { IoEye, IoPencil, IoAdd } from "react-icons/io5"
-import LocalDetailsModal from "../../components/LocalDetailsModal"
 import { useLang } from "../../context/LanguageContext"
 import T from "../../i18n/T"
 import toast from "react-hot-toast"
 import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
+import LocalDetailPage from "./LocalDetailPage"
 
-const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
+const LocalsProfile = ({ navigateToAssignImli, onPageChange, prefilledLocalId }) => {
   // eslint-disable-next-line no-unused-vars
   const { lang } = useLang()
   const [locals, setLocals] = useState([])
@@ -18,14 +18,36 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredLocals, setFilteredLocals] = useState([])
   const [selectedLocal, setSelectedLocal] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [localToDelete, setLocalToDelete] = useState(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const hasPrefilledRef = useRef(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlLocalId = searchParams.get('localId')
 
   useEffect(() => {
     fetchLocals()
   }, [])
+
+  useEffect(() => {
+    if (locals.length > 0) {
+      if (urlLocalId) {
+        const local = locals.find(l => l.LocalID?.toString() === urlLocalId || l._id === urlLocalId)
+        if (local && (!selectedLocal || selectedLocal.LocalID !== local.LocalID)) {
+          setSelectedLocal(local)
+        }
+      } else if (prefilledLocalId && !hasPrefilledRef.current) {
+        const local = locals.find(l => l.LocalID === prefilledLocalId || l._id === prefilledLocalId)
+        if (local) {
+          setSelectedLocal(local)
+          setSearchParams({ localId: local.LocalID })
+          hasPrefilledRef.current = true
+        }
+      } else if (!urlLocalId && selectedLocal) {
+        setSelectedLocal(null)
+      }
+    }
+  }, [locals, urlLocalId, prefilledLocalId, selectedLocal, setSearchParams])
 
   const fetchLocals = async () => {
     try {
@@ -73,14 +95,9 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
     }
   }
 
-  const openModal = (local) => {
+  const openDetailPage = (local) => {
     setSelectedLocal(local)
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setSelectedLocal(null)
-    setIsModalOpen(false)
+    setSearchParams({ localId: local.LocalID })
   }
 
   const handleDeleteLocal = (deletedLocalId) => {
@@ -116,17 +133,23 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
     }
   }
 
-  if (loading) {
+  // ─── Show full detail page when a local is selected ───
+  if (selectedLocal) {
     return (
-      <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 md:p-4 mb-4 md:mb-6 animate-pulse">
-          <div className="h-10 md:h-12 bg-gray-200 rounded-lg w-full"></div>
-        </div>
-        <TableSkeleton rows={6} columns={3} />
-        <ListItemSkeleton count={6} />
-      </div>
+      <LocalDetailPage
+        local={selectedLocal}
+        onBack={() => {
+          setSelectedLocal(null)
+          searchParams.delete('localId')
+          setSearchParams(searchParams)
+          fetchLocals()
+        }}
+        navigateToAssignImli={navigateToAssignImli}
+      />
     )
   }
+
+
 
   if (error) {
     return (
@@ -185,7 +208,12 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
         </div>
       </div>
 
-      {filteredLocals.length === 0 ? (
+      {loading ? (
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1 md:pr-2">
+          <TableSkeleton rows={6} columns={3} headers={['Local', 'Status', 'Actions']} />
+          <ListItemSkeleton count={6} />
+        </div>
+      ) : filteredLocals.length === 0 ? (
         <div className="bg-white rounded-xl p-8 md:p-12 text-center shadow-sm border border-orange-500/20">
           <div className="bg-gray-50 w-16 md:w-20 h-16 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
             <MdSearch className="text-3xl md:text-4xl text-gray-300" />
@@ -233,7 +261,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
                   {filteredLocals.map((local) => (
-                    <tr key={local._id} onClick={() => openModal(local)} className="hover:bg-orange-50/30 transition-all duration-200 group cursor-pointer">
+                    <tr key={local._id} onClick={() => openDetailPage(local)} className="hover:bg-orange-50/30 transition-all duration-200 group cursor-pointer">
                       <td className="px-6 py-5">
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0">
@@ -263,7 +291,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
                       <td className="px-4 py-5 text-right pr-6">
                         <div className="flex items-center justify-end space-x-3">
                           <button
-                            onClick={(e) => { e.stopPropagation(); openModal(local); }}
+                            onClick={(e) => { e.stopPropagation(); openDetailPage(local); }}
                             className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 hover:border-gray-400 focus:outline-none transition-all duration-200 shadow-sm"
                             title="View Details"
                           >
@@ -299,7 +327,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
             {filteredLocals.map((local) => (
               <div
                 key={local._id}
-                onClick={() => openModal(local)}
+                onClick={() => openDetailPage(local)}
                 className="bg-white rounded-xl border border-gray-100 p-4 active:bg-gray-50 transition-colors cursor-pointer"
               >
                 {/* Top row: Avatar + Name + Status */}
@@ -327,7 +355,7 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
                 {/* Bottom row: Action buttons */}
                 <div className="flex gap-2">
                   <button
-                    onClick={(e) => { e.stopPropagation(); openModal(local); }}
+                    onClick={(e) => { e.stopPropagation(); openDetailPage(local); }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg active:bg-gray-100 transition-colors"
                   >
                     <MdVisibility className="text-sm" />
@@ -391,14 +419,6 @@ const LocalsProfile = ({ navigateToAssignImli, onPageChange }) => {
           </div>
         </div>
       )}
-
-      {/* Local Details Modal */}
-      <LocalDetailsModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        local={selectedLocal}
-        onDelete={handleDeleteLocal}
-      />
     </div>
   )
 }

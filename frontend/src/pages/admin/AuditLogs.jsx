@@ -72,7 +72,7 @@ const AuditLogs = ({ onPageChange }) => {
     };
 
     return (
-        <div className="h-full min-h-full bg-gray-50 flex flex-col overflow-hidden p-4 md:p-8">
+        <div className="h-full min-h-full bg-gray-50 flex flex-col overflow-hidden p-3 md:p-6">
             <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0 gap-4 md:gap-6">
 
                 {/* Header */}

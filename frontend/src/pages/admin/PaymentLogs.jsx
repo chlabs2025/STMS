@@ -63,7 +63,7 @@ const PaymentLogs = ({ localID }) => {
     if (loading) {
         return (
             <div className="p-3 md:p-6 w-full max-w-7xl mx-auto space-y-4">
-                <TableSkeleton rows={5} columns={5} />
+                <TableSkeleton rows={5} columns={5} headers={['Date & Time', 'Local Name', 'Amount Paid', 'Payment Mode', 'Processed By']} />
                 <ListItemSkeleton count={5} />
             </div>
         );

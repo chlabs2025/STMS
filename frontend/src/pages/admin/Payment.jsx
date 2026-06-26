@@ -226,20 +226,7 @@ const Payment = ({ onPageChange }) => {
         }
     }, [fetchLocals, fetchAssignmentHistory, orderData])
 
-    if (loading) {
-        return (
-            <div className="p-3 md:p-6 lg:p-8 bg-white min-h-screen overflow-x-hidden">
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 md:p-4 mb-4 md:mb-6 animate-pulse">
-                    <div className="h-10 md:h-12 bg-gray-200 rounded-lg w-full"></div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <PaymentCardSkeleton key={i} />
-                    ))}
-                </div>
-            </div>
-        )
-    }
+
 
     if (error) {
         return (
@@ -293,7 +280,13 @@ const Payment = ({ onPageChange }) => {
                 </div>
             </div>
 
-            {filteredLocals.length === 0 ? (
+            {loading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <PaymentCardSkeleton key={i} />
+                    ))}
+                </div>
+            ) : filteredLocals.length === 0 ? (
                 <div className="bg-white rounded-2xl p-6 md:p-12 text-center shadow-lg border border-orange-500/20">
                     <div className="bg-gray-50 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
                         <MdSearch className="text-3xl md:text-4xl text-gray-300" />

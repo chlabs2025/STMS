@@ -11,7 +11,7 @@ import CleanedImliForm from "../../components/billing/CleanedImliForm"
 import CleanedImliPreview from "../../components/billing/CleanedImliPreview"
 import api from "../../api/axios"
 import API from "../../api/endpoints"
-import { TableSkeleton, ListItemSkeleton } from "../../components/Skeletons"
+
 import toast from "react-hot-toast"
 
 // Steps for Tamarind Seeds (existing 5-step flow)
@@ -366,7 +366,7 @@ function Billing() {
   if (submitResult) {
     return (
       <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-x-hidden">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-12 text-center">
             {submitResult.success ? (
               <>
@@ -403,7 +403,7 @@ function Billing() {
 
   return (
     <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-x-hidden">
-      <div className="max-w-3xl mx-auto mb-6 w-full">
+      <div className="max-w-4xl mx-auto mb-6 w-full">
         <div className="flex bg-gray-100 p-1 rounded-xl w-full overflow-hidden">
           <button
             onClick={() => setActiveTab("generate")}
@@ -420,8 +420,9 @@ function Billing() {
         </div>
       </div>
 
-      {activeTab === "history" ? (
-        <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto grid grid-cols-1 grid-rows-1 relative items-start">
+        {/* History Tab */}
+        <div className={`col-start-1 row-start-1 transition-all duration-300 w-full ${activeTab === 'history' ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-2 pointer-events-none z-0'}`}>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
@@ -461,9 +462,28 @@ function Billing() {
             </div>
 
             {loadingHistory ? (
-              <div className="space-y-4">
-                <TableSkeleton rows={5} columns={4} />
-                <ListItemSkeleton count={5} />
+              <div className="space-y-4 overflow-hidden">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 md:p-5 flex flex-col gap-3 animate-pulse">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-2">
+                        <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
+                      </div>
+                      <div className="h-6 w-24 md:w-32 bg-gray-100 rounded-full"></div>
+                    </div>
+                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-50">
+                      <div className="space-y-1">
+                        <div className="h-2 w-12 bg-gray-100 rounded"></div>
+                        <div className="h-4 w-28 md:w-36 bg-gray-200 rounded"></div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="h-8 w-16 md:w-20 bg-gray-100 rounded-lg"></div>
+                        <div className="h-8 w-20 md:w-24 bg-gray-100 rounded-lg"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : historyData.length === 0 ? (
               <div className="py-10 text-center text-gray-500">No billing history found.</div>
@@ -527,8 +547,9 @@ function Billing() {
             )}
           </div>
         </div>
-      ) : (
-        <div className="max-w-3xl mx-auto">
+
+        {/* Generate Tab */}
+        <div className={`col-start-1 row-start-1 transition-all duration-300 w-full ${activeTab === 'generate' ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-2 pointer-events-none z-0'}`}>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             {/* Header */}
             <div className="bg-white px-4 py-4 md:px-8 md:py-6 border-b border-gray-100">
@@ -660,7 +681,7 @@ function Billing() {
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

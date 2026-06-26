@@ -2,9 +2,11 @@ import express from "express"
 import dotenv from "dotenv";
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import compression from "compression"
 
 dotenv.config();
 const app = express()
+app.use(compression())
 
 // ─── CORS — must be FIRST ─────────────────────────────────────────────────────
 const corsOptions = {

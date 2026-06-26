@@ -226,13 +226,13 @@ export default function Settings({ activeTab: initialTab }) {
                             {/* Status Messages overlay */}
                             <div className="z-40 pointer-events-none mb-6">
                                 {successMessage && (
-                                    <div className="pointer-events-auto p-4 bg-green-50/95 border border-green-200 rounded-xl shadow-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="pointer-events-auto p-4 bg-green-50/95 border border-green-200 rounded-xl shadow-sm flex items-center gap-3 ">
                                         <MdCheckCircle className="text-green-500 text-lg shrink-0" />
                                         <p className="text-green-900 text-xs md:text-sm font-bold">{successMessage}</p>
                                     </div>
                                 )}
                                 {errorMessage && (
-                                    <div className="pointer-events-auto p-4 bg-red-50/95 border border-red-200 rounded-xl shadow-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="pointer-events-auto p-4 bg-red-50/95 border border-red-200 rounded-xl shadow-sm flex items-center gap-3 ">
                                         <MdError className="text-red-500 text-lg shrink-0" />
                                         <p className="text-red-900 text-xs md:text-sm font-bold">{errorMessage}</p>
                                     </div>

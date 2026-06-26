@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { MdStore, MdAdd, MdClose, MdSearch, MdChevronRight, MdAccountBalanceWallet } from 'react-icons/md'
 import api from "../../api/axios"
 import API from "../../api/endpoints"
@@ -18,6 +19,16 @@ const Vendors = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [selectedVendorId, setSelectedVendorId] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlVendorId = searchParams.get('vendorId')
+
+  useEffect(() => {
+    if (urlVendorId && urlVendorId !== selectedVendorId) {
+      setSelectedVendorId(urlVendorId)
+    } else if (!urlVendorId && selectedVendorId) {
+      setSelectedVendorId(null)
+    }
+  }, [urlVendorId, selectedVendorId])
 
   const fetchVendors = async () => {
     try {
@@ -68,6 +79,8 @@ const Vendors = () => {
         vendorId={selectedVendorId}
         onBack={() => {
           setSelectedVendorId(null)
+          searchParams.delete('vendorId')
+          setSearchParams(searchParams)
           fetchVendors()
         }}
       />
@@ -120,7 +133,10 @@ const Vendors = () => {
               return (
                 <div
                   key={vendor._id}
-                  onClick={() => setSelectedVendorId(vendor._id)}
+                  onClick={() => {
+                    setSelectedVendorId(vendor._id)
+                    setSearchParams({ vendorId: vendor._id })
+                  }}
                   className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-orange-200 transition-all cursor-pointer group"
                 >
                   <div className="p-5">
@@ -165,7 +181,7 @@ const Vendors = () => {
         {/* Add Vendor Modal */}
         {isAddModalOpen && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl animate-in fade-in zoom-in duration-200">
+            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl ">
               <div className="flex items-center justify-between p-5 border-b border-gray-100">
                 <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                   <MdStore className="text-orange-600" />

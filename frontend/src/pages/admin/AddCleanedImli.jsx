@@ -44,11 +44,9 @@ const AddCleanedImli = () => {
   }
 
   return (
-    <div className="h-full min-h-full bg-white p-3 md:p-6 overflow-hidden flex flex-col">
-      <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col pt-4 md:pt-8">
-        <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 overflow-y-auto" style={{ maxHeight: "calc(100vh - 120px)", scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
-
-
+    <div className="h-full min-h-full bg-gray-50 p-3 md:p-6 flex flex-col overflow-hidden">
+      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col min-h-0">
+        <div className="bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-200 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e1 transparent" }}>
           {/* Content */}
           <div className="px-4 md:px-8 py-5 md:py-8">
             <form onSubmit={handleSubmit} className="space-y-5 md:space-y-8">

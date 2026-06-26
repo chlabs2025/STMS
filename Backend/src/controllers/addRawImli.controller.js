@@ -20,7 +20,7 @@ export const getRawImli = asyncHandler(async (req, res) => {
 });
 
 export const addRawImli = asyncHandler(async (req, res) => {
-  const { rawImliQuantity, vendorId, pricePerKg } = req.body;
+  const { rawImliQuantity, vendorId, pricePerKg, vehicleNumber, source } = req.body;
 
   if (!rawImliQuantity) throw new ApiError(400, "imli quantity is required");
   if (rawImliQuantity < 0) throw new ApiError(400, "imli quantity cannt be negative");
@@ -59,11 +59,15 @@ export const addRawImli = asyncHandler(async (req, res) => {
   }
 
   // Log activity
+  const sourceText = source ? (source === "Truck" ? '' : ` via ${source}`) : '';
+  const vehicleText = (source === "Truck" && vehicleNumber) ? ` from Truck/Vehicle: ${vehicleNumber}` : '';
+
   await logActivity({
     type: "RESTOCK",
-    description: `Added ${rawImliQuantity} KG of raw Imli to stock${additionalLogData}`,
+    description: `Added ${rawImliQuantity} KG of raw Imli to stock${additionalLogData}${sourceText}${vehicleText}`,
     quantity: rawImliQuantity,
-    actor: "Admin"
+    actor: "Admin",
+    vehicleNumber: source === "Truck" ? vehicleNumber : ""
   });
 
   return res

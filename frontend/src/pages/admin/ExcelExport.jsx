@@ -42,15 +42,15 @@ const ExcelExport = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-xl p-3 md:p-4 flex items-center justify-center gap-2 transition-all font-semibold md:text-[15px] group outline-none"
+                className="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg px-3 py-2 md:px-4 md:py-2 flex items-center justify-center gap-1.5 md:gap-2 transition-all font-medium text-xs md:text-sm group outline-none"
             >
-                <MdDownload className="text-xl group-hover:scale-110 transition-transform" />
+                <MdDownload className="text-base md:text-lg group-hover:scale-110 transition-transform" />
                 <T k="Export Reports" />
-                <MdKeyboardArrowDown className={`ml-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                <MdKeyboardArrowDown className={`ml-0.5 text-sm md:text-base transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="absolute top-full left-0 min-w-[200px] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 min-w-[200px] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden transform transition-all ">
                     <button
                         onClick={() => handleDownload(API.EXPORT_LOCALS, "Locals_Report.xlsx")}
                         className="w-full text-left px-4 py-3 hover:bg-green-50 text-gray-700 text-xs md:text-sm border-b border-gray-100 flex items-center gap-3 transition-colors"

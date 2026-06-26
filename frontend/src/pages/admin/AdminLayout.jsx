@@ -30,7 +30,7 @@ const AdminLayout = () => {
   const scrollRef = useRef(null)
 
   useEffect(() => {
-    if (activePage !== "assignImli" && activePage !== "settings") {
+    if (activePage !== "assignImli" && activePage !== "settings" && activePage !== "localsProfile") {
       setNavigationProps({})
     }
   }, [activePage])
@@ -59,7 +59,7 @@ const AdminLayout = () => {
     addCleanedImli: { component: AddCleanedImli, title: "Add Cleaned Imli", props: {} },
     assignImli: { component: AssignImli, title: "Assign Imli", props: navigationProps },
     imliReturned: { component: ImliReturned, title: "Imli Returned", props: {} },
-    localsProfile: { component: LocalsProfile, title: "Locals Profile", props: { navigateToAssignImli, onPageChange: handlePageChange } },
+    localsProfile: { component: LocalsProfile, title: "Locals Profile", props: { navigateToAssignImli, onPageChange: handlePageChange, ...navigationProps } },
     vendors: { component: Vendors, title: "Vendors", props: {} },
     payment: { component: Payment, title: "Payment", props: { onPageChange: handlePageChange } },
     billing: { component: Billing, title: "Billing", props: {} },
@@ -70,8 +70,12 @@ const AdminLayout = () => {
   const currentPage = pageConfig[activePage]
   const CurrentComponent = currentPage.component
 
+  const whiteBgPages = ["localsProfile", "payment", "billing"];
+  const isWhiteBg = whiteBgPages.includes(activePage);
+  const layoutBg = isWhiteBg ? "bg-white" : "bg-gray-50";
+
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden transition-colors duration-300">
+    <div className={`flex h-screen ${layoutBg} overflow-hidden transition-colors duration-300`}>
       <Sidebar
         activePage={activePage}
         onPageChange={handlePageChange}
@@ -82,7 +86,7 @@ const AdminLayout = () => {
           title={currentPage.title}
           onPageChange={handlePageChange}
         />
-        <div ref={scrollRef} className="flex-1 overflow-y-auto pb-20 md:pb-0 no-x-scroll relative">
+        <div ref={scrollRef} className={`flex-1 overflow-y-auto pb-[90px] md:pb-0 no-x-scroll relative ${layoutBg}`}>
           <CurrentComponent {...currentPage.props} />
         </div>
       </div>

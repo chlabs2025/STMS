@@ -23,6 +23,10 @@ const activityLogSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+        vehicleNumber: {
+            type: String,
+            default: ""
+        },
         actor: {
             type: String,
             default: "Admin"

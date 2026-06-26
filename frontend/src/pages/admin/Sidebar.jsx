@@ -64,7 +64,7 @@ export default function Sidebar({ activePage, onPageChange }) {
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-orange-600 rounded-r-full"></div>
                 )}
                 <IconComponent className={`text-xl flex-shrink-0 ${isActive ? 'text-orange-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
-                <span className="whitespace-nowrap transition-all duration-300 opacity-100 w-auto">
+                <span className="text-sm whitespace-nowrap transition-all duration-300 opacity-100 w-auto">
                   {item.label}
                 </span>
               </button>

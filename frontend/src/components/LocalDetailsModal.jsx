@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import api from "../api/axios"
 import API from "../api/endpoints"
 import toast from "react-hot-toast"
+import moment from "moment"
 
 const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
   const [isEditing, setIsEditing] = useState(false)
@@ -14,6 +15,9 @@ const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
     LocalAddress: "",
     upiId: ""
   })
+  const [activeTab, setActiveTab] = useState("details")
+  const [assignmentHistory, setAssignmentHistory] = useState([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   useEffect(() => {
     if (local) {
@@ -24,8 +28,29 @@ const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
         upiId: local.upiId || (local.payment && local.payment.localUPI) || ""
       })
       setIsEditing(false)
+      setActiveTab("details")
     }
   }, [local, isOpen])
+
+  useEffect(() => {
+    if (activeTab === "logs" && local && local.LocalID) {
+      fetchAssignmentHistory()
+    }
+  }, [activeTab, local])
+
+  const fetchAssignmentHistory = async () => {
+    try {
+      setLoadingHistory(true)
+      const res = await api.get(`${API.ASSIGNMENT_HISTORY}?localID=${local.LocalID}`)
+      if (res.data && res.data.data) {
+        setAssignmentHistory(res.data.data)
+      }
+    } catch (error) {
+      console.error("Error fetching history:", error)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
 
   if (!isOpen || !local) return null
 
@@ -117,9 +142,25 @@ const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
             </div>
           </div>
 
+          {/* ─── Tabs ─── */}
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab("details")}
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === "details" ? "text-orange-600 border-b-2 border-orange-600" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab("logs")}
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === "logs" ? "text-orange-600 border-b-2 border-orange-600" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Activity Logs
+            </button>
+          </div>
+
           {/* ─── Scrollable Content Area ─── */}
           <div className="flex-1 overflow-y-auto pb-4">
-            {/* ─── Details ─── */}
+            {activeTab === "details" ? (
             <div className="px-6 py-5 space-y-6">
               {/* Phone */}
               <div className="flex items-center gap-4">
@@ -201,9 +242,66 @@ const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
                 </div>
               )}
             </div>
+            ) : (
+              <div className="p-4">
+                {loadingHistory ? (
+                  <div className="flex justify-center p-8">
+                    <div className="w-8 h-8 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+                  </div>
+                ) : assignmentHistory.length === 0 ? (
+                  <div className="text-center p-8 text-gray-500">
+                    <MdAssignment className="text-4xl mx-auto mb-2 text-gray-300" />
+                    <p>No activity logs found.</p>
+                  </div>
+                ) : (
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-500 tracking-wider">Timestamp</th>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-500 tracking-wider">Subject</th>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-500 tracking-wider">Assigned</th>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-500 tracking-wider">Returned</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 tracking-wider">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 bg-white">
+                        {assignmentHistory.map((item, idx) => {
+                          const isReturned = item.isReturned || item.cleanedQuantity > 0;
+                          return (
+                            <tr key={item._id || idx} className="hover:bg-gray-50">
+                              <td className="px-4 py-3 text-xs font-medium text-gray-900 whitespace-nowrap">
+                                {moment(item.createdAt).format('DD MMM h:mm A')}
+                              </td>
+                              <td className="px-4 py-3 text-xs font-medium text-gray-900">
+                                {local.LocalName}
+                              </td>
+                              <td className="px-4 py-3 text-xs font-medium text-gray-900">
+                                {item.quantity ? `${item.quantity}kg` : "---"}
+                              </td>
+                              <td className="px-4 py-3 text-xs font-medium text-gray-900">
+                                {item.cleanedQuantity ? `${item.cleanedQuantity}kg` : (item.isReturned ? "0kg" : "---")}
+                              </td>
+                              <td className="px-4 py-3 flex justify-center items-center">
+                                {isReturned ? (
+                                  <div className="w-3 h-3 rounded-full bg-[#82b440]"></div>
+                                ) : (
+                                  <div className="w-3 h-3 rounded-full bg-[#e34c43]"></div>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ─── Sticky Action Footer ─── */}
+          {activeTab === "details" && (
           <div className="sticky bottom-0 bg-white border-t border-gray-100 p-5 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
             {isEditing ? (
               <div className="grid grid-cols-2 gap-4">
@@ -236,6 +334,7 @@ const LocalDetailsModal = ({ isOpen, onClose, onUpdate, local }) => {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>

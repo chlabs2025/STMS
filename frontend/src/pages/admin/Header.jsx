@@ -86,7 +86,7 @@ const Header = ({ title, onPageChange }) => {
 
           {/* Dropdown Menu */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50 ">
               <div className="px-4 py-3 border-b border-gray-100 md:hidden">
                 <p className="text-sm font-bold text-gray-900">Admin</p>
               </div>

@@ -66,7 +66,7 @@ export const get7DayTrend = asyncHandler(async (req, res) => {
 /**
  * Utility function to log system activities
  */
-export const logActivity = async ({ type, description, quantity = 0, unit = "KG", localName = "", actor = "Admin" }) => {
+export const logActivity = async ({ type, description, quantity = 0, unit = "KG", localName = "", actor = "Admin", vehicleNumber = "" }) => {
     try {
         await ActivityLog.create({
             type,
@@ -74,7 +74,8 @@ export const logActivity = async ({ type, description, quantity = 0, unit = "KG"
             quantity,
             unit,
             localName,
-            actor
+            actor,
+            vehicleNumber
         });
     } catch (error) {
         console.error("Failed to log activity:", error);
