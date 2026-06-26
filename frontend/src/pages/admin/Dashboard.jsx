@@ -120,7 +120,7 @@ const Dashboard = ({ onPageChange }) => {
   ).values()).filter(Boolean).slice(0, 5);
 
   return (
-    <div className="h-full min-h-full bg-gray-50 p-3 md:p-6 overflow-y-auto">
+    <div className="bg-gray-50 p-3 md:p-6">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
 
         {/* ── Top Section (Stats row + Quick Actions row) ── */}
